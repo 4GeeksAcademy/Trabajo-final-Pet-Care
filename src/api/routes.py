@@ -33,3 +33,29 @@ def login():
 
     return jsonify({"token": access_token, "user": user.serialize()}), 200
 
+
+    return jsonify(response_body), 200
+
+
+user_bp = Blueprint('user', __name__)
+
+@user_bp.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+    
+    if not username or not email or not password:
+        return jsonify({'msg': 'Todos los campos son obligatorios'}), 400
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return jsonify({'msg': 'El usuario ya existe'}), 400
+
+    hashed_password = generate_password_hash(password)
+    new_user = User(username=username, email=email, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({'msg': 'Usuario registrado correctamente'}), 201
+
