@@ -5,9 +5,12 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+
+from flask_swagger import swagger
 from flask_jwt_extended import create_access_token
 from werkzeug.security import check_password_hash
 from datetime import timedelta
+
 
 api = Blueprint('api', __name__)
 
@@ -37,6 +40,11 @@ def login():
     return jsonify(response_body), 200
 
 
+
+@api.route('/logout', methods=['POST'])
+def logout():
+    return jsonify({"message": "Logged out successfully"}), 200
+  
 user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/register', methods=['POST'])
@@ -58,4 +66,5 @@ def register():
     db.session.commit()
 
     return jsonify({'msg': 'Usuario registrado correctamente'}), 201
+
 
