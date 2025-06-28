@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+from flask_swagger import swagger
 
 api = Blueprint('api', __name__)
 
@@ -20,3 +21,8 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+
+@api.route('/logout', methods=['POST'])
+def logout():
+    return jsonify({"message": "Logged out successfully"}), 200
