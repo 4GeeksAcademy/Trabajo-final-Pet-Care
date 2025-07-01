@@ -1,0 +1,95 @@
+@import "./home.css";
+
+/* Footer general */
+.site-footer {
+  background: var(--purple-dark);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Enlaces */
+.site-footer a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.site-footer a:hover {
+  color: var(--purple-light);
+}
+
+/* Contenedor superior */
+.footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 1.5rem;
+}
+
+/* Redes sociales */
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-right: 0.5rem;
+  background: var(--purple-mid);
+  border-radius: 0.5rem;
+}
+.footer-social a:last-child {
+  margin-right: 0;
+}
+.footer-social i {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+/* Bloque de enlaces */
+.footer-links {
+  display: flex;
+  gap: 2.5rem;
+  flex: 1 1 300px;
+}
+.footer-links h4 {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.footer-links li {
+  margin-bottom: 0.5rem;
+}
+.footer-links a {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Línea inferior */
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-links {
+    justify-content: center;
+  }
+  .footer-cert {
+    margin-top: 1rem;
+  }
+}

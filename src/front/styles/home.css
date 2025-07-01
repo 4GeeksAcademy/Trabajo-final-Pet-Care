@@ -1,0 +1,199 @@
+/* Paleta de colores y fuentes */
+:root {
+  --purple-dark:        #5D3A9B;
+  --purple-mid:         #9B59B6;
+  --purple-light:       #D2B4DE;
+  --purple-soft:        #E8DAEF;
+  --hero-gradient-from: #F4ECF7;
+  --hero-gradient-to:   #E8DAEF;
+  --light-bg:           #f1f5f9;
+  --ff-body:     'Inter', sans-serif;
+  --ff-headings: 'Bricolage Grotesque', sans-serif;
+}
+body {
+  background-color: var(--light-bg);
+  color: var(--text-default);
+  font-family: var(--ff-headings);
+}
+/* Fondos componentes  */
+.bg-light {
+  background-color: var(--light-bg) !important;
+}
+.bg-purple-light {
+  background-color: var(--purple-light) !important;
+}
+.text-purple-dark {
+  color: var(--purple-dark) !important;
+}
+
+/* Botones*/
+.btn-main {
+  background-color: var(--purple-mid) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  padding: 0.75rem 1.5rem !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+  transition: background-color 0.3s ease !important;
+}
+.btn-main:hover {
+  background-color: var(--purple-dark) !important;
+}
+.btn-maskots {
+  background-color: #6B46C1 !important;
+  color: #fff !important;
+  padding: 0.5rem 1.2rem !important;
+  border-radius: 50px !important;
+  font-weight: 600 !important;
+  transition: transform 0.1s, background-color 0.2s !important;
+  text-align: center !important;
+}
+.btn-maskots:hover,
+.btn-maskots:focus {
+  background-color: #553C9A !important;
+  transform: scale(1.05) !important;
+  text-decoration: none !important;
+}
+.btn-add {
+  border: 2px solid var(--white);
+  color: var(--white);
+  background: transparent;
+  font-size: 1.5rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  transition: background var(--transition-fast);
+}
+.btn-add:hover {
+  background: rgba(255,255,255,0.2);
+}
+/* Avatar de mascota */
+.pet-avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border: 3px solid #fff;
+}
+.pet-name {
+  color: rgba(255,255,255,0.9);
+}
+.card {
+  border-radius: 2rem !important;
+}
+/* Botón “+” fijo */
+.btn-add {
+  width: 60px;
+  height: 60px;
+  border-width: 2px !important;
+}
+
+/* Enlaces */
+.link-primary {
+  color: var(--purple-mid) !important;
+  transition: color 0.2s ease;
+}
+.link-primary:hover {
+  color: var(--purple-dark) !important;
+  text-decoration: underline !important;
+}
+
+/* Márgenes y Padding extra */
+.hero,
+.features,
+.jumbotron,
+.testimonial,
+.cta,
+.contact {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
+
+/* Tarjetas Testimonios */
+.testimonial-card {
+  flex: 0 0 auto;
+  width: 300px;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 4px 12px rgba(207, 97, 230, 0.05) !important;
+  border: none !important;
+  background: var(--white);
+  transition: transform var(--transition-fast);
+}
+.testimonial-card:hover {
+  transform: translateY(-5px);
+}
+.testimonial-card .card-body {
+  padding: 1.5rem;
+}
+.testimonial-card .card-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: var(--text-default);
+}
+.testimonial-card .card-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+.testimonial-card .card-footer {
+  padding-bottom: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Ocultar scrollbar*/
+.scroll-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Flechas manuales */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--white);
+  color: var(--purple-mid);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  z-index: 5;
+}
+.carousel-btn:hover {
+  background: var(--purple-soft);
+  color: var(--purple-dark);
+}
+.prev-btn { left: 1rem; }
+.next-btn { right: 1rem; }
+
+/* Mascotas */
+.pet-avatar {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  border: 2px solid var(--white);
+  border-radius: 50%;
+}
+/* Media Queries */
+@media (max-width: 576px) {
+  .testimonial-card { width: 200px; }
+  .carousel-btn { display: none; }  /* en móvil, dejemos swipe nativo */
+  .scroll-container { padding: 0 1rem; gap: 1rem; overflow-x: auto; }
+}
+@media (max-width: 576px) {
+  .overflow-auto > li {
+    margin-right: 1rem !important;
+  }
+}
