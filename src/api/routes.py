@@ -7,7 +7,7 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
 from flask_swagger import swagger
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 
@@ -16,6 +16,8 @@ api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+jwt_blacklist = set()
 
 
 # RUTA LOGIN
@@ -31,21 +33,22 @@ def login():
         raise APIException("Credenciales inválidas", status_code=401)
 
     access_token = create_access_token(
-        identity=str(user.id), expires_delta=timedelta(days=1))
+        identity=str(user.id), expires_delta=timedelta(days=1)
+    )
 
     return jsonify({"token": access_token, "user": user.serialize()}), 200
 
 
-
-
+# RUTA LOGOUT
 @api.route('/logout', methods=['POST'])
+@jwt_required()
 def logout():
-    return jsonify({"message": "Logged out successfully"}), 200
+    jti = get_jwt()["jti"]
+    jwt_blacklist.add(jti)
+    return jsonify({"message": "Logged out and token revoked"}), 200
 
 
-# user_bp = Blueprint('user', __name__)
-
-
+# RUTA REGISTER USER
 @api.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -56,6 +59,7 @@ def register():
 
     if not nombre or not apellido or not email or not password:
         return jsonify({'msg': 'Todos los campos son obligatorios'}), 400
+
     user = User.query.filter_by(email=email).first()
     if user:
         return jsonify({'msg': 'El usuario ya existe'}), 400
@@ -71,7 +75,6 @@ def register():
 # RUTA REGISTRO DE MASCOTA
 @api.route('/pets', methods=['POST'])
 def register_pet():
-
     data = request.get_json()
     nombre = data.get('nombre')
     especie = data.get('especie')
@@ -82,7 +85,7 @@ def register_pet():
 
     if not nombre or not especie or not raza or not peso:
         return jsonify({'msg': 'Todos los campos son obligatorios, excepto la foto 🥰'}), 400
-    
+
     try:
         nueva_mascota = Pet(
             nombre=nombre,
@@ -97,7 +100,7 @@ def register_pet():
         db.session.commit()
 
         return jsonify({'msg': 'Mascota registrada con éxito 😎'}), 201
-    
+
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Error al registrar la mascota', 'error': str(e)}), 500
