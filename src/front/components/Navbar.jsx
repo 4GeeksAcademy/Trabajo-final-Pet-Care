@@ -1,14 +1,23 @@
 // Navbar.jsx
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import '../styles/navbar.css';
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const { dispatch } = useGlobalReducer();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
+
+  const handleLogout = () => {
+    dispatch({ type: "reset_store" });
+    setOpen(false);
+    navigate("/");
+  };
 
   return (
     <header className="navbar navbar-expand-lg navbar-dark bg-purple-dark fixed-top">
@@ -51,6 +60,15 @@ const Navbar = () => {
               >
                 Iniciar Sesión
               </Link>
+            </li>
+            <li className="nav-item">
+              <button
+                className="nav-link btn btn-danger"
+                style={{ border: "none", background: "none" }}
+                onClick={handleLogout}
+              >
+                Cerrar Sesión
+              </button>
             </li>
           </ul>
         </div>
