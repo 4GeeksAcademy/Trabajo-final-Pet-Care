@@ -56,7 +56,7 @@ def register():
     apellido = data.get('apellido')
     email = data.get('email')
     password = data.get('password')
-
+    
     if not nombre or not apellido or not email or not password:
         return jsonify({'msg': 'Todos los campos son obligatorios'}), 400
 
