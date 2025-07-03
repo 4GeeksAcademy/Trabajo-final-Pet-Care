@@ -62,6 +62,11 @@ const Navbar = () => {
               </Link>
             </li>
             <li className="nav-item">
+              <Link className="nav-link" to="/pets" onClick={() => setOpen(false)}>
+                Mis Mascotas
+              </Link>
+            </li>
+            <li className="nav-item">
               <button
                 className="nav-link btn btn-danger"
                 style={{ border: "none", background: "none" }}
