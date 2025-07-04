@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/footer.css";  // ruta de tu CSS
+import "../styles/footer.css"; 
 
 const Footer = () => (
   <footer className="site-footer">
@@ -28,8 +28,6 @@ const Footer = () => (
           </ul>
         </div>
       </div>
-
-      {/* Certificado */}
       
     </div>
 
