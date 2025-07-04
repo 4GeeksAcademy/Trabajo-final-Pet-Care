@@ -7,7 +7,7 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
 from flask_swagger import swagger
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity 
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 
@@ -56,7 +56,7 @@ def register():
     apellido = data.get('apellido')
     email = data.get('email')
     password = data.get('password')
-
+    
     if not nombre or not apellido or not email or not password:
         return jsonify({'msg': 'Todos los campos son obligatorios'}), 400
 
@@ -104,6 +104,7 @@ def register_pet():
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Error al registrar la mascota', 'error': str(e)}), 500
+    7b-ruta-post-vacunas
 
 #RUTA REGISTRO DE VACUNAS
 @api.route('/mascotas/<int:mascota_id>/vacunas', methods=['POST'])
@@ -120,4 +121,19 @@ def add_vacuna(mascota_id):
     db.session.add(nueva_vacuna)
     db.session.commit()
 
-    return jsonify({"msg": "Vacuna agregada exitosamente", "vacuna": nueva_vacuna.serialize()}), 201
+    return jsonify({"msg": "Vacuna agregada exitosamente", "vacuna": nueva_vacuna.serialize()}), 20
+  
+#RUTA GET MASCOTAS POR ID DE USUARIO
+@api.route('/pets', methods=['GET'])
+def get_pets_por_usuario():
+    user_id = request.args.get('user_id')
+
+    if not user_id:
+        return jsonify({'msg': 'Debes proporcionar id de usuario en la url'}), 400
+    
+    try: 
+        pets = Pet.query.filter_by(user_id=user_id).all()
+        return jsonify([pet.serialize() for pet in pets]), 200
+    
+    except Exception as e:
+        return jsonify ({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
