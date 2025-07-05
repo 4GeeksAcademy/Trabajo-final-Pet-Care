@@ -3,7 +3,7 @@ import './PetRegistrationForm.css';
 
 const PetRegistrationForm = () => {
   return (
-    <div className="App">
+    <div className="fondo-pet">
       <img
         src="https://media.tenor.com/FFL1QxcDF64AAAAi/dog-cute.gif"
         alt="Perrito corriendo"
