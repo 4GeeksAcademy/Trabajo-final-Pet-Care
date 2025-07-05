@@ -40,6 +40,9 @@ export default function storeReducer(store, action = {}) {
         )
       };
 
+    case 'reset_store':
+      return initialStore();
+
     default:
       throw Error('Unknown action.');
   }
