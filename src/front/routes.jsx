@@ -9,9 +9,11 @@ import  Layout  from "./pages/Layout";
 import  Home  from "./pages/Home";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
+import PetRegistrationForm from "./pages/PetRegistrationForm";
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard'
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -30,8 +32,9 @@ export const router = createBrowserRouter(
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="dashboard" element={<Dashboard />} />
-
         <Route path="/demo" element={<Demo />} />
+        <Route path="/pet" element={<Demo />} />
+        <Route path="/register-pet" element={<PetRegistrationForm />} />
       </Route>
     )
 );
