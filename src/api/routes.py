@@ -17,8 +17,8 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
-jwt_blacklist = set()
 
+jwt_blacklist = set()
 
 # RUTA LOGIN
 @api.route('/login', methods=['POST'])

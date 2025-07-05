@@ -23,7 +23,7 @@ const Hero = () => (
         <div className="col-12 col-lg-6 text-center">
           <img
             src="https://static.vecteezy.com/system/resources/previews/037/749/723/non_2x/ai-generated-dog-and-cat-on-transparent-background-free-png.png"
-            alt="Perrito feliz"
+            alt="Mascotas"
             className="img-fluid rounded-3 hero-img"
           />
         </div>
