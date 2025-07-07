@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
 
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
