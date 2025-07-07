@@ -21,8 +21,6 @@ CORS(api)
 jwt_blacklist = set()
 
 # RUTA LOGIN
-
-
 @api.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -75,7 +73,7 @@ def register():
     return jsonify({'msg': 'Usuario registrado correctamente'}), 201
 
 
-# RUTA PARA OBTENER TODOS LOS USUARIOS
+#RUTA GET ALL USERS
 @api.route('/users', methods=['GET'])
 def get_users():
     all_users = User.query.all()
@@ -117,15 +115,11 @@ def register_pet():
         return jsonify({'msg': 'Error al registrar la mascota', 'error': str(e)}), 500
 
 
-# RUTA REGISTRO DE VACUNAS
+#RUTA REGISTRO DE VACUNAS
+
 @api.route('/mascotas/<int:mascota_id>/vacunas', methods=['POST'])
 def add_vacuna(mascota_id):
     data = request.get_json()
-
-    # Valida que los datos necesarios estén presentes
-    if not data.get('nombre') or not data.get('fecha_aplicacion'):
-        return jsonify({"msg": "El nombre y la fecha de aplicación son obligatorios"}), 400
-
     nueva_vacuna = Vacuna(
         nombre=data.get('nombre'),
         descripcion=data.get('descripcion'),
@@ -137,20 +131,16 @@ def add_vacuna(mascota_id):
     db.session.commit()
 
     return jsonify({"msg": "Vacuna agregada exitosamente", "vacuna": nueva_vacuna.serialize()}), 20
-
-# RUTA GET MASCOTAS POR ID DE USUARIO
-
-
+  
+#RUTA GET MASCOTAS POR ID DE USUARIO
 @api.route('/pets', methods=['GET'])
 def get_pets_por_usuario():
     user_id = request.args.get('user_id')
 
     if not user_id:
         return jsonify({'msg': 'Debes proporcionar id de usuario en la url'}), 400
-
     try:
         pets = Pet.query.filter_by(user_id=user_id).all()
         return jsonify([pet.serialize() for pet in pets]), 200
-
     except Exception as e:
         return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
