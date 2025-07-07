@@ -34,7 +34,7 @@ export const router = createBrowserRouter(
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/pet" element={<Demo />} />
-        <Route path="/register-pet" element={<PetRegistrationForm />} />
+        <Route path="/pets/new" element={<PetRegistrationForm />} />
       </Route>
     )
 );

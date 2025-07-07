@@ -73,6 +73,7 @@ def register():
     return jsonify({'msg': 'Usuario registrado correctamente'}), 201
 
 
+#RUTA GET ALL USERS
 @api.route('/users', methods=['GET'])
 def get_users():
     all_users = User.query.all()
@@ -133,7 +134,6 @@ def add_vacuna(mascota_id):
     return jsonify({"msg": "Vacuna agregada exitosamente", "vacuna": nueva_vacuna.serialize()}), 20
   
 #RUTA GET MASCOTAS POR ID DE USUARIO
-
 @api.route('/pets', methods=['GET'])
 def get_pets_por_usuario():
     user_id = request.args.get('user_id')
@@ -147,4 +147,5 @@ def get_pets_por_usuario():
 
     except Exception as e:
         return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
+
 
