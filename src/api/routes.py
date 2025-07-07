@@ -2,12 +2,12 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet
+from api.models import db, User, Pet, Vacuna
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
 from flask_swagger import swagger
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity 
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 
@@ -17,10 +17,12 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
+
 jwt_blacklist = set()
 
-
 # RUTA LOGIN
+
+
 @api.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -65,11 +67,20 @@ def register():
         return jsonify({'msg': 'El usuario ya existe'}), 400
 
     hashed_password = generate_password_hash(password)
-    new_user = User(nombre=nombre, apellido=apellido, email=email, password=hashed_password)
+    new_user = User(nombre=nombre, apellido=apellido,
+                    email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
 
     return jsonify({'msg': 'Usuario registrado correctamente'}), 201
+
+
+# RUTA PARA OBTENER TODOS LOS USUARIOS
+@api.route('/users', methods=['GET'])
+def get_users():
+    all_users = User.query.all()
+    serialized = [u.serialize() for u in all_users]
+    return jsonify(serialized), 200
 
 
 # RUTA REGISTRO DE MASCOTA
@@ -104,22 +115,42 @@ def register_pet():
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Error al registrar la mascota', 'error': str(e)}), 500
-    
 
-#RUTA GET MASCOTAS POR ID DE USUARIO
+
+# RUTA REGISTRO DE VACUNAS
+@api.route('/mascotas/<int:mascota_id>/vacunas', methods=['POST'])
+def add_vacuna(mascota_id):
+    data = request.get_json()
+
+    # Valida que los datos necesarios estén presentes
+    if not data.get('nombre') or not data.get('fecha_aplicacion'):
+        return jsonify({"msg": "El nombre y la fecha de aplicación son obligatorios"}), 400
+
+    nueva_vacuna = Vacuna(
+        nombre=data.get('nombre'),
+        descripcion=data.get('descripcion'),
+        fecha_aplicacion=data.get('fecha_aplicacion'),
+        mascota_id=mascota_id
+    )
+
+    db.session.add(nueva_vacuna)
+    db.session.commit()
+
+    return jsonify({"msg": "Vacuna agregada exitosamente", "vacuna": nueva_vacuna.serialize()}), 20
+
+# RUTA GET MASCOTAS POR ID DE USUARIO
+
+
 @api.route('/pets', methods=['GET'])
 def get_pets_por_usuario():
     user_id = request.args.get('user_id')
 
     if not user_id:
         return jsonify({'msg': 'Debes proporcionar id de usuario en la url'}), 400
-    
-    try: 
+
+    try:
         pets = Pet.query.filter_by(user_id=user_id).all()
         return jsonify([pet.serialize() for pet in pets]), 200
-    
-    except Exception as e:
-        return jsonify ({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
-    
-    
 
+    except Exception as e:
+        return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
