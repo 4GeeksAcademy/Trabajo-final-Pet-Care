@@ -1,5 +1,22 @@
-// Import necessary components and functions from react-router-dom.
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
+from flask import Flask, request, jsonify, url_for, Blueprint
+from api.models import db, User, Pet, Vacuna
+from api.utils import generate_sitemap, APIException
+from flask_cors import CORS
+
+from flask_swagger import swagger
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
+from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import timedelta
+
+
+api = Blueprint('api', __name__)
+
+# Allow CORS requests to this API
+CORS(api)
+
+
+jwt_blacklist = set()
+
 import {
     createBrowserRouter, request, jsonify, url_for, Blueprint
     createRoutesFromElements,er, Pet
@@ -20,6 +37,7 @@ export const router = createBrowserRouter(
 jwt_blacklist = set()
       // Root Route: All navigation will start from here.
       <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
+
 # RUTA LOGIN
         {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
         <Route path= "/" element={<Home />} />
@@ -74,6 +92,14 @@ def register():
     return jsonify({'msg': 'Usuario registrado correctamente'}), 201
 
 
+#RUTA GET ALL USERS
+@api.route('/users', methods=['GET'])
+def get_users():
+    all_users = User.query.all()
+    serialized = [u.serialize() for u in all_users]
+    return jsonify(serialized), 200
+
+
 # RUTA REGISTRO DE MASCOTA
 @api.route('/pets', methods=['POST'])
 def register_pet():
@@ -108,7 +134,28 @@ def register_pet():
         return jsonify({'msg': 'Error al registrar la mascota', 'error': str(e)}), 500
 
 
+
 # RUTA GET MASCOTAS POR ID DE USUARIO
+
+#RUTA REGISTRO DE VACUNAS
+@api.route('/mascotas/<int:mascota_id>/vacunas', methods=['POST'])
+def add_vacuna(mascota_id):
+    data = request.get_json()
+
+    nueva_vacuna = Vacuna(
+        nombre=data.get('nombre'),
+        descripcion=data.get('descripcion'),
+        fecha_aplicacion=data.get('fecha_aplicacion'),
+        mascota_id=mascota_id
+    )
+
+    db.session.add(nueva_vacuna)
+    db.session.commit()
+
+    return jsonify({"msg": "Vacuna agregada exitosamente", "vacuna": nueva_vacuna.serialize()}), 20
+  
+#RUTA GET MASCOTAS POR ID DE USUARIO
+
 @api.route('/pets', methods=['GET'])
 def get_pets_por_usuario():
     user_id = request.args.get('user_id')
@@ -183,7 +230,6 @@ def update_user(user_id):
         return jsonify({'msg': 'Error al actualizar el usuario', 'error': str(e)}), 500
 
 # RUTA ELIMINAR USUARIO
-
 
 @api.route('/user/<int:user_id>', methods=['DELETE'])
 @jwt_required()
