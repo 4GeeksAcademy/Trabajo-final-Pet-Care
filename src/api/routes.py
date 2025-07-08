@@ -1,8 +1,10 @@
-from flask import request, jsonify, Blueprint
-from flask_jwt_extended import (
+# estoy que me muero de dolor de cabeza
+
+from flask import request, jsonify, Blueprint 
+from flask_jwt_extended import ( 
     create_access_token, jwt_required, get_jwt, get_jwt_identity
 )
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash 
 from datetime import timedelta
 from .models import db, User, Pet, Vacuna
 from .utils import APIException

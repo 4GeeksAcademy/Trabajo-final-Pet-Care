@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 const PetCard = ({ pet }) => (
@@ -20,5 +19,7 @@ const PetCard = ({ pet }) => (
         </div>
     </div>
 );
+
+
 
 export default PetCard;
