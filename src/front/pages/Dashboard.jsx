@@ -52,7 +52,7 @@ export default function Dashboard() {
         </h1>
         <button
           className="btn btn-main"
-          onClick={() => navigate("/pets/new")}
+          onClick={() => navigate("/register-pet")}
         >
           + Añadir mascota
         </button>

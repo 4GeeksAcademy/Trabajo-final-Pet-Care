@@ -12,29 +12,36 @@ export default function Login() {
   };
 
   const handleSubmit = async e => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        }
-      );
-
-      if (res.ok) {
-        const { token, user } = await res.json();
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
-        navigate("/dashboard");
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/login`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       }
-    } catch (err) {
-      setError(err.message);
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const mensaje = data.msg || data.message || "Credenciales inválidas";
+      setError(mensaje);
+      return;
     }
-  };
+    const { token, user } = data;
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+    navigate("/dashboard");
+
+  } catch (err) {
+    setError("No se pudo conectar con el servidor");
+  }
+};
+
 
   return (
     <main className="d-flex justify-content-center align-items-center vh-100">
