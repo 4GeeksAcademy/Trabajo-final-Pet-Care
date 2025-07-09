@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, Vacuna
+from api.models import db, User, Pet, Vacuna,Raza
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -148,4 +148,23 @@ def get_pets_por_usuario():
     except Exception as e:
         return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
 
+# RUTA PARA CREAR RAZA
+@api.route('/razas', methods=['POST'])
+def create_raza():
+    data = request.get_json()
+    nombre = data.get('nombre')
+    descripcion = data.get('descripcion')
+
+    if not nombre:
+        return jsonify({'msg': 'El campo nombre es obligatorio'}), 400
+
+    nueva_raza = Raza(
+        nombre=nombre,
+        descripcion=descripcion
+    )
+
+    db.session.add(nueva_raza)
+    db.session.commit()
+
+    return jsonify({'msg': 'Raza creada con éxito', 'raza': nueva_raza.serialize()}), 201
 
