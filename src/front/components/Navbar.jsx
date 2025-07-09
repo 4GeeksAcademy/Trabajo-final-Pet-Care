@@ -18,7 +18,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     const ok = window.confirm("¿Estás seguro de que quieres cerrar sesión?");
-    if (!ok) return;           // si el usuario pulsa “Cancelar”, no hacemos nada
+    if (!ok) return;  
     dispatch({ type: "reset_store" });
     localStorage.removeItem("token");
     localStorage.removeItem("user");
