@@ -42,7 +42,6 @@
   background-color: var(--purple-dark);
 }
 
-/* Utilities */
 .text-purple-mid {
   color: var(--purple-mid) !important;
 }

@@ -2,8 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../../styles/home.css";
 
+
 const Hero = () => (
-  <section className="bg-purple-light text-center text-lg-start py-5">
+  <section className="bg-purple-light hero-section text-center text-lg-start py-5">
     <div className="container">
       <div className="row align-items-center gx-5">
         <div className="col-12 col-lg-6 mb-4 mb-lg-0">
@@ -20,7 +21,7 @@ const Hero = () => (
             </button>
           </Link>
         </div>
-        <div className="col-12 col-lg-6 text-center">
+        <div className="col-12 col-lg-6 hero-img-col">
           <img
             src="https://static.vecteezy.com/system/resources/previews/037/749/723/non_2x/ai-generated-dog-and-cat-on-transparent-background-free-png.png"
             alt="Mascotas"

@@ -25,7 +25,6 @@ body {
 .text-purple-dark {
   color: var(--purple-dark) !important;
 }
-
 /* Botones*/
 .btn-main {
   background-color: var(--purple-mid) !important;
@@ -86,7 +85,6 @@ body {
   height: 60px;
   border-width: 2px !important;
 }
-
 /* Enlaces */
 .link-primary {
   color: var(--purple-mid) !important;
@@ -96,20 +94,6 @@ body {
   color: var(--purple-dark) !important;
   text-decoration: underline !important;
 }
-
-/* Márgenes y Padding extra */
-.hero,
-.features,
-.jumbotron,
-.testimonial,
-.cta,
-.contact {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-
-
 /* Tarjetas Testimonios */
 .testimonial-card {
   flex: 0 0 auto;
@@ -141,7 +125,6 @@ body {
   font-size: 0.8rem;
   color: var(--text-muted);
 }
-
 /* Ocultar scrollbar*/
 .scroll-container {
   -ms-overflow-style: none;
@@ -150,7 +133,6 @@ body {
 .scroll-container::-webkit-scrollbar {
   display: none;
 }
-
 /* Flechas manuales */
 .carousel-btn {
   position: absolute;
@@ -189,7 +171,7 @@ body {
 /* Media Queries */
 @media (max-width: 576px) {
   .testimonial-card { width: 200px; }
-  .carousel-btn { display: none; }  /* en móvil, dejemos swipe nativo */
+  .carousel-btn { display: none; } 
   .scroll-container { padding: 0 1rem; gap: 1rem; overflow-x: auto; }
 }
 @media (max-width: 576px) {

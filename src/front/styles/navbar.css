@@ -11,11 +11,17 @@
 .bg-purple-dark {
   background-color: var(--purple-dark) !important;
 }
-/* Logo */
-.navbar-brand {
-  color: var(--link-hover) !important;
-  font-weight: bold;
+
+.navbar-brand .navbar-logo {
+  max-height: 50px;    
+  width: auto;          
+  object-fit: contain;
 }
+.navbar {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
 .navbar-brand:hover {
   color: var(--link-hover) !important;
 }
@@ -28,7 +34,7 @@
 .nav-link:focus {
   color: var(--link-hover) !important;
 }
-/* Icono de toggler personalizado */
+
 .navbar-dark .navbar-toggler {
   border-color: var(--link-default) !important;
 }
