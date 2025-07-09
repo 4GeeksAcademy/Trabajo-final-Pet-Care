@@ -1,5 +1,4 @@
 // Import necessary components and functions from react-router-dom.
-
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -11,6 +10,11 @@ import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import PetList from "./components/PetList";
 import PetDetails from "./pages/PetDetails";
+import PetRegistrationForm from "./pages/PetRegistrationForm";
+import Signup from './pages/Signup';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard'
+
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,12 +27,18 @@ export const router = createBrowserRouter(
     // Root Route: All navigation will start from here.
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
 
-      {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-      <Route path="/" element={<Home />} />
-      <Route path="/single/:theId" element={<Single />} />  {/* Dynamic route for single items */}
-      <Route path="/demo" element={<Demo />} />
-      <Route path="/pets" element={<PetList userId={1} />} /> {/* Cambia el userId según tu lógica */}
-      <Route path="/pets/:petId" element={<PetDetails />} />
-    </Route>
-  )
+        {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
+        <Route path= "/" element={<Home />} />
+        <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="/demo" element={<Demo />} />
+        <Route path="/pet" element={<Demo />} />
+        <Route path="/pets/new" element={<PetRegistrationForm />} />
+        <Route path="/pets" element={<PetList userId={1} />} /> {/* Cambia el userId según tu lógica */}
+        <Route path="/pets/:petId" element={<PetDetails />} />
+      </Route>
+    )
+
 );

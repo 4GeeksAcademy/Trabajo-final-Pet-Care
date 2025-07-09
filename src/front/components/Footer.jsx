@@ -1,22 +1,32 @@
 import React from "react";
-import "../styles/footer.css";  // ruta de tu CSS
+import "../styles/footer.css"; 
+import logo from "../assets/img/logo-pet.png"; 
 
 const Footer = () => (
   <footer className="site-footer">
     <div className="footer-top container">
+      <div className="footer-logo">
+        <a href="/">
+          <img
+              src={logo}
+              alt="PetCare Logo"
+              style={{
+              height: "100px",
+              objectFit: "contain",
+              }}
+          />
+        </a>
+      </div>
+
       <div className="footer-social">
         <a href="#" aria-label="Instagram"><i className="fab fa-instagram" /></a>
-        <a href="#" aria-label="Facebook"><i className="fab fa-facebook-f" /></a>
-        <a href="#" aria-label="TikTok"><i className="fab fa-tiktok" /></a>
-        <a href="#" aria-label="YouTube"><i className="fab fa-youtube" /></a>
-        <a href="#" aria-label="LinkedIn"><i className="fab fa-linkedin-in" /></a>
       </div>
 
       <div className="footer-links">
         <div>
           <h4>La app</h4>
           <ul>
-            <li><a href="#how-it-works">¿Que ofrecemos?</a></li>
+            <li><a href="#how-it-works">¿Qué ofrecemos?</a></li>
             <li><a href="#why-us">Por qué PetCare</a></li>
           </ul>
         </div>
@@ -28,9 +38,6 @@ const Footer = () => (
           </ul>
         </div>
       </div>
-
-      {/* Certificado */}
-      
     </div>
 
     <div className="footer-bottom">
