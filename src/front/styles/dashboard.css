@@ -1,0 +1,47 @@
+.dashboard {
+  background-color: var(--light-bg);
+  min-height: 100vh;
+}
+
+.dashboard__title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.pets-list {
+  margin-top: 1rem;
+}
+
+/* Card de mascota */
+.dashboard__pet-card {
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.dashboard__pet-card:hover {
+  transform: translateY(-5px);
+}
+
+.dashboard__pet-img {
+  height: 180px;
+  object-fit: cover;
+}
+
+/* Botón principal */
+.btn-main {
+  background-color: var(--purple-mid);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-main:hover {
+  background-color: var(--purple-dark);
+}
+
+.text-purple-mid {
+  color: var(--purple-mid) !important;
+}

@@ -1,0 +1,185 @@
+.fondo-pet {
+  background-color: #D2B4DE;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1100px;
+  position: relative;
+  overflow-x: hidden;
+  margin: 0;
+  z-index: 1;
+}
+
+.FormCard {
+  width: 600px;
+  height: 950px;
+  background-color: #F4ECF7;;
+  border-radius: 20px;
+  border: solid 1px #c69cd6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: 70px;
+  position: relative;
+  z-index: 3;
+}
+
+.Titulo {
+  color: #5D3A9B;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 35px;
+  font-weight: 700;
+  margin-top: 50px;
+}
+
+.Sub-titulo {
+  color: rgb(105, 104, 104);
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-weight: 500;
+  margin-top: 15px;
+  margin-bottom: 60px;
+  font-size: 18px;
+}
+
+.Categoria {
+  color: rgb(66, 66, 66);
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-weight: 600;
+  margin-left: 3px;
+}
+
+.Inputs {
+  width: 550px;
+}
+
+.Input, .Select {
+  width: 550px;
+  height: 35px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-weight: 600;
+  border: 1.5px solid rgba(93, 58, 155, 0.3);
+  background-color: white;
+  outline: none;
+  padding-left: 15px;
+}
+
+.Foto {
+  margin-bottom: 0px;
+}
+
+.Aviso {
+  color: rgb(105, 104, 104);
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 5px;
+  margin-left: 3px;
+}
+
+.Input::placeholder {
+  color: rgba(66, 66, 66, 0.5);
+  
+}
+
+.Select {
+  width: 550px;
+  height: 35px;
+  color: rgba(66, 66, 66, 0.5);
+  cursor: pointer;
+  padding-left: 10px;
+}
+
+.Select:valid {
+  color: black;
+}
+
+.Perro, .Gato, .Ave, .Pez, .Reptil, .Roedor, .Conejo, .Otro {
+  color: Black;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.Boton {
+  background-color: #5D3A9B;
+  color: #f8f3fa;
+  width: 400px;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-weight: 600;
+  font-size: 20px;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 40px;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease;
+  
+}
+
+.Boton:hover {
+  transform: scale(1.1);
+}
+
+.Nota {
+  width: 550px;
+  height: 65px;
+  border-radius: 15px;
+  border: solid 1px #dac2e6;
+  background-color: #E8DAEF;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  margin-top: 30px;
+}
+
+.Texto {
+    margin-left: 12px;
+    margin-right: 8px;
+    margin-top: 10px;
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-weight: 500;
+    font-size: 13px;
+    color: rgb(105, 104, 104);
+}
+
+.Apostrofe {
+  color: rgb(66, 66, 66) !important;
+}
+
+.DogRunner {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 400px;
+  height: 80px;
+  pointer-events: none;
+  z-index: 2;
+  animation: correr-perrito 16s linear infinite;
+}
+
+@keyframes correr-perrito {
+  0% {
+    left: -700px;
+    transform: scaleX(-1);
+  }
+  12% {
+    left: -200px;
+    transform: scaleX(-1);
+  }
+  44% {
+    left: 100vw;
+    transform: scaleX(-1);
+  }
+  50% {
+    left: 130vw;
+    transform: scaleX(-1);
+  }
+  50.01% {
+    transform: scaleX(1);
+  }
+  100% {
+    left: -800px;
+    transform: scaleX(1);
+  }
+}

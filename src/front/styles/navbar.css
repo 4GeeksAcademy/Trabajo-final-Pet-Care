@@ -1,0 +1,41 @@
+/*  NAVBAR: links en blanco */
+.navbar-dark .nav-link,
+.navbar-dark .navbar-brand {
+  color: #fff !important;
+}
+.navbar-dark .nav-link:hover,
+.navbar-dark .nav-link:focus {
+  color: #eee !important;  
+}
+.bg-navbar,
+.bg-purple-dark {
+  background-color: var(--purple-dark) !important;
+}
+
+.navbar-brand .navbar-logo {
+  max-height: 50px;    
+  width: auto;          
+  object-fit: contain;
+}
+.navbar {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.navbar-brand:hover {
+  color: var(--link-hover) !important;
+}
+/* Links de navegación */
+.nav-link {
+  color: var(--link-default) !important;
+  transition: color 0.2s ease;
+}
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--link-hover) !important;
+}
+
+.navbar-dark .navbar-toggler {
+  border-color: var(--link-default) !important;
+}
+
