@@ -88,11 +88,13 @@
   color: Black;
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+
 .BotonContainer {
   display: flex;
   justify-content: center;
   width: 100%;
 }
+
 .Boton {
   background-color: #5D3A9B;
   color: #F8F3FA;

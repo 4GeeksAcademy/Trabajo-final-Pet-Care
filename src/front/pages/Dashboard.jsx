@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
 import PetList from "../components/PetList";
 
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
