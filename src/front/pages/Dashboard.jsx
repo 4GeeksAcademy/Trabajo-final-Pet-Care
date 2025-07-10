@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
+import PetList from "../components/PetList";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -56,11 +57,11 @@ export default function Dashboard() {
           + Añadir mascota
         </button>
       </div>
-
+      <PetList userId={user.id} />
       <section className="pets-list row gy-4">
         {pets.length > 0 ? (
-          pets.map((p) => (
-            <div key={p.id} className="col-sm-6 col-md-4 col-lg-3">
+          pets.map((pet) => (
+            <div key={pet.id} className="col-sm-6 col-md-4 col-lg-3">
             </div>
           ))
         ) : (
