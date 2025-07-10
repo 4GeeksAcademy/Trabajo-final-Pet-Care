@@ -9,13 +9,12 @@
   margin: 0;
   z-index: 1;
 }
-
 .FormCard {
   width: 600px;
   height: 950px;
   background-color: #F4ECF7;;
   border-radius: 20px;
-  border: solid 1px #c69cd6;
+  border: solid 1px #C69CD6;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,7 +23,6 @@
   position: relative;
   z-index: 3;
 }
-
 .Titulo {
   color: #5D3A9B;
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -32,7 +30,6 @@
   font-weight: 700;
   margin-top: 50px;
 }
-
 .Sub-titulo {
   color: rgb(105, 104, 104);
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -41,18 +38,15 @@
   margin-bottom: 60px;
   font-size: 18px;
 }
-
 .Categoria {
   color: rgb(66, 66, 66);
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: 600;
   margin-left: 3px;
 }
-
 .Inputs {
   width: 550px;
 }
-
 .Input, .Select {
   width: 550px;
   height: 35px;
@@ -66,11 +60,9 @@
   outline: none;
   padding-left: 15px;
 }
-
 .Foto {
   margin-bottom: 0px;
 }
-
 .Aviso {
   color: rgb(105, 104, 104);
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -79,12 +71,9 @@
   margin-top: 5px;
   margin-left: 3px;
 }
-
 .Input::placeholder {
   color: rgba(66, 66, 66, 0.5);
-  
 }
-
 .Select {
   width: 550px;
   height: 35px;
@@ -92,11 +81,9 @@
   cursor: pointer;
   padding-left: 10px;
 }
-
 .Select:valid {
   color: black;
 }
-
 .Perro, .Gato, .Ave, .Pez, .Reptil, .Roedor, .Conejo, .Otro {
   color: Black;
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -110,7 +97,7 @@
 
 .Boton {
   background-color: #5D3A9B;
-  color: #f8f3fa;
+  color: #F8F3FA;
   width: 400px;
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: 600;
@@ -123,21 +110,18 @@
   margin-bottom: 10px;
   transition: transform 0.3s ease;
 }
-
 .Boton:hover {
   transform: scale(1.1);
 }
-
 .Nota {
   width: 550px;
   height: 65px;
   border-radius: 15px;
-  border: solid 1px #dac2e6;
+  border: solid 1px #DAC2E6;
   background-color: #E8DAEF;
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   margin-top: 30px;
 }
-
 .Texto {
     margin-left: 12px;
     margin-right: 8px;
@@ -147,11 +131,9 @@
     font-size: 13px;
     color: rgb(105, 104, 104);
 }
-
 .Apostrofe {
   color: rgb(66, 66, 66) !important;
 }
-
 .DogRunner {
   position: absolute;
   top: 50%;
@@ -162,7 +144,6 @@
   z-index: 2;
   animation: correr-perrito 16s linear infinite;
 }
-
 @keyframes correr-perrito {
   0% {
     left: -700px;

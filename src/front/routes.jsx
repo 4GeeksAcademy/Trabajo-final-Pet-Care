@@ -13,7 +13,9 @@ import PetDetails from "./pages/PetDetails";
 import PetRegistrationForm from "./pages/PetRegistrationForm";
 import Signup from './pages/Signup';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard'
+import Dashboard from './pages/Dashboard'; 
+import PetList from "./components/PetList";
+import PetDetails from "./pages/PetDetails"; 
 
 
 export const router = createBrowserRouter(
@@ -36,7 +38,7 @@ export const router = createBrowserRouter(
         <Route path="/demo" element={<Demo />} />
         <Route path="/pet" element={<Demo />} />
         <Route path="/pets/new" element={<PetRegistrationForm />} />
-        <Route path="/pets" element={<PetList userId={1} />} /> {/* Cambia el userId según tu lógica */}
+        <Route path="/pets" element={<PetList userId={1} />} />
         <Route path="/pets/:petId" element={<PetDetails />} />
       </Route>
     )

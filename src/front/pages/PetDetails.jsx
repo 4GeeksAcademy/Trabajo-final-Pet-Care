@@ -12,7 +12,9 @@ const PetDetails = () => {
   }, [petId]);
 
   if (!pet) return <p>Cargando detalles...</p>;
-  if (pet.msg) return <p>{pet.msg}</p>; // Si hay error desde el backend
+
+  if (pet.msg) return <p>{pet.msg}</p>; 
+
 
   return (
     <div className="container py-4">

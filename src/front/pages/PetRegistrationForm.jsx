@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PetRegistrationForm.css';
-
 const PetRegistrationForm = () => {
   const [nombre, setNombre] = useState('');
   const [especie, setEspecie] = useState('');
@@ -20,8 +19,10 @@ const PetRegistrationForm = () => {
     }
   }, [navigate]);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
 
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
@@ -80,7 +81,6 @@ const PetRegistrationForm = () => {
         alt="Perrito corriendo"
         className="DogRunner"
       />
-
       <div className="FormCard">
         <div className="Titulo">¡Registra tu Mascota!</div>
         <div className="Sub-titulo">Añade a tu compañero/a a nuestra familia</div>
@@ -88,6 +88,7 @@ const PetRegistrationForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="Inputs">
             <div className="Categoria">🏷️ Nombre de la mascota *</div>
+
             <input
               className="Input"
               type="text"
@@ -97,6 +98,7 @@ const PetRegistrationForm = () => {
             />
 
             <div className="Categoria">🐾 Especie *</div>
+
             <select
               className="Select"
               required
@@ -162,14 +164,4 @@ const PetRegistrationForm = () => {
     </div>
   );
 };
-
 export default PetRegistrationForm;
-
-
-
-
-
-
-
-
-
