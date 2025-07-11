@@ -26,7 +26,7 @@ export default function Dashboard() {
         if (!res.ok) throw new Error("Error al cargar mascotas");
         return res.json();
       })
-      .then((data) => setPets(data))
+      .then((data) => setPets(data)) 
       .catch(() => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
