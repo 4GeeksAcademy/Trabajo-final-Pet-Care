@@ -6,10 +6,10 @@ const PetList = ({ userId }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pets?user_id=${userId}`)
+        fetch(`${import.meta.env.VITE_BACKEND_URL}api/pet/${userId}`)
             .then((res) => res.json())
             .then((data) => {
-                setPets(data);
+                setPets(data);                             // CAMBIAR POR COMPLETO
                 setLoading(false);
             });
     }, [userId]);
@@ -23,7 +23,7 @@ const PetList = ({ userId }) => {
             <div className="row g-4">
                 {pets.map((pet) => (
                     <div className="col-12 col-md-6 col-lg-4" key={pet.id}>
-                        <PetCard pet={pet} />
+                        <PetCard pet={pet.id} />
                     </div>
                 ))}
             </div>

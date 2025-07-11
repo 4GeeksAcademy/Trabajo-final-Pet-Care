@@ -49,7 +49,7 @@ const PetRegistrationForm = () => {
     };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pets`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/pets`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ const PetRegistrationForm = () => {
       if (response.ok) {
         setMensaje(data.msg || 'Mascota registrada con éxito');
         setTimeout(() => {
-          navigate('/dashboard'); // o "/dashboard" según tu estructura
+          navigate('/dashboard');
         }, 1500);
       } else {
         setMensaje(data.msg || 'Error al registrar mascota');
