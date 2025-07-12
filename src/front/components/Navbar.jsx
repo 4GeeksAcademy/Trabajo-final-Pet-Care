@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import "../styles/navbar.css";
-import logo from "../assets/img/logo-pet.png";
+
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -34,11 +34,6 @@ const Navbar = () => {
     <header className="navbar navbar-expand-lg navbar-dark bg-purple-dark fixed-top">
       <div className="container">
         <Link className="navbar-brand fw-bold" to="/">
-          <img
-            src={logo}
-            alt="PetCare Logo"
-            className="navbar-logo"
-          />
         </Link>
         <button
           className="navbar-toggler"

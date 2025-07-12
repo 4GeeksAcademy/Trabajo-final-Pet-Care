@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/dashboard.css";
+import VeterinarianSection from "../components/ComponentesDashboard/VeterinarianSection";
+import Footer from "../components/Footer";
 import PetList from "../components/PetList";
-
+import "../styles/dashboard.css";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,9 +13,8 @@ export default function Dashboard() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-    if (!token || !storedUser) {
-      return navigate("/login");
-    }
+    if (!token || !storedUser) return navigate("/login");
+
     const parsedUser = JSON.parse(storedUser);
     setUser(parsedUser);
 
@@ -26,7 +26,7 @@ export default function Dashboard() {
         if (!res.ok) throw new Error("Error al cargar mascotas");
         return res.json();
       })
-      .then((data) => setPets(data)) 
+      .then((data) => setPets(data))
       .catch(() => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -45,32 +45,28 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard container py-5 mt-5">
-      <div className="dashboard__header mb-4">
-        <h1 className="dashboard__title">
-          ¡Bienvenido,{" "}
-          <span className="text-purple-mid">{user.nombre}</span>!
-        </h1>
-        <button
-          className="btn btn-main"
-          onClick={() => navigate("/register-pet")}
-        >
-          + Añadir mascota
-        </button>
+    <div className="d-flex flex-column min-vh-100">
+      <div className="dashboard container py-5 mt-5 flex-grow-1">
+        <div className="dashboard__header mb-4 d-flex justify-content-between align-items-center">
+          <h1 className="dashboard__title">
+            ¡Bienvenido, <span className="text-purple-mid">{user.nombre}</span>!
+          </h1>
+          <button
+            className="btn btn-main"
+            onClick={() => navigate("/register-pet")}
+          >
+            + Añadir mascota
+          </button>
+        </div>
+        <PetList
+          pets={pets}
+          onDelete={(id) => setPets((prev) => prev.filter((p) => p.id !== id))}
+        />
+
+        {/* Sección Mi Veterinario integrada en el mismo Dashboard */}
+        <VeterinarianSection />
       </div>
-      <PetList userId={user.id} />
-      <section className="pets-list row gy-4">
-        {pets.length > 0 ? (
-          pets.map((pet) => (
-            <div key={pet.id} className="col-sm-6 col-md-4 col-lg-3">
-            </div>
-          ))
-        ) : (
-          <p className="text-muted">Aún no tienes mascotas registradas.</p>
-        )}
-      </section>
+      <Footer />
     </div>
   );
 }
-
-
