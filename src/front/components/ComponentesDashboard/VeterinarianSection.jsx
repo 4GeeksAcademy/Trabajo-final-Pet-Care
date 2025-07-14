@@ -1,117 +1,255 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  GoogleMap,
+  Marker,
+  InfoWindow,
+  useJsApiLoader,
+} from "@react-google-maps/api";
+import "../../styles/veterinarian.css";
 
+const containerStyle = { width: "100%", height: "350px" };
 
-const VeterinarianSection = () => {
-  const [location, setLocation] = useState(null);
+const BACKEND = import.meta.env.VITE_BACKEND_URL;
+
+export default function VeterinarianSection() {
+  const [coords, setCoords] = useState(null);
   const [clinics, setClinics] = useState([]);
-  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem("favClinics") || "[]"));
+  const [selected, setSelected] = useState(null);
+  const [details, setDetails] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
-  // Obtener geolocalización del usuario
+  const token = localStorage.getItem("token") || "";
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
+    libraries: ["places"],
+  });
+
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        ({ coords }) => setLocation({ lat: coords.latitude, lng: coords.longitude }),
-        () => console.warn("Permiso de ubicación denegado")
-      );
-    }
+    navigator.geolocation?.getCurrentPosition(
+      ({ coords }) =>
+        setCoords({ lat: coords.latitude, lng: coords.longitude }),
+      () => console.warn("Ubicación denegada")
+    );
   }, []);
 
-  // Fetch de clínicas cercanas con Google Places API
-  useEffect(() => {
-    if (!location) return;
-    const fetchNearby = async () => {
-      const resp = await fetch(
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=5000&type=veterinary_care&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
-      );
-      const json = await resp.json();
-      const top5 = json.results.slice(0, 5);
-      const withDetails = await Promise.all(
-        top5.map(async (c) => {
-          const detResp = await fetch(
-            `https://maps.googleapis.com/maps/api/place/details/json?place_id=${c.place_id}&fields=formatted_phone_number,formatted_address&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
-          );
-          const detJson = await detResp.json();
-          return {
-            ...c,
-            phone: detJson.result.formatted_phone_number,
-            address: detJson.result.formatted_address,
-          };
-        })
-      );
-      setClinics(withDetails);
-    };
-    fetchNearby();
-  }, [location]);
+  const fetchClinics = useCallback(() => {
+    if (!coords || !isLoaded) return;
+    const service = new window.google.maps.places.PlacesService(
+      document.createElement("div")
+    );
+    service.nearbySearch(
+      { location: coords, radius: 5000, type: "veterinary_care" },
+      (results, status) => {
+        if (status === "OK" && results) setClinics(results.slice(0, 7));
+      }
+    );
+  }, [coords, isLoaded]);
+  useEffect(fetchClinics, [fetchClinics]);
 
-  const toggleFavorite = (clinic) => {
-    let updated;
-    if (favorites.some((f) => f.place_id === clinic.place_id)) {
-      updated = favorites.filter((f) => f.place_id !== clinic.place_id);
-    } else {
-      updated = [...favorites, clinic];
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${BACKEND}api/favorites`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then(setFavorites)
+      .catch(console.error);
+  }, [token]);
+
+  const handleMarkerClick = (clinic) => {
+    setSelected(clinic);
+    new window.google.maps.places.PlacesService(
+      document.createElement("div")
+    ).getDetails(
+      {
+        placeId: clinic.place_id,
+        fields: [
+          "name",
+          "formatted_address",
+          "formatted_phone_number",
+          "website",
+          "geometry",
+        ],
+      },
+      (place, status) => {
+        if (status === "OK") setDetails(place);
+      }
+    );
+  };
+
+  const toggleFavorite = async (place) => {
+    if (!token) {
+      alert("Debes iniciar sesión para guardar favoritos");
+      return;
     }
-    setFavorites(updated);
-    localStorage.setItem("favClinics", JSON.stringify(updated));
+    const placeId = place.place_id || (selected && selected.place_id);
+    if (!placeId) {
+      alert("No se encontró el place_id del veterinario.");
+      return;
+    }
+    const exists = favorites.some((f) => f.place_id === placeId);
+
+    try {
+      if (exists) {
+        await fetch(
+          `${BACKEND}api/favorites/${placeId}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setFavorites((f) =>
+          f.filter((fav) => fav.place_id !== placeId)
+        );
+      } else {
+        const res = await fetch(
+          `${BACKEND}api/favorites`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              place_id: placeId,
+              name: place.name,
+              address: place.formatted_address,
+              phone: place.formatted_phone_number || null,
+              website: place.website || null,
+            }),
+          }
+        );
+        const newFav = await res.json();
+        setFavorites((f) => [...f, newFav]);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error al modificar favoritos");
+    } finally {
+      setSelected(null);
+      setDetails(null);
+    }
   };
 
   return (
-    <section className="veterinarian-section container py-4">
-      <h2>Mi Veterinario</h2>
-      <div className="row">
-        {/* Clínicas cercanas */}
-        <div className="col-md-6">
-          <h4>Cerca de mí</h4>
-          {clinics.length ? (
-            <ul className="list-group">
-              {clinics.map((c) => (
-                <li key={c.place_id} className="list-group-item d-flex justify-content-between align-items-start">
-                  <div>
-                    <strong>{c.name}</strong>
-                    <p className="mb-1">{c.address}</p>
-                    <p className="mb-0">📞 {c.phone}</p>
+    <section className="veterinarian-section container my-5 p-4 rounded">
+      <h2 className="section-title mb-4">Veterinarios cercanos a ti </h2>
+      <div className="row gx-4">
+        <div className="col-lg-8 mb-4">
+          {coords && isLoaded ? (
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={coords}
+              zoom={13}
+            >
+              <Marker position={coords} label="Yo" />
+              {clinics
+                .filter(c => c.geometry && c.geometry.location)
+                .map((c) => (
+                  <Marker
+                    key={c.place_id}
+                    position={{
+                      lat: c.geometry.location.lat(),
+                      lng: c.geometry.location.lng(),
+                    }}
+                    icon={{
+                      url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                      scaledSize: new window.google.maps.Size(32, 32),
+                    }}
+                    onClick={() => handleMarkerClick(c)}
+                  />
+                ))}
+
+              {selected && details && (
+                <InfoWindow
+                  position={{
+                    lat: details.geometry.location.lat(),
+                    lng: details.geometry.location.lng(),
+                  }}
+                  onCloseClick={() => setSelected(null)}
+                >
+                  <div className="info-window p-3">
+                    <h5 className="fw-bold mb-2">{details.name}</h5>
+                    <p className="small mb-1">
+                      📍 {details.formatted_address}
+                    </p>
+                    {details.formatted_phone_number && (
+                      <p className="small mb-1">
+                        📞 {details.formatted_phone_number}
+                      </p>
+                    )}
+                    {details.website && (
+                      <p className="small mb-2">
+                        🌐{" "}
+                        <a
+                          href={details.website}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="info-link"
+                        >
+                          {new URL(details.website).hostname}
+                        </a>
+                      </p>
+                    )}
+                    <button
+                      className={`btn w-100 btn-sm ${favorites.some((f) => f.place_id === details.place_id)
+                          ? "btn-outline-danger"
+                          : "btn-success"
+                        }`}
+                      onClick={() => toggleFavorite(details)}
+                    >
+                      {favorites.some((f) => f.place_id === details.place_id)
+                        ? "Eliminar favorito"
+                        : "Guardar favorito"}
+                    </button>
                   </div>
-                  <button
-                    className="btn btn-sm btn-outline-primary"
-                    onClick={() => toggleFavorite(c)}
-                  >
-                    {favorites.some((f) => f.place_id === c.place_id) ? "★" : "☆"}
-                  </button>
-                </li>
-              ))}
-            </ul>
+                </InfoWindow>
+              )}
+            </GoogleMap>
           ) : (
-            <p>Buscando clínicas cercanas…</p>
+            <p>Cargando mapa…</p>
           )}
         </div>
 
-        {/* Clínicas favoritas */}
-        <div className="col-md-6">
-          <h4>Favoritos</h4>
+        <div className="col-lg-4">
+          <h4 className="favorites-title">Favoritos</h4>
           {favorites.length ? (
-            <ul className="list-group">
-              {favorites.map((c) => (
-                <li key={c.place_id} className="list-group-item d-flex justify-content-between align-items-start">
+            <div className="favorites-list">
+              {favorites.map((f) => (
+                <div key={f.place_id} className="favorite-card mb-3 p-3">
                   <div>
-                    <strong>{c.name}</strong>
-                    <p className="mb-1">{c.address}</p>
-                    <p className="mb-0">📞 {c.phone}</p>
+                    <strong>{f.name}</strong>
+                    <p className="small mb-1">{f.address}</p>
+                    {f.phone && <p className="small mb-1">📞 {f.phone}</p>}
+                    {f.website && (
+                      <p className="small mb-2">
+                        🌐{" "}
+                        <a
+                          href={f.website}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="info-link"
+                        >
+                          {new URL(f.website).hostname}
+                        </a>
+                      </p>
+                    )}
                   </div>
                   <button
                     className="btn btn-sm btn-outline-danger"
-                    onClick={() => toggleFavorite(c)}
+                    onClick={() => toggleFavorite(f)}
                   >
-                    Quitar
+                    Eliminar favorito
                   </button>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
-            <p>No tienes favoritos aún.</p>
+            <p className="text-muted">Aún no tienes favoritos.</p>
           )}
         </div>
       </div>
     </section>
   );
-};
-
-export default VeterinarianSection;
+}

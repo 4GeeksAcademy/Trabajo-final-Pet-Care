@@ -1,0 +1,114 @@
+
+.veterinarian-section {
+  background: #e8f5e9; /* verde claro */
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.veterinarian-section .section-title {
+  color: #1b5e20;
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.veterinarian-section .gm-style {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.veterinarian-section .gm-style .gm-ui-hover-effect {
+  display: none !important;
+}
+
+.veterinarian-section .info-window {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-family: "Segoe UI", sans-serif;
+  line-height: 1.4;
+  max-width: 260px;
+}
+.veterinarian-section .info-window h5 {
+  margin: 0 0 0.5rem;
+  color: #2e7d32;
+  font-size: 1.1rem;
+}
+.veterinarian-section .info-window p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  color: #424242;
+}
+.veterinarian-section .info-window .info-link {
+  color: #388e3c;
+  text-decoration: none;
+  font-weight: 500;
+}
+.veterinarian-section .info-window .info-link:hover {
+  text-decoration: underline;
+}
+.veterinarian-section .info-window .btn-success,
+.veterinarian-section .info-window .btn-outline-danger {
+  width: 100%;
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.veterinarian-section .favorites-title {
+  color: #1b5e20;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.veterinarian-section .favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.veterinarian-section .favorite-card {
+  background: #ffffff;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-family: "Segoe UI", sans-serif;
+}
+.veterinarian-section .favorite-card > div {
+  flex: 1;
+}
+.veterinarian-section .favorite-card strong {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #2e7d32;
+  font-size: 1rem;
+}
+.veterinarian-section .favorite-card p {
+  margin: 0.2rem 0;
+  font-size: 0.85rem;
+  color: #424242;
+}
+.veterinarian-section .favorite-card .info-link {
+  color: #388e3c;
+  text-decoration: none;
+}
+.veterinarian-section .favorite-card .info-link:hover {
+  text-decoration: underline;
+}
+.veterinarian-section .favorite-card .btn-outline-danger {
+  font-size: 0.85rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 4px;
+}
+
+@media (max-width: 992px) {
+  .veterinarian-section .row > [class*="col-"] {
+    margin-bottom: 1.5rem;
+  }
+}

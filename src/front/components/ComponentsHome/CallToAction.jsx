@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "../../styles/home.css";
 
 const CallToAction = () => (
-  <section className="py-5 text-center bg-purple-dark">
+  <section className="py-5 text-center bg-green-dark">
     <div className="container">
       <h2 className="fw-bold mb-4 text-white">
         ¿Listo para cuidar mejor a tu mascota?

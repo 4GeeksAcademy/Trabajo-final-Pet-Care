@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, Vacuna, Raza
+from api.models import db, User, Pet, Vacuna, Raza, Favorite
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_swagger import swagger
@@ -15,7 +15,6 @@ from flask_jwt_extended import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
-from .models import db, User, Pet, Vacuna
 from .utils import APIException
 
 api = Blueprint('api', __name__)
@@ -273,3 +272,43 @@ def add_vacuna(mascota_id):
         return jsonify([pet.serialize() for pet in pets]), 200
     except Exception as e:
         return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
+
+#RUTAS VETERINARIAS FAVORITAS 
+
+# GET /favorites
+@api.route("/favorites", methods=["GET"])
+@jwt_required()
+def get_favorites():
+    user_id = int(get_jwt_identity())
+    favs = Favorite.query.filter_by(user_id=user_id).all()
+    return jsonify([f.serialize() for f in favs]), 200
+
+# POST /favorites
+@api.route("/favorites", methods=["POST"])
+@jwt_required()
+def add_favorite():
+    user_id = int(get_jwt_identity())
+    data = request.get_json()
+    fav = Favorite(
+        user_id=user_id,
+        place_id=data["place_id"],
+        name=data["name"],
+        address=data.get("address"),
+        phone=data.get("phone"),
+        website=data.get("website"),
+    )
+    db.session.add(fav)
+    db.session.commit()
+    return jsonify(fav.serialize()), 201
+
+# DELETE /favorites/<place_id>
+@api.route("/favorites/<place_id>", methods=["DELETE"])
+@jwt_required()
+def delete_favorite(place_id):
+    user_id = int(get_jwt_identity())
+    fav = Favorite.query.filter_by(user_id=user_id, place_id=place_id).first()
+    if not fav:
+        return jsonify({"msg": "No encontrado"}), 404
+    db.session.delete(fav)
+    db.session.commit()
+    return jsonify({"msg": "Eliminado"}), 200
