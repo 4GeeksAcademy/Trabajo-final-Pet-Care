@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean
+from sqlalchemy import String, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import date
 
@@ -13,6 +13,12 @@ class User(db.Model):
     apellido: Mapped[str] = mapped_column(String(30), nullable=False)
     email: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(500), nullable=False)
+
+    favorites: Mapped[list["Favorite"]] = relationship(
+        "Favorite",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
     def serialize(self):
         return {
@@ -90,4 +96,30 @@ class Vacuna(db.Model):
             "descripcion": self.descripcion,
             "fecha_aplicacion": self.fecha_aplicacion.isoformat() if self.fecha_aplicacion else None,
             "mascota_id": self.mascota_id
+        }
+
+
+#MODELO FAVORITOS 
+class Favorite(db.Model):
+    __tablename__ = "favorites"
+
+    id:       Mapped[int]    = mapped_column(primary_key=True)
+    user_id:  Mapped[int]    = mapped_column(ForeignKey("users.id"), nullable=False)
+    place_id: Mapped[str]    = mapped_column(String(100), nullable=False)
+    name:     Mapped[str]    = mapped_column(String(200), nullable=False)
+    address:  Mapped[str]    = mapped_column(String(300), nullable=True)
+    phone:    Mapped[str]    = mapped_column(String(50),  nullable=True)
+    website:  Mapped[str]    = mapped_column(String(200), nullable=True)
+
+    user:     Mapped["User"] = relationship("User", back_populates="favorites")
+
+    def serialize(self):
+        return {
+            "id":       self.id,
+            "user_id":  self.user_id,
+            "place_id": self.place_id,
+            "name":     self.name,
+            "address":  self.address,
+            "phone":    self.phone,
+            "website":  self.website,
         }

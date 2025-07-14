@@ -73,7 +73,7 @@ const Features = () => (
                 <ul className="list-unstyled mb-0">
                   {f.items.map((item) => (
                     <li key={item} className="d-flex align-items-start mb-2">
-                      <span className="badge bg-success me-2">&nbsp;</span>
+                      <span className="badge bg-green-dark me-2">&nbsp;</span>
                       <small className="text-secondary">{item}</small>
                     </li>
                   ))}

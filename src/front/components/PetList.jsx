@@ -1,36 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PetCard from "./PetCard";
 
-const PetList = ({ userId }) => {
-    const [pets, setPets] = useState([]);
-    const [loading, setLoading] = useState(true);
+const PetList = ({ pets, onDelete }) => {
+  if (!pets || pets.length === 0) {
+    return <p className="text-muted">Aún no tienes mascotas registradas.</p>;
+  }
 
-    useEffect(() => {
-        fetch(`${import.meta.env.VITE_BACKEND_URL}api/pet/${userId}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setPets(data);                             // CAMBIAR POR COMPLETO
-                setLoading(false);
-            });
-    }, [userId]);
-
-    if (loading) return <p>Cargando mascotas...</p>;
-    if (!pets.length) return <p>No tienes mascotas registradas.</p>;
-
-    return (
-        <div className="container py-4">
-            <h2 className="mb-4">Mis Mascotas</h2>
-            <div className="row g-4">
-                {pets.map((pet) => (
-                    <div className="col-12 col-md-6 col-lg-4" key={pet.id}>
-                        <PetCard pet={pet.id} />
-                    </div>
-                ))}
-            </div>
+  return (
+    <section className="pets-list row gy-4">
+      {pets.map((pet) => (
+        <div key={pet.id} className="col-sm-6 col-md-4 col-lg-3">
+          <PetCard pet={pet} onDelete={onDelete} />
         </div>
-    );
+      ))}
+    </section>
+  );
 };
-
-
 
 export default PetList;

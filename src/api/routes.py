@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, Vacuna, Raza
+from api.models import db, User, Pet, Vacuna, Raza, Favorite
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_swagger import swagger
@@ -15,7 +15,6 @@ from flask_jwt_extended import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
-from .models import db, User, Pet, Vacuna
 from .utils import APIException
 
 api = Blueprint('api', __name__)
@@ -68,7 +67,8 @@ def login():
     if not user or not check_password_hash(user.password, password):
         raise APIException("Credenciales inválidas", status_code=401)
     access_token = create_access_token(
-        identity=user.id, expires_delta=timedelta(days=1)
+        identity=str(user.id),  
+        expires_delta=timedelta(days=1)
     )
     return jsonify({"token": access_token, "user": user.serialize()}), 200
 
@@ -83,8 +83,6 @@ def logout():
     return jsonify({"message": "Logged out and token revoked"}), 200
 
 # RUTA ACTUALIZAR USUARIO
-
-
 @api.route('/user/<int:user_id>', methods=['PUT'])
 @jwt_required()
 def update_user(user_id):
@@ -112,8 +110,6 @@ def update_user(user_id):
         return jsonify({'msg': 'Error al actualizar el usuario', 'error': str(e)}), 500
 
     # RUTA ELIMINAR USUARIO
-
-
 @api.route('/user/<int:user_id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(user_id):
@@ -132,8 +128,6 @@ def delete_user(user_id):
         return jsonify({'msg': 'Error al eliminar el usuario', 'error': str(e)}), 500
 
 # RUTA OBTENER USUARIO POR ID
-
-
 @api.route('/user/<int:user_id>', methods=['GET'])
 def get_user_by_id(user_id):
     try:
@@ -145,9 +139,8 @@ def get_user_by_id(user_id):
         return jsonify({'msg': 'Error al obtener el usuario', 'error': str(e)}), 500
 
     # ________________MASCOTAS_____________#
+
 # RUTA GET MASCOTAS POR ID DE USUARIO
-
-
 @api.route('/pets', methods=['GET'])
 def get_pets_por_usuario():
     user_id = request.args.get('user_id')
@@ -160,8 +153,6 @@ def get_pets_por_usuario():
         return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
 
     # RUTA OBTENER MASCOTA POR ID / VJ
-
-
 @api.route('/pet/<int:pet_id>', methods=['GET'])
 def get_pet_by_id(pet_id):
     try:
@@ -173,8 +164,6 @@ def get_pet_by_id(pet_id):
         return jsonify({'msg': 'Error al obtener la mascota', 'error': str(e)}), 500
 
     # RUTA OBTENER TODAS LAS MASCOTAS
-
-
 @api.route('/all_pets', methods=['GET'])
 def get_all_pets():
     try:
@@ -184,7 +173,6 @@ def get_all_pets():
         return jsonify({'msg': 'Error al obtener las mascotas', 'error': str(e)}), 500
 
 # RUTA REGISTRO DE MASCOTA
-
 
 @api.route('/pets', methods=['POST'])
 def register_pet():
@@ -214,37 +202,35 @@ def register_pet():
         return jsonify({'msg': 'Error al registrar la mascota', 'error': str(e)}), 500
 
 # RUTA ACTUALIZAR MASCOTA
-
-
 @api.route('/pet/<int:pet_id>', methods=['PUT'])
 @jwt_required()
 def update_pet(pet_id):
     data = request.get_json()
-    nombre = data.get('nombre')
-    especie = data.get('especie')
-    raza = data.get('raza')
-    foto = data.get('foto')
-    peso = data.get('peso')
-    user_id = data.get('user_id')
+    pet  = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({'msg': 'Mascota no encontrada'}), 404
+
+    # Actualiza sólo si viene en el payload
+    if 'nombre' in data:
+        pet.nombre  = data['nombre']
+    if 'peso' in data:
+        pet.peso    = data['peso']
+    if 'especie' in data:
+        pet.especie = data['especie']
+    if 'raza' in data:
+        pet.raza    = data['raza']
+    if 'foto' in data:
+        pet.foto    = data['foto']
+
     try:
-        pet = Pet.query.get(pet_id)
-        if not pet:
-            return jsonify({'msg': 'Mascota no encontrada'}), 404
-        pet.nombre = nombre
-        pet.especie = especie
-        pet.raza = raza
-        pet.foto = foto
-        pet.peso = peso
-        pet.user_id = user_id
         db.session.commit()
         return jsonify({'msg': 'Mascota actualizada correctamente'}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Error al actualizar la mascota', 'error': str(e)}), 500
 
+
 # RUTA ELIMINAR MASCOTA
-
-
 @api.route('/pet/<int:pet_id>', methods=['DELETE'])
 @jwt_required()
 def delete_pet(pet_id):
@@ -286,3 +272,43 @@ def add_vacuna(mascota_id):
         return jsonify([pet.serialize() for pet in pets]), 200
     except Exception as e:
         return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
+
+#RUTAS VETERINARIAS FAVORITAS 
+
+# GET /favorites
+@api.route("/favorites", methods=["GET"])
+@jwt_required()
+def get_favorites():
+    user_id = int(get_jwt_identity())
+    favs = Favorite.query.filter_by(user_id=user_id).all()
+    return jsonify([f.serialize() for f in favs]), 200
+
+# POST /favorites
+@api.route("/favorites", methods=["POST"])
+@jwt_required()
+def add_favorite():
+    user_id = int(get_jwt_identity())
+    data = request.get_json()
+    fav = Favorite(
+        user_id=user_id,
+        place_id=data["place_id"],
+        name=data["name"],
+        address=data.get("address"),
+        phone=data.get("phone"),
+        website=data.get("website"),
+    )
+    db.session.add(fav)
+    db.session.commit()
+    return jsonify(fav.serialize()), 201
+
+# DELETE /favorites/<place_id>
+@api.route("/favorites/<place_id>", methods=["DELETE"])
+@jwt_required()
+def delete_favorite(place_id):
+    user_id = int(get_jwt_identity())
+    fav = Favorite.query.filter_by(user_id=user_id, place_id=place_id).first()
+    if not fav:
+        return jsonify({"msg": "No encontrado"}), 404
+    db.session.delete(fav)
+    db.session.commit()
+    return jsonify({"msg": "Eliminado"}), 200
