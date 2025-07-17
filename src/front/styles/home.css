@@ -167,7 +167,17 @@ body {
 }
 .prev-btn { left: 1rem; }
 .next-btn { right: 1rem; }
-
+.testimonial-card {
+  opacity: 0.4;
+  transform: scale(0.9);
+  transition: all 0.3s ease;
+}
+.testimonial-card.active {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 1;
+}
 /* Mascotas */
 .pet-avatar {
   width: 4rem;
@@ -185,5 +195,90 @@ body {
 @media (max-width: 576px) {
   .overflow-auto > li {
     margin-right: 1rem !important;
+  }
+}
+.info-section {
+  background: #4fb35f;
+  color: #fff;
+  padding: 4rem 0;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+}
+
+/* 3) Título con estilo “óvalo dibujado a mano” solo alrededor de “PetTracker” */
+.info-title {
+  text-align: center;
+  font-size: 2rem;
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+/* Subraya “PetTracker” con un óvalo */
+.info-title .underline {
+  position: relative;
+  z-index: 1;
+  padding: 0 0.2em;
+}
+.info-title .underline::before {
+  content: '';
+  position: absolute;
+  top: -0.2em;
+  left: -0.3em;
+  width: calc(100% + 0.6em);
+  height: calc(100% + 0.4em);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  transform: rotate(-3deg);
+  z-index: -1;
+}
+
+/* 4) Contenedor de tarjetas */
+.info-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 1000px;
+  margin: 2rem auto 0;
+}
+
+/* 5) Cada tarjeta */
+.info-card {
+  background: #fff;
+  color: #333;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  flex: 1 1 calc(20% - 1rem);
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+.info-card:hover {
+  transform: translateY(-6px);
+}
+
+/* 6) Icono dentro de la tarjeta */
+.info-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* 7) Texto de la tarjeta */
+.info-text {
+  font-size: 1rem;
+  font-weight: 600;
+  display: block;      /* antes era inline-block */
+  margin: 0 auto;      /* centro horizontal */
+}
+
+/* 8) Responsivo */
+@media (max-width: 767px) {
+  .info-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+  .info-card {
+    flex: 0 0 80%;
   }
 }

@@ -1,9 +1,19 @@
+/* 1) Import de la fuente Montserrat */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
 
+:root {
+  --bs-primary: #FF6B6B;
+  --bs-secondary: #4ECDC4;
+}
+body,
 .veterinarian-section {
-  background: #e8f5e9; /* verde claro */
+  font-family: 'Montserrat', sans-serif;
+}
+.veterinarian-section {
+  background: #e8f5e9;
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 .veterinarian-section .section-title {
   color: #1b5e20;
@@ -11,22 +21,19 @@
   margin-bottom: 1.5rem;
   font-weight: 600;
 }
-
 .veterinarian-section .gm-style {
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 .veterinarian-section .gm-style .gm-ui-hover-effect {
   display: none !important;
 }
-
 .veterinarian-section .info-window {
   background: #ffffff;
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  font-family: "Segoe UI", sans-serif;
   line-height: 1.4;
   max-width: 260px;
 }
@@ -34,6 +41,7 @@
   margin: 0 0 0.5rem;
   color: #2e7d32;
   font-size: 1.1rem;
+  font-weight: 600;
 }
 .veterinarian-section .info-window p {
   margin: 0.25rem 0;
@@ -41,44 +49,68 @@
   color: #424242;
 }
 .veterinarian-section .info-window .info-link {
-  color: #388e3c;
+  color: #9b59b6;
   text-decoration: none;
   font-weight: 500;
 }
 .veterinarian-section .info-window .info-link:hover {
   text-decoration: underline;
 }
-.veterinarian-section .info-window .btn-success,
-.veterinarian-section .info-window .btn-outline-danger {
-  width: 100%;
+/* Botones dentro de InfoWindow */
+.veterinarian-section .info-window .btn-success {
+  background: linear-gradient(45deg, #6fcf7f, #9b59b6);
+  border: none;
+  color: #fff;
+  border-radius: 20px;
   font-size: 0.85rem;
   padding: 0.5rem 0;
-  border-radius: 4px;
   font-weight: 600;
+  width: 100%;
+  transition: opacity .2s ease;
+}
+.veterinarian-section .info-window .btn-success:hover {
+  opacity: 0.9;
+}
+.veterinarian-section .info-window .btn-outline-danger {
+  background: #fff;
+  border: 1px solid #9b59b6;
+  color: #9b59b6;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  width: 100%;
+  transition: background .2s ease, color .2s ease;
+}
+.veterinarian-section .info-window .btn-outline-danger:hover {
+  background: #9b59b6;
+  color: #fff;
 }
 .veterinarian-section .favorites-title {
-  color: #1b5e20;
+  color: #9b59b6;
   font-size: 1.25rem;
   margin-bottom: 1rem;
   font-weight: 500;
 }
-
 .veterinarian-section .favorites-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-
 .veterinarian-section .favorite-card {
   background: #ffffff;
-  border: 1px solid #c8e6c9;
-  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
   padding: 1rem;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  font-family: "Segoe UI", sans-serif;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.veterinarian-section .favorite-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .veterinarian-section .favorite-card > div {
   flex: 1;
@@ -86,7 +118,7 @@
 .veterinarian-section .favorite-card strong {
   display: block;
   margin-bottom: 0.4rem;
-  color: #2e7d32;
+  color: #9b59b6;
   font-size: 1rem;
 }
 .veterinarian-section .favorite-card p {
@@ -95,18 +127,26 @@
   color: #424242;
 }
 .veterinarian-section .favorite-card .info-link {
-  color: #388e3c;
+  color: #9b59b6;
   text-decoration: none;
 }
 .veterinarian-section .favorite-card .info-link:hover {
   text-decoration: underline;
 }
 .veterinarian-section .favorite-card .btn-outline-danger {
+  background: #fff;
+  border: 1px solid #9b59b6;
+  color: #9b59b6;
+  border-radius: 20px;
   font-size: 0.85rem;
   padding: 0.45rem 0.8rem;
-  border-radius: 4px;
+  font-weight: 600;
+  transition: background .2s ease, color .2s ease;
 }
-
+.veterinarian-section .favorite-card .btn-outline-danger:hover {
+  background: #9b59b6;
+  color: #fff;
+}
 @media (max-width: 992px) {
   .veterinarian-section .row > [class*="col-"] {
     margin-bottom: 1.5rem;
