@@ -205,7 +205,6 @@ body {
   text-align: center;
 }
 
-/* 3) Título con estilo “óvalo dibujado a mano” solo alrededor de “PetTracker” */
 .info-title {
   text-align: center;
   font-size: 2rem;
@@ -214,7 +213,6 @@ body {
   margin: 0 auto;
 }
 
-/* Subraya “PetTracker” con un óvalo */
 .info-title .underline {
   position: relative;
   z-index: 1;
@@ -233,7 +231,6 @@ body {
   z-index: -1;
 }
 
-/* 4) Contenedor de tarjetas */
 .info-cards {
   display: flex;
   flex-wrap: wrap;
@@ -243,7 +240,6 @@ body {
   margin: 2rem auto 0;
 }
 
-/* 5) Cada tarjeta */
 .info-card {
   background: #fff;
   color: #333;
@@ -258,21 +254,18 @@ body {
   transform: translateY(-6px);
 }
 
-/* 6) Icono dentro de la tarjeta */
 .info-icon {
   font-size: 2rem;
   margin-bottom: 1rem;
 }
 
-/* 7) Texto de la tarjeta */
 .info-text {
   font-size: 1rem;
   font-weight: 600;
-  display: block;      /* antes era inline-block */
-  margin: 0 auto;      /* centro horizontal */
+  display: block;      
+  margin: 0 auto;      
 }
 
-/* 8) Responsivo */
 @media (max-width: 767px) {
   .info-cards {
     flex-direction: column;

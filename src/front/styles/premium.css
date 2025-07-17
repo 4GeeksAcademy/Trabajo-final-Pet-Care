@@ -5,8 +5,6 @@
   --bs-primary: #6fcf7f;
   --bs-secondary: #5D3A9B;
 }
-
-/* 2) Sección Premium SIN degradado de fondo */
 .premium-section {
   font-family: 'Montserrat', sans-serif;
   background: #D2B4DE !important; 
@@ -19,8 +17,6 @@
   transform: translateY(-4px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-
-/* 3) Imagen perrito con su bounce épico */
 @keyframes bounce {
   0%,100% { transform: translateY(0); }
   50%     { transform: translateY(-8px); }
@@ -34,7 +30,6 @@
   animation: bounce 4s ease-in-out infinite;
 }
 
-/* 4) Botones morado→verde intactos + scale al hover */
 .btn-purple-mid {
   background: #6fcf7f !important;
   border: none;
@@ -49,8 +44,6 @@
   opacity: 0.9;
   transform: scale(1.04);
 }
-
-/* 5) Bullets estáticos */
 .feature-bullet {
   width: 0.8rem;
   height: 0.8rem;
@@ -58,8 +51,6 @@
   border-radius: 2px;
   flex-shrink: 0;
 }
-
-/* 6) Espaciado de lista */
 .premium-section .feature-list {
   display: flex;
   flex-direction: column;
