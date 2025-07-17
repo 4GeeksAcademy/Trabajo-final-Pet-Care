@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PetRegistrationForm.css';
+
 const PetRegistrationForm = () => {
   const [nombre, setNombre] = useState('');
   const [especie, setEspecie] = useState('');
   const [raza, setRaza] = useState('');
   const [peso, setPeso] = useState('');
   const [foto, setFoto] = useState('');
+  const [fechaNacimiento, setFechaNacimiento] = useState('');
+  const [sexo, setSexo] = useState('');
   const [mensaje, setMensaje] = useState(null);
 
   const navigate = useNavigate();
@@ -19,10 +22,8 @@ const PetRegistrationForm = () => {
     }
   }, [navigate]);
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
 
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
@@ -34,7 +35,7 @@ const PetRegistrationForm = () => {
       return;
     }
 
-    if (!nombre || !especie || !raza || !peso) {
+    if (!nombre || !especie || !raza || !peso || !fechaNacimiento || !sexo) {
       setMensaje('Por favor, completa todos los campos obligatorios.');
       return;
     }
@@ -45,6 +46,8 @@ const PetRegistrationForm = () => {
       raza,
       peso: parseFloat(peso),
       foto,
+      fecha_nacimiento: fechaNacimiento,
+      sexo,
       user_id: user_id
     };
 
@@ -88,7 +91,6 @@ const PetRegistrationForm = () => {
         <form onSubmit={handleSubmit}>
           <div className="Inputs">
             <div className="Categoria">🏷️ Nombre de la mascota *</div>
-
             <input
               className="Input"
               type="text"
@@ -98,7 +100,6 @@ const PetRegistrationForm = () => {
             />
 
             <div className="Categoria">🐾 Especie *</div>
-
             <select
               className="Select"
               required
@@ -106,14 +107,14 @@ const PetRegistrationForm = () => {
               onChange={(e) => setEspecie(e.target.value)}
             >
               <option value="" disabled hidden>Selecciona una especie</option>
-              <option value="Perro">Perro 🐶</option>
-              <option value="Gato">Gato 🐱</option>
-              <option value="Ave">Ave 🐦</option>
-              <option value="Pez">Pez 🐠</option>
-              <option value="Reptil">Reptil 🦎</option>
-              <option value="Roedor">Roedor 🐭</option>
-              <option value="Conejo">Conejo 🐰</option>
-              <option value="Otro">Otro ❓</option>
+              <option value="Perro" style={{color: "black"}}>Perro 🐶</option>
+              <option value="Gato" style={{color: "black"}}>Gato 🐱</option>
+              <option value="Ave" style={{color: "black"}}>Ave 🐦</option>
+              <option value="Pez" style={{color: "black"}}>Pez 🐠</option>
+              <option value="Reptil" style={{color: "black"}}>Reptil 🦎</option>
+              <option value="Roedor" style={{color: "black"}}>Roedor 🐭</option>
+              <option value="Conejo" style={{color: "black"}}>Conejo 🐰</option>
+              <option value="Otro" style={{color: "black"}}>Otro ❓</option>
             </select>
 
             <div className="Categoria">🧬 Raza *</div>
@@ -133,6 +134,27 @@ const PetRegistrationForm = () => {
               value={peso}
               onChange={(e) => setPeso(e.target.value)}
             />
+
+            <div className="Categoria">📅 Fecha de Nacimiento *</div>
+            <input
+              className="Input"
+              type="date"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
+              max={new Date().toISOString().split("T")[0]}
+            />
+
+            <div className="Categoria">👫 Sexo *</div>
+            <select
+              className="Select"
+              value={sexo}
+              onChange={(e) => setSexo(e.target.value)}
+              required
+            >
+              <option value="" disabled hidden>Selecciona sexo</option>
+              <option value="Macho" style={{color: "black"}}>Macho ♂️</option>
+              <option value="Hembra" style={{color: "black"}}>Hembra ♀️</option>
+            </select>
 
             <div className="Categoria">📷 Foto</div>
             <input
@@ -164,4 +186,5 @@ const PetRegistrationForm = () => {
     </div>
   );
 };
+
 export default PetRegistrationForm;

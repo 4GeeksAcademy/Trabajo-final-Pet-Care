@@ -54,6 +54,8 @@ class Pet(db.Model):
     foto: Mapped[str] = mapped_column(String(300))
     peso: Mapped[int] = mapped_column(nullable=False)
     raza: Mapped[str] = mapped_column(String(300))
+    fecha_nacimiento: Mapped[date] = mapped_column(nullable=False)
+    sexo: Mapped[str] = mapped_column(String(10), nullable=False)
 
     user_id: Mapped[int] = mapped_column(
         db.ForeignKey("users.id"), nullable=False)
@@ -74,7 +76,9 @@ class Pet(db.Model):
             "peso": self.peso,
             "user_id": self.user_id,
             # "raza": self.raza.serialize() if self.raza else None
-            "raza": self.raza
+            "raza": self.raza,
+            "fecha_nacimiento": self.fecha_nacimiento.isoformat(),
+            "sexo": self.sexo
         }
 
 

@@ -42,6 +42,8 @@ const PetDetails = () => {
     if (form.especie.value && form.especie.value !== pet.especie) updatedPet.especie = form.especie.value;
     if (form.raza.value && form.raza.value !== (pet.raza || "")) updatedPet.raza = form.raza.value;
     if (form.foto.value && form.foto.value !== (pet.foto || "")) updatedPet.foto = form.foto.value;
+    if (form.fecha_nacimiento.value && form.fecha_nacimiento.value !== (pet.fecha_nacimiento || "")) updatedPet.fecha_nacimiento = form.fecha_nacimiento.value;
+    if (form.sexo.value && form.sexo.value !== (pet.sexo || "")) updatedPet.sexo = form.sexo.value;
 
     if (!Object.keys(updatedPet).length) {
       setError("No hay cambios para guardar.");
@@ -64,7 +66,6 @@ const PetDetails = () => {
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.msg || "Error updating");
-
 
       setSuccess("Actualización exitosa");
       const modalEl = document.getElementById("modalEditarMascota");
@@ -115,7 +116,11 @@ const PetDetails = () => {
                 <div className="text-center mb-4">
                   <img src={pet.foto || "https://placehold.co/400x300?text=Mascota"} alt={pet.nombre} className="rounded" style={{ height: "250px", objectFit: "cover" }} />
                   <h2 className="mt-3">{pet.nombre}</h2>
-                  <p className="text-muted">{pet.especie} – {pet.raza || "Sin raza"} – {pet.peso} kg</p>
+                  <p className="text-muted">
+                    {pet.especie} – {pet.raza || "Sin raza"} – {pet.peso} kg <br />
+                    <strong>Fecha de nacimiento:</strong> {pet.fecha_nacimiento || "No disponible"} <br />
+                    <strong>Sexo:</strong> {pet.sexo || "No disponible"}
+                  </p>
                 </div>
 
                 {activeTab === "alimentacion" && <div><h5 className="mb-3">🍽 Alimentación</h5><p>Aquí puedes ver y editar los hábitos alimenticios de {pet.nombre}.</p></div>}
@@ -134,7 +139,54 @@ const PetDetails = () => {
                 <div className="modal-dialog modal-dialog-centered"><div className="modal-content rounded-4"><div className="modal-header"><h5 className="modal-title" id="modalHistorialLabel">📋 Historial médico de {pet.nombre}</h5><button type="button" className="btn-close" data-bs-dismiss="modal" /></div><div className="modal-body"><p>Aquí aparecerán las consultas, enfermedades y tratamientos.</p></div></div></div></div>
 
               <div className="modal fade" id="modalEditarMascota" tabIndex="-1" aria-labelledby="modalEditarMascotaLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered"><div className="modal-content rounded-4"><div className="modal-header"><h5 className="modal-title" id="modalEditarMascotaLabel">✏️ Editar datos de {pet.nombre}</h5><button type="button" className="btn-close" data-bs-dismiss="modal" /></div><div className="modal-body"><form onSubmit={handleUpdate}><div className="mb-3"><label className="form-label">Nombre</label><input name="nombre" className="form-control" defaultValue={pet.nombre} /></div><div className="mb-3"><label className="form-label">Peso (kg)</label><input name="peso" type="number" step="0.1" className="form-control" defaultValue={pet.peso} /></div><div className="mb-3"><label className="form-label">Especie</label><input name="especie" className="form-control" defaultValue={pet.especie} /></div><div className="mb-3"><label className="form-label">Raza</label><input name="raza" className="form-control" defaultValue={pet.raza} /></div><div className="mb-3"><label className="form-label">Foto (URL)</label><input name="foto" className="form-control" defaultValue={pet.foto} /></div>{error && <p className="text-danger">{error}</p>}<button type="submit" className="btn btn-main w-100">Guardar cambios</button></form></div></div></div></div>
+                <div className="modal-dialog modal-dialog-centered"><div className="modal-content rounded-4"><div className="modal-header"><h5 className="modal-title" id="modalEditarMascotaLabel">✏️ Editar datos de {pet.nombre}</h5><button type="button" className="btn-close" data-bs-dismiss="modal" /></div><div className="modal-body">
+                  <form onSubmit={handleUpdate}>
+                    <div className="mb-3">
+                      <label className="form-label">Nombre</label>
+                      <input name="nombre" className="form-control" defaultValue={pet.nombre} />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Peso (kg)</label>
+                      <input name="peso" type="number" step="0.1" className="form-control" defaultValue={pet.peso} />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Especie</label>
+                      <input name="especie" className="form-control" defaultValue={pet.especie} />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Raza</label>
+                      <input name="raza" className="form-control" defaultValue={pet.raza} />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Foto (URL)</label>
+                      <input name="foto" className="form-control" defaultValue={pet.foto} />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Fecha de Nacimiento</label>
+                      <input
+                        name="fecha_nacimiento"
+                        type="date"
+                        className="form-control"
+                        defaultValue={pet.fecha_nacimiento ? pet.fecha_nacimiento.split("T")[0] : ""}
+                        max={new Date().toISOString().split("T")[0]}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Sexo</label>
+                      <select
+                        name="sexo"
+                        className="form-select"
+                        defaultValue={pet.sexo || ""}
+                      >
+                        <option value="" disabled hidden>Selecciona sexo</option>
+                        <option value="Macho">Macho</option>
+                        <option value="Hembra">Hembra</option>
+                      </select>
+                    </div>
+                    {error && <p className="text-danger">{error}</p>}
+                    <button type="submit" className="btn btn-main w-100">Guardar cambios</button>
+                  </form>
+                </div></div></div></div>
             </div>
 
           </div>
