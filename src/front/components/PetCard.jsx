@@ -24,9 +24,8 @@ const PetCard = ({ pet, onDelete }) => {
 
   return (
     <div className="card h-100 shadow-lg border-0 rounded-4 overflow-hidden position-relative">
-      {/* Botón de eliminar usando emoji */}
       <button
-        className="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2"
+        className="btn btn-sm  position-absolute top-0 end-0 m-2"
         onClick={handleDelete}
         title="Eliminar mascota"
         style={{ zIndex: 10, fontSize: '1.2rem', lineHeight: '1' }}
@@ -49,10 +48,10 @@ const PetCard = ({ pet, onDelete }) => {
         </span>
       </div>
       <div className="card-body d-flex flex-column justify-content-between">
-        <h5 className="card-title text-center mb-2">{pet.nombre}</h5>
+        <h3 className="card-title text-center mb-2">{pet.nombre}</h3>
         <Link
           to={`/pets/${pet.id}`}
-          className="btn btn-main w-100 mt-3 fw-semibold"
+          className="btn btn-pet w-100 mt-3 fw-semibold"
         >
           Ver detalles
         </Link>

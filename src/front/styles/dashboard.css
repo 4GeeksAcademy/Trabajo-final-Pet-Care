@@ -1,47 +1,78 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+:root {
+  --bs-primary: #9b59b6;
+  --bs-secondary: #4ECDC4;
+}
+
+body,
+.dashboard__title {
+  font-family: 'Montserrat', sans-serif;
+}
+h1, h2, .dashboard__title {
+  font-weight: 600;
+}
 .dashboard {
   background-color: var(--light-bg);
   min-height: 100vh;
 }
-
-.dashboard__title {
-  font-size: 2rem;
-  font-weight: 700;
+.container.py-4 {
+  padding-top: 3rem !important;
+  padding-bottom: 3rem !important;
 }
-
 .pets-list {
   margin-top: 1rem;
 }
+.pets-list > .row > .col-12 {
+  margin-bottom: 2rem;
+}
 
-/* Card de mascota */
 .dashboard__pet-card {
-  border-radius: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   overflow: hidden;
-  transition: transform 0.2s ease;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
-
 .dashboard__pet-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+/* 6) Imagen dentro de la card */
 .dashboard__pet-img {
   height: 180px;
   object-fit: cover;
 }
 
-/* Botón principal */
-.btn-main {
-  background-color: var(--purple-mid);
-  color: #fff;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  transition: background-color 0.2s ease;
+.btn-main,
+.btn-primary {
+  background: linear-gradient(45deg, #6fcf7f, #5D3A9B) !important;
+  border: none !important;
+  border-radius: 20px !important;
+  padding: .6rem 1.4rem !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  transition: opacity .2s ease;
 }
-
-.btn-main:hover {
-  background-color: var(--purple-dark);
+.btn-main:hover,
+.btn-primary:hover {
+  opacity: 0.9;
+}
+.btn-pet{
+background: #9b59b6 !important;
+  border: none !important;
+  border-radius: 20px !important;
+  padding: .6rem 1.4rem !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  transition: opacity .2s ease;
+}
+.btn-pet:hover{
+  opacity: 0.9;
 }
 
 .text-purple-mid {
-  color: var(--purple-mid) !important;
+  color: var(--bs-primary) !important;
 }

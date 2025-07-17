@@ -10,7 +10,7 @@ const plans = [
       "Acceso a historial nutricional básico",
       "Descuentos en tiendas aliadas (5%)",
     ],
-    dogUrl: "https://your.cdn.com/husky-silver.png",
+    dogUrl: "https://tse4.mm.bing.net/th/id/OIP.IweJ98rAXq8-3xDm5GIYEwHaEr?rs=1&pid=ImgDetMain&o=7&rm=3",
     buttonText: "Contratar Silver",
   },
   {
@@ -23,7 +23,7 @@ const plans = [
       "Descuentos en tiendas aliadas (10%)",
       "Soporte VIP 24/7",
     ],
-    dogUrl: "https://your.cdn.com/husky-gold.png",
+    dogUrl: "https://img.freepik.com/fotos-premium/cabeza-perro-chow-chow-fondo-blanco_980353-4471.jpg?w=2000",
     buttonText: "Contratar Gold",
   },
 ];
@@ -34,7 +34,7 @@ export default function PremiumSection() {
       <div className="container">
         <div className="text-center mb-4">
           <span className="fs-1">🚀</span>
-          <h2 className="d-inline-block ms-2">Elige tu paquete Premium</h2>
+          <h2 className="d-inline-block ms-2 text-white">Elige tu suscripción y mantén a tu peludo feliz y sano</h2>
         </div>
         <div className="row gy-4">
           {plans.map((plan) => (
@@ -48,12 +48,12 @@ export default function PremiumSection() {
                       className="premium-dog-img me-3"
                     />
                     <div>
-                      <h5 className="card-title mb-1 text-purple-mid">
+                      <h3 className="card-title mb-1 text-purple-mid">
                         {plan.name}
-                      </h5>
-                      <h6 className="card-subtitle text-green-mid">
+                      </h3>
+                      <h5 className="card-subtitle text-green-mid">
                         {plan.price}
-                      </h6>
+                      </h5>
                     </div>
                   </div>
                   <ul className="list-unstyled flex-grow-1">

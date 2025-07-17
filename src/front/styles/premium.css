@@ -1,35 +1,61 @@
+/* 1) Montserrat como siempre */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
 
-.text-purple-mid { color: #9b59b6 !important; }
-.text-green-mid  { color: #6fcf7f !important; }
-
-.premium-section {
-  background: #f2e5f6;
+:root {
+  --bs-primary: #6fcf7f;
+  --bs-secondary: #5D3A9B;
 }
-
+.premium-section {
+  font-family: 'Montserrat', sans-serif;
+  background: #D2B4DE !important; 
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.premium-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-8px); }
+}
 .premium-dog-img {
   width: 80px;
   height: 80px;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid #9b59b6;
+  border: 3px solid var(--bs-primary);
+  animation: bounce 4s ease-in-out infinite;
 }
 
 .btn-purple-mid {
-  background-color: #9b59b6;
-  color: white;
+  background: #6fcf7f !important;
   border: none;
-  border-radius: .5rem;
-  padding: .5rem 1rem;
-  transition: background .3s;
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  transition: opacity .2s ease, transform .2s ease;
+  text-shadow: 3px 1px 3px rgba(0, 0, 0, 0.25);
 }
 .btn-purple-mid:hover {
-  background-color: #5d3a9b;
+  opacity: 0.9;
+  transform: scale(1.04);
 }
-
 .feature-bullet {
-  width: .8rem;
-  height: .8rem;
-  background: #6fcf7f;
+  width: 0.8rem;
+  height: 0.8rem;
+  background: var(--bs-secondary);
   border-radius: 2px;
   flex-shrink: 0;
+}
+.premium-section .feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.premium-section h2 {
+  text-shadow: 3px 1px 3px rgba(0, 0, 0, 0.25);
 }
