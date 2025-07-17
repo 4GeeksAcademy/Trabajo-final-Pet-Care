@@ -182,9 +182,12 @@ def register_pet():
     raza = data.get('raza')
     foto = data.get('foto')
     peso = data.get('peso')
+    fecha_nacimiento = data.get('fecha_nacimiento')
+    sexo = data.get('sexo')
     user_id = data.get('user_id')
-    if not nombre or not especie or not raza or not peso:
-        return jsonify({'msg': 'Todos los campos son obligatorios, excepto la foto :cara_sonriendo_con_3_corazones:'}), 400
+
+    if not nombre or not especie or not raza or not peso or not fecha_nacimiento or not sexo:
+        return jsonify({'msg': 'Todos los campos son obligatorios, excepto la foto'}), 400
     try:
         nueva_mascota = Pet(
             nombre=nombre,
@@ -192,6 +195,8 @@ def register_pet():
             raza=raza,
             foto=foto,
             peso=peso,
+            fecha_nacimiento=fecha_nacimiento,
+            sexo=sexo,
             user_id=user_id
         )
         db.session.add(nueva_mascota)
@@ -221,6 +226,10 @@ def update_pet(pet_id):
         pet.raza    = data['raza']
     if 'foto' in data:
         pet.foto    = data['foto']
+    if 'fecha_nacimiento' in data:
+        pet.fecha_nacimiento = data['fecha_nacimiento']
+    if 'sexo' in data:
+        pet.sexo = data['sexo']
 
     try:
         db.session.commit()
