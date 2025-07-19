@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, Vacuna, Raza, Favorite
+from api.models import db, User, Pet, Vacuna, Raza, Favorite, Recomendacion
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_swagger import swagger
@@ -16,6 +16,14 @@ from flask_jwt_extended import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
 from .utils import APIException
+
+# import openai
+# import os
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+
+from openai import OpenAI
+
+client = OpenAI()
 
 api = Blueprint('api', __name__)
 
@@ -321,3 +329,77 @@ def delete_favorite(place_id):
     db.session.delete(fav)
     db.session.commit()
     return jsonify({"msg": "Eliminado"}), 200
+
+
+#------------------RUTAS IA-----------------#
+
+# POST
+@api.route('/pet/<int:pet_id>/recomendacion', methods=['POST'])
+@jwt_required()
+def generar_recomendacion_ia(pet_id):
+    data = request.get_json()
+    pregunta = data.get("pregunta", "")
+    user_id = int(get_jwt_identity())
+
+    pet = Pet.query.get(pet_id)
+    if not pet or pet.user_id != user_id:
+        return jsonify({"msg": "Mascota no encontrada o acceso no autorizado"}), 403
+
+    prompt = (
+        f"Nombre: {pet.nombre}\n"
+        f"Especie: {pet.especie}\n"
+        f"Raza: {pet.raza or 'Desconocida'}\n"
+        f"Peso: {pet.peso} kg\n"
+        f"Sexo: {pet.sexo}\n"
+        f"Fecha de nacimiento: {pet.fecha_nacimiento}\n\n"
+        f"Pregunta del usuario: {pregunta}\n\n"
+        "Responde de forma útil y concisa en no más de 3 frases. Sé claro, directo y breve, como un experto en bienestar animal que da consejos rápidos:"
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Eres un experto en cuidado y bienestar de mascotas."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7
+        )
+        respuesta = response.choices[0].message.content
+
+        recomendacion = Recomendacion(
+            mascota_id=pet_id,
+            pregunta=pregunta,
+            respuesta=respuesta
+        )
+        db.session.add(recomendacion)
+        db.session.commit()
+
+        return jsonify(recomendacion.serialize()), 201
+
+    except Exception as e:
+        return jsonify({"msg": "Error al generar recomendación", "error": str(e)}), 500
+
+# GET
+@api.route('/pet/<int:pet_id>/recomendaciones', methods=['GET'])
+@jwt_required()
+def get_recomendaciones(pet_id):
+    pet = Pet.query.get(pet_id)
+    if not pet or pet.user_id != int(get_jwt_identity()):
+        return jsonify({"msg": "No autorizado"}), 403
+
+    recomendaciones = Recomendacion.query.filter_by(mascota_id=pet_id).order_by(Recomendacion.fecha.desc()).all()
+    return jsonify([r.serialize() for r in recomendaciones]), 200
+
+
+# DELETE
+@api.route('/recomendacion/<int:id>', methods=['DELETE'])
+@jwt_required()
+def delete_recomendacion(id):
+    recomendacion = Recomendacion.query.get(id)
+    if not recomendacion or recomendacion.mascota.user_id != int(get_jwt_identity()):
+        return jsonify({"msg": "No autorizado"}), 403
+
+    db.session.delete(recomendacion)
+    db.session.commit()
+    return jsonify({"msg": "Recomendación eliminada"}), 200

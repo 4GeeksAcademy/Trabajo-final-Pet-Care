@@ -1,3 +1,0 @@
-Para que funcione la api de maps:
-- En tu archivo .env --> VITE_GOOGLE_API_KEY=AIzaSyBXdvIc0rqtkVbsubdzwwNIVd6pb8ivKCQ
-- En la consola (bash) --> npm install @react-google-maps/api 

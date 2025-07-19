@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Integer, ForeignKey, Boolean
+from sqlalchemy import String, Integer, ForeignKey, Boolean, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import date
+from datetime import date, datetime
 
 db = SQLAlchemy()
 
@@ -63,6 +63,8 @@ class Pet(db.Model):
         db.ForeignKey("razas.id"), nullable=True)
     vacunas: Mapped[list["Vacuna"]] = relationship(
         "Vacuna", back_populates="mascota")
+    recomendaciones: Mapped[list["Recomendacion"]] = relationship(
+        "Recomendacion", back_populates="mascota", cascade="all, delete-orphan")
 
     # Relación ➜ cada mascota "apunta" a una raza
     razas: Mapped["Raza"] = relationship("Raza", back_populates="mascotas")
@@ -126,4 +128,23 @@ class Favorite(db.Model):
             "address":  self.address,
             "phone":    self.phone,
             "website":  self.website,
+        }
+
+class Recomendacion(db.Model):
+    __tablename__ = "recomendaciones"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    pregunta: Mapped[str] = mapped_column(String(500), nullable=False)
+    respuesta: Mapped[str] = mapped_column(String(2000), nullable=False)
+    fecha: Mapped[date] = mapped_column(default=date.today)
+
+    mascota_id: Mapped[int] = mapped_column(ForeignKey("pets.id"), nullable=False)
+    mascota: Mapped["Pet"] = relationship("Pet", back_populates="recomendaciones")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "pregunta": self.pregunta,
+            "respuesta": self.respuesta,
+            "fecha": self.fecha.isoformat(),
+            "mascota_id": self.mascota_id
         }
