@@ -27,3 +27,53 @@ img.rounded {
 }
 .min-vh-100 { min-height: 100vh; display: flex; flex-direction: column; }
 .flex-grow-1 { flex-grow: 1; }
+
+.card.pet-profile {
+  width: 340px;
+  min-height: 420px;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  border-radius: 2.2rem;
+  box-shadow: 0 8px 36px 0 rgba(130, 130, 200, 0.12);
+  background: #fff;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-profile-img {
+  width: 210px;
+  height: 210px;
+  object-fit: cover;
+  border-radius: 1.4rem;
+  border: 6px solid #faf8fd;
+  background: #f4f4fb;
+  box-shadow: 0 2px 16px 0 rgba(80,50,150,0.08);
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 992px) {
+  .row[style*="flexWrap: 'nowrap'"] {
+    flex-wrap: nowrap !important;
+  }
+}
+@keyframes carnetFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.carnet-animado {
+  animation: carnetFadeInUp 1s cubic-bezier(.22,1,.36,1) forwards;
+  box-shadow: 0 8px 24px #bbaafd44;
+}

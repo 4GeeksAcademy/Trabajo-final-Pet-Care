@@ -18,7 +18,13 @@ body {
   background-color: var(--light-bg);
   color: var(--text-default);
   font-family: var(--ff-headings);
+  padding-top: 50px;
 }
+
+body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
 /* Fondos componentes  */
 .bg-light {
   background-color: var(--light-bg) !important;

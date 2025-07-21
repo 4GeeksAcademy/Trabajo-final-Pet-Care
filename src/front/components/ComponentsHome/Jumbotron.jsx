@@ -12,7 +12,7 @@ const Jumbotron = () => (
   <section className="py-5 text-white bg-purple-light">
     <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
       <div className="text-center text-lg-start mb-4 mb-lg-0">
-        <h2 className="fw-bold display-6">
+        <h2 className="fw-bold display-6 text-white">
           Añade <u>todas las mascotas</u> que quieras
         </h2>
       </div>

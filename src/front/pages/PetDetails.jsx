@@ -1,137 +1,67 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Footer from "../components/Footer";
+import RecomendacionesIAView from "../components/RecomendacionesIAView";
+import VacunasView from "../components/VacunasView";
+import PerfilMedicoPet from "../components/PerfilMedicoPet";
 import "../styles/petdetails.css";
+import { BsPersonCircle, BsCapsulePill, BsClipboard2Check, BsEggFried, BsRobot } from "react-icons/bs";
+
 
 const PetDetails = () => {
   const { petId } = useParams();
   const [pet, setPet] = useState(null);
-  const [activeTab, setActiveTab] = useState("alimentacion");
+  const [activeTab, setActiveTab] = useState("perfil");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [recomendaciones, setRecomendaciones] = useState([]);
-  const [preguntaIA, setPreguntaIA] = useState("");
-  const [respuestaIA, setRespuestaIA] = useState("");
-  const [loadingIA, setLoadingIA] = useState(false);
-  const [expandedId, setExpandedId] = useState(null);
-
-  const fetchPet = async () => {
-    setError("");
-    setSuccess("");
-    try {
-      setLoading(true);
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pet/${petId}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Error fetching");
-      setPet(data);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchRecomendaciones = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/pet/${petId}/recomendaciones`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const data = await res.json();
-      if (res.ok) setRecomendaciones(data);
-    } catch (e) {
-      console.error("Error al obtener recomendaciones IA", e);
-    }
-  };
-
-  const handlePreguntarIA = async (e) => {
-    e.preventDefault();
-    setRespuestaIA("");
-    setLoadingIA(true);
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/pet/${petId}/recomendacion`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ pregunta: preguntaIA })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setRespuestaIA(data.respuesta);
-        setPreguntaIA("");
-        fetchRecomendaciones();
-      } else {
-        setRespuestaIA("Hubo un error al generar la recomendación.");
-      }
-    } catch (e) {
-      setRespuestaIA("Error al contactar el servidor.");
-    } finally {
-      setLoadingIA(false);
-    }
-  };
-
-  const handleDeleteRecomendacion = async (id) => {
-    const token = localStorage.getItem("token");
-    if (!window.confirm("¿Estás seguro de que deseas eliminar esta recomendación?")) return;
-
-    try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/recomendacion/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (res.ok) {
-        setRecomendaciones((prev) => prev.filter((r) => r.id !== id));
-        if (expandedId === id) setExpandedId(null);
-      }
-    } catch (e) {
-      console.error("Error al eliminar recomendación:", e);
-    }
-  };
+  const [showModal, setShowModal] = useState(false);
+  const [editData, setEditData] = useState({});
 
   useEffect(() => {
+    if (success) {
+      const timeout = setTimeout(() => setSuccess(""), 2500);
+      return () => clearTimeout(timeout);
+    }
+  }, [success]);
+
+  useEffect(() => {
+    const fetchPet = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pet/${petId}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.msg || "Error cargando mascota");
+        setPet(data);
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchPet();
-  }, [petId]);
+  }, [petId, showModal]);
 
-  useEffect(() => {
-    setSuccess("");
-  }, [activeTab]);
+  const handleOpenEdit = () => {
+    setEditData({
+      nombre: pet.nombre,
+      especie: pet.especie,
+      raza: pet.raza,
+      peso: pet.peso,
+      foto: pet.foto,
+      fecha_nacimiento: pet.fecha_nacimiento,
+      sexo: pet.sexo,
+    });
+    setShowModal(true);
+  };
 
-  useEffect(() => {
-    if (activeTab === "ia") {
-      fetchRecomendaciones();
-    }
-  }, [activeTab]);
-
-  const handleUpdate = async (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError("");
-    const form = e.target;
-    const updatedPet = {};
-
-    if (form.nombre.value && form.nombre.value !== pet.nombre) updatedPet.nombre = form.nombre.value;
-    if (form.peso.value && parseFloat(form.peso.value) !== pet.peso) updatedPet.peso = parseFloat(form.peso.value);
-    if (form.especie.value && form.especie.value !== pet.especie) updatedPet.especie = form.especie.value;
-    if (form.raza.value && form.raza.value !== (pet.raza || "")) updatedPet.raza = form.raza.value;
-    if (form.foto.value && form.foto.value !== (pet.foto || "")) updatedPet.foto = form.foto.value;
-    if (form.fecha_nacimiento.value && form.fecha_nacimiento.value !== (pet.fecha_nacimiento || "")) updatedPet.fecha_nacimiento = form.fecha_nacimiento.value;
-    if (form.sexo.value && form.sexo.value !== (pet.sexo || "")) updatedPet.sexo = form.sexo.value;
-
-    if (!Object.keys(updatedPet).length) {
-      setError("No hay cambios para guardar.");
-      return;
-    }
-
+    setSuccess("");
     try {
-      setLoading(true);
       const token = localStorage.getItem("token");
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pet/${petId}`, {
         method: "PUT",
@@ -139,250 +69,246 @@ const PetDetails = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updatedPet),
+        body: JSON.stringify(editData),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Error updating");
-
-      setSuccess("Actualización exitosa");
-      const modalEl = document.getElementById("modalEditarMascota");
-      if (modalEl && window.bootstrap) {
-        const modal = window.bootstrap.Modal.getInstance(modalEl);
-        modal.hide();
-      }
-
-      document.body.classList.remove("modal-open");
-      document.querySelectorAll(".modal-backdrop").forEach((el) => el.remove());
-
-      fetchPet();
-    } catch (e) {
-      setError(e.message);
+      if (!res.ok) throw new Error(data.msg || "Error al actualizar");
+      setSuccess("Mascota actualizada correctamente");
+      setShowModal(false);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   return (
-    <div className="d-flex flex-column min-vh-100">
-      <div className="container mt-5 py-5 flex-grow-1">
-        <Link to="/dashboard" className="btn btn-link mb-4">← Volver al dashboard</Link>
-        {loading && <p className="text-center">Procesando...</p>}
+    <div className="d-flex flex-column min-vh-100 bg-light">
+      <div className="container py-5 flex-grow-1">
+        <Link to="/dashboard" className="btn btn-link text-purple-dark mb-4">
+          ← Volver al dashboard
+        </Link>
+        {loading && <p className="text-center">Cargando...</p>}
         {error && <p className="text-center text-danger">{error}</p>}
-        {!loading && pet && (
-          <div className="row">
-            <div className="col-md-3 mb-4">
-              <div className="list-group">
-                <button className="list-group-item" data-bs-toggle="modal" data-bs-target="#modalVacunas">💉 Vacunas</button>
-                <button className="list-group-item" data-bs-toggle="modal" data-bs-target="#modalHistorial">📋 Historial Médico</button>
-                <button className={`list-group-item ${activeTab === "alimentacion" ? "active" : ""}`} onClick={() => setActiveTab("alimentacion")}>🍽 Alimentación</button>
-                <button className={`list-group-item ${activeTab === "ia" ? "active" : ""}`} onClick={() => setActiveTab("ia")}>🤖 Recomendaciones IA</button>
+        {pet && (
+          <div
+            className="row justify-content-center align-items-start gx-4"
+            style={{ minHeight: "70vh", flexWrap: "nowrap" }}
+          >
+            <div className="col-12 col-md-4 d-flex justify-content-center align-items-start mb-4 mb-md-0">
+              <div
+                className="card shadow rounded-5 text-center position-relative"
+                style={{
+                  width: "350px",
+                  minHeight: "430px",
+                  padding: "2.5rem 1.5rem 2rem 1.5rem",
+                  border: "none",
+                  background: "#fff",
+                  boxShadow: "0 8px 36px 0 rgba(130, 130, 200, 0.12)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <button
+                  className="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-3"
+                  title="Editar mascota"
+                  onClick={handleOpenEdit}
+                  style={{ zIndex: 2 }}
+                >⚙️</button>
+                <img
+                  src={pet.foto || "https://placehold.co/320x320?text=Mascota"}
+                  alt={pet.nombre}
+                  className="rounded-4 shadow"
+                  style={{
+                    width: "220px",
+                    height: "220px",
+                    objectFit: "cover",
+                    marginBottom: "2rem",
+                    border: "6px solid #faf8fd",
+                    background: "#f4f4fb"
+                  }}
+                />
+                <h2 style={{
+                  fontSize: "2.3rem",
+                  fontWeight: 700,
+                  letterSpacing: "-1px",
+                  color: "#3c276a"
+                }}>{pet.nombre}</h2>
               </div>
             </div>
 
-            <div className="col-md-9">
-              <div className="card p-4 shadow-sm position-relative">
-                <button className="btn btn-sm btn-outline-secondary position-absolute top-0 start-0 m-3" data-bs-toggle="modal" data-bs-target="#modalEditarMascota">⚙️</button>
-                <div className="text-center mb-4">
-                  <img src={pet.foto || "https://placehold.co/400x300?text=Mascota"} alt={pet.nombre} className="rounded" style={{ height: "250px", objectFit: "cover" }} />
-                  <h2 className="mt-3">{pet.nombre}</h2>
-                  <p className="text-muted">
-                    {pet.especie} – {pet.raza || "Sin raza"} – {pet.peso} kg <br />
-                    <strong>Fecha de nacimiento:</strong> {pet.fecha_nacimiento || "No disponible"} <br />
-                    <strong>Sexo:</strong> {pet.sexo || "No disponible"}
-                  </p>
-                </div>
+            <div className="col-12 col-md-2 d-flex flex-md-column flex-row align-items-center justify-content-center gap-3 my-4 my-md-0">
+              {[
+                { tab: "perfil", icon: <BsPersonCircle />, text: "Perfil" },
+                { tab: "vacunas", icon: <BsCapsulePill />, text: "Vacunas" },
+                { tab: "historial", icon: <BsClipboard2Check />, text: "Historial" },
+                { tab: "alimentacion", icon: <BsEggFried />, text: "Alimentación" },
+                { tab: "ia", icon: <BsRobot />, text: "IA" },
+              ].map(({ tab, icon, text }) => (
+                <button
+                  key={tab}
+                  className={`btn d-flex align-items-center w-100 mb-md-2 rounded-pill justify-content-center justify-content-md-start px-3 ${activeTab === tab
+                    ? "btn-main active"
+                    : "btn-outline-main"
+                    }`}
+                  style={{ minHeight: "44px", fontSize: "1.08em" }}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  <span style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1.3em",
+                    marginRight: 12,
+                    minWidth: 22
+                  }}>
+                    {icon}
+                  </span>
+                  <span>{text}</span>
+                </button>
+              ))}
+            </div>
 
+            {/* Columna 3: Info dinámica */}
+            <div className="col-12 col-md-6 d-flex align-items-start">
+              <div className="bg-white rounded-4 shadow-sm p-4 min-vh-50 w-100">
+                {activeTab === "perfil" && (
+                  <div>
+                    <h4>📝 Perfil</h4>
+                    <ul className="list-group list-group-flush">
+                      <li className="list-group-item"><b>Nombre:</b> {pet.nombre}</li>
+                      <li className="list-group-item"><b>Especie:</b> {pet.especie}</li>
+                      <li className="list-group-item"><b>Raza:</b> {pet.raza || "Sin raza"}</li>
+                      <li className="list-group-item"><b>Peso:</b> {pet.peso} kg</li>
+                      <li className="list-group-item"><b>Sexo:</b> {pet.sexo || "No disponible"}</li>
+                      <li className="list-group-item"><b>Fecha de nacimiento:</b> {pet.fecha_nacimiento || "No disponible"}</li>
+                    </ul>
+                  </div>
+                )}
+                {activeTab === "vacunas" && (
+                  <div>
+                    <VacunasView petId={petId} pet={pet} user={user} />
+                  </div>
+                )}
+                {activeTab === "historial" && (
+                  <div>
+                    <PerfilMedicoPet petId={petId} />
+                  </div>
+                )}
                 {activeTab === "alimentacion" && (
                   <div>
-                    <h5 className="mb-3">🍽 Alimentación</h5>
+                    <h4>🍽 Alimentación</h4>
                     <p>Aquí puedes ver y editar los hábitos alimenticios de {pet.nombre}.</p>
                   </div>
                 )}
-
                 {activeTab === "ia" && (
-                  <div>
-                    <h5 className="mb-3">🤖 Recomendaciones IA</h5>
-                    <p>Estas son sugerencias personalizadas para {pet.nombre} generadas con IA.</p>
-                    <button className="btn btn-main mb-3" data-bs-toggle="modal" data-bs-target="#modalIA">
-                      + Nueva recomendación
-                    </button>
-                    {recomendaciones.length > 0 ? (
-                      <ul className="list-group">
-                        {recomendaciones.map((r) => {
-                          const isExpanded = expandedId === r.id;
-                          const preguntaCorta = r.pregunta.length > 60 ? r.pregunta.slice(0, 60) + "..." : r.pregunta;
-                          return (
-                            <li
-                              key={r.id}
-                              className="list-group-item d-flex flex-column"
-                              style={{ cursor: "pointer" }}
-                              onClick={() => setExpandedId(isExpanded ? null : r.id)}
-                            >
-                              <div className="d-flex justify-content-between align-items-center">
-                                <div>
-                                  <strong>🗨️ Pregunta:</strong> {!isExpanded ? preguntaCorta : r.pregunta}
-                                  <br />
-                                  <small className="text-muted">📅 {new Date(r.fecha).toLocaleDateString()}</small>
-                                </div>
-                                <button
-                                  className="btn btn-sm btn-outline-danger ms-3"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteRecomendacion(r.id);
-                                  }}
-                                >
-                                  🗑
-                                </button>
-                              </div>
-                              {isExpanded && (
-                                <div className="mt-2">
-                                  <strong>💡 Respuesta:</strong> {r.respuesta}
-                                </div>
-                              )}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    ) : (
-                      <p className="text-muted">No hay recomendaciones aún.</p>
-                    )}
-                  </div>
+                  <RecomendacionesIAView petId={petId} pet={pet} />
                 )}
-
                 {success && <div className="alert alert-success mt-4">{success}</div>}
               </div>
             </div>
+          </div>
+        )}
 
-            <div className="col-12">
-              <div className="modal fade" id="modalVacunas" tabIndex="-1" aria-labelledby="modalVacunasLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered">
-                  <div className="modal-content rounded-4">
-                    <div className="modal-header">
-                      <h5 className="modal-title" id="modalVacunasLabel">💉 Vacunas de {pet.nombre}</h5>
-                      <button type="button" className="btn-close" data-bs-dismiss="modal" />
+        {/* Modal edición mascota */}
+        {showModal && (
+          <div className="modal show d-block" tabIndex="-1" style={{ background: "#0008" }}>
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content rounded-4">
+                <div className="modal-header">
+                  <h5 className="modal-title">✏️ Editar datos de {pet.nombre}</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowModal(false)}
+                  />
+                </div>
+                <form onSubmit={handleEditSubmit}>
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label className="form-label">Nombre</label>
+                      <input
+                        className="form-control"
+                        value={editData.nombre}
+                        onChange={e => setEditData({ ...editData, nombre: e.target.value })}
+                        required
+                      />
                     </div>
-                    <div className="modal-body">
-                      {pet.vacunas?.length ? (
-                        <ul className="list-group">
-                          {pet.vacunas.map(v => (
-                            <li key={v.id} className="list-group-item">{v.nombre} – {v.fecha_aplicacion}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>No hay vacunas registradas.</p>
-                      )}
+                    <div className="mb-3">
+                      <label className="form-label">Especie</label>
+                      <input
+                        className="form-control"
+                        value={editData.especie}
+                        onChange={e => setEditData({ ...editData, especie: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Raza</label>
+                      <input
+                        className="form-control"
+                        value={editData.raza || ""}
+                        onChange={e => setEditData({ ...editData, raza: e.target.value })}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Peso (kg)</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={editData.peso || ""}
+                        onChange={e => setEditData({ ...editData, peso: e.target.value })}
+                        min="0"
+                        step="0.1"
+                        required
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Sexo</label>
+                      <select
+                        className="form-select"
+                        value={editData.sexo || ""}
+                        onChange={e => setEditData({ ...editData, sexo: e.target.value })}
+                        required
+                      >
+                        <option value="">Selecciona sexo</option>
+                        <option value="Macho">Macho</option>
+                        <option value="Hembra">Hembra</option>
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Fecha de nacimiento</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={editData.fecha_nacimiento || ""}
+                        onChange={e => setEditData({ ...editData, fecha_nacimiento: e.target.value })}
+                        max={new Date().toISOString().split("T")[0]}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Foto (URL)</label>
+                      <input
+                        className="form-control"
+                        value={editData.foto || ""}
+                        onChange={e => setEditData({ ...editData, foto: e.target.value })}
+                      />
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="modal fade" id="modalHistorial" tabIndex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered">
-                  <div className="modal-content rounded-4">
-                    <div className="modal-header">
-                      <h5 className="modal-title" id="modalHistorialLabel">📋 Historial médico de {pet.nombre}</h5>
-                      <button type="button" className="btn-close" data-bs-dismiss="modal" />
-                    </div>
-                    <div className="modal-body">
-                      <p>Aquí aparecerán las consultas, enfermedades y tratamientos.</p>
-                    </div>
+                  {error && <p className="text-danger text-center">{error}</p>}
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                      Cancelar
+                    </button>
+                    <button type="submit" className="btn btn-main" disabled={loading}>
+                      Guardar cambios
+                    </button>
                   </div>
-                </div>
+                </form>
               </div>
-
-              <div className="modal fade" id="modalEditarMascota" tabIndex="-1" aria-labelledby="modalEditarMascotaLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered">
-                  <div className="modal-content rounded-4">
-                    <div className="modal-header">
-                      <h5 className="modal-title" id="modalEditarMascotaLabel">✏️ Editar datos de {pet.nombre}</h5>
-                      <button type="button" className="btn-close" data-bs-dismiss="modal" />
-                    </div>
-                    <div className="modal-body">
-                      <form onSubmit={handleUpdate}>
-                        <div className="mb-3">
-                          <label className="form-label">Nombre</label>
-                          <input name="nombre" className="form-control" defaultValue={pet.nombre} />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Peso (kg)</label>
-                          <input name="peso" type="number" step="0.1" className="form-control" defaultValue={pet.peso} />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Especie</label>
-                          <input name="especie" className="form-control" defaultValue={pet.especie} />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Raza</label>
-                          <input name="raza" className="form-control" defaultValue={pet.raza} />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Foto (URL)</label>
-                          <input name="foto" className="form-control" defaultValue={pet.foto} />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Fecha de Nacimiento</label>
-                          <input
-                            name="fecha_nacimiento"
-                            type="date"
-                            className="form-control"
-                            defaultValue={pet.fecha_nacimiento ? pet.fecha_nacimiento.split("T")[0] : ""}
-                            max={new Date().toISOString().split("T")[0]}
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Sexo</label>
-                          <select
-                            name="sexo"
-                            className="form-select"
-                            defaultValue={pet.sexo || ""}
-                          >
-                            <option value="" disabled hidden>Selecciona sexo</option>
-                            <option value="Macho">Macho</option>
-                            <option value="Hembra">Hembra</option>
-                          </select>
-                        </div>
-                        {error && <p className="text-danger">{error}</p>}
-                        <button type="submit" className="btn btn-main w-100">Guardar cambios</button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="modal fade" id="modalIA" tabIndex="-1" aria-labelledby="modalIALabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered">
-                  <div className="modal-content rounded-4">
-                    <div className="modal-header">
-                      <h5 className="modal-title" id="modalIALabel">🤖 Pregunta para IA</h5>
-                      <button type="button" className="btn-close" data-bs-dismiss="modal" />
-                    </div>
-                    <div className="modal-body">
-                      <form onSubmit={handlePreguntarIA}>
-                        <div className="mb-3">
-                          <label className="form-label">¿Qué deseas saber sobre el cuidado de {pet.nombre}?</label>
-                          <textarea
-                            className="form-control"
-                            rows="3"
-                            value={preguntaIA}
-                            onChange={(e) => setPreguntaIA(e.target.value)}
-                            required
-                          />
-                        </div>
-                        <button type="submit" className="btn btn-main w-100" disabled={loadingIA}>
-                          {loadingIA ? "Consultando IA..." : "Enviar pregunta"}
-                        </button>
-                      </form>
-                      {respuestaIA && (
-                        <div className="alert alert-info mt-3">
-                          <strong>Respuesta IA:</strong><br />
-                          {respuestaIA}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </div>
         )}

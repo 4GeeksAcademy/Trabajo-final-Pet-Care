@@ -1,45 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from "../components/Footer";
 import './PetRegistrationForm.css';
 
 const PetRegistrationForm = () => {
-  const [nombre, setNombre] = useState('');
-  const [especie, setEspecie] = useState('');
-  const [raza, setRaza] = useState('');
-  const [peso, setPeso] = useState('');
-  const [foto, setFoto] = useState('');
-  const [fechaNacimiento, setFechaNacimiento] = useState('');
-  const [sexo, setSexo] = useState('');
-  const [mensaje, setMensaje] = useState(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    if (!token || !user) {
+    if (!localStorage.getItem('token') || !localStorage.getItem('user')) {
       navigate('/login');
     }
   }, [navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [nombre, setNombre] = useState('');
+  const [especie, setEspecie] = useState('');
+  const [raza, setRaza] = useState('');
+  const [peso, setPeso] = useState('');
+  const [fechaNacimiento, setFechaNacimiento] = useState('');
+  const [sexo, setSexo] = useState('');
+  const [foto, setFoto] = useState('');
+  const [mensaje, setMensaje] = useState(null);
 
+  const [step, setStep] = useState(0);
+  const stepsCount = 4;
+
+  const handleNext = () => {
+    if (step === 0 && (!nombre.trim() || !especie)) {
+      setMensaje('Completa nombre y especie.');
+      return;
+    }
+    if (step === 1 && (!raza.trim() || !peso.trim())) {
+      setMensaje('Completa raza y peso.');
+      return;
+    }
+    if (step === 2 && (!fechaNacimiento || !sexo)) {
+      setMensaje('Completa fecha de nacimiento y sexo.');
+      return;
+    }
+    setMensaje(null);
+    setStep(s => Math.min(s + 1, stepsCount - 1));
+  };
+
+  const handleSubmit = async () => {
     const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    const user = storedUser ? JSON.parse(storedUser) : null;
-    const user_id = user?.id;
-
-    if (!user_id || !token) {
-      setMensaje('Debes iniciar sesión para registrar una mascota.');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!token || !user.id) {
+      setMensaje('Inicia sesión primero.');
       return;
     }
-
     if (!nombre || !especie || !raza || !peso || !fechaNacimiento || !sexo) {
-      setMensaje('Por favor, completa todos los campos obligatorios.');
+      setMensaje('Faltan campos obligatorios.');
       return;
     }
-
     const mascota = {
       nombre,
       especie,
@@ -48,141 +60,183 @@ const PetRegistrationForm = () => {
       foto,
       fecha_nacimiento: fechaNacimiento,
       sexo,
-      user_id: user_id
+      user_id: user.id
     };
-
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/pets`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(mascota),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMensaje(data.msg || 'Mascota registrada con éxito');
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 1500);
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}api/pets`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(mascota)
+        }
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setMensaje(data.msg || '¡Mascota registrada!');
+        setTimeout(() => navigate('/dashboard'), 1500);
       } else {
-        setMensaje(data.msg || 'Error al registrar mascota');
+        setMensaje(data.msg || 'Error al registrar.');
       }
-    } catch (error) {
-      setMensaje('Error de conexión al servidor');
-      console.error(error);
+    } catch {
+      setMensaje('Error de conexión.');
     }
   };
 
   return (
-    <div className="fondo-pet">
-      <img
-        src="https://media.tenor.com/FFL1QxcDF64AAAAi/dog-cute.gif"
-        alt="Perrito corriendo"
-        className="DogRunner"
-      />
-      <div className="FormCard">
-        <div className="Titulo">¡Registra tu Mascota!</div>
-        <div className="Sub-titulo">Añade a tu compañero/a a nuestra familia</div>
+    <div className="AppLayout">
+      <div className="fondo-pet">
+        <div className="DogImageContainerOutside">
+          <img
+            className="DogImageOutside"
+            src="https://static.vecteezy.com/system/resources/thumbnails/022/983/455/small_2x/dog-and-cat-free-illustration-icons-free-png.png"
+            alt="Perrito especial"
+          />
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="Inputs">
-            <div className="Categoria">🏷️ Nombre de la mascota *</div>
-            <input
-              className="Input"
-              type="text"
-              placeholder="ej: Firulais, Michi, Rex..."
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-            />
+        <div className="FormCard">
+          <h2 className="Titulo">¡Registra tu Mascota!</h2>
+          <p className="Sub-titulo">
+            Añade a tu compañero/a a nuestra familia
+          </p>
 
-            <div className="Categoria">🐾 Especie *</div>
-            <select
-              className="Select"
-              required
-              value={especie}
-              onChange={(e) => setEspecie(e.target.value)}
-            >
-              <option value="" disabled hidden>Selecciona una especie</option>
-              <option value="Perro" style={{color: "black"}}>Perro 🐶</option>
-              <option value="Gato" style={{color: "black"}}>Gato 🐱</option>
-              <option value="Ave" style={{color: "black"}}>Ave 🐦</option>
-              <option value="Pez" style={{color: "black"}}>Pez 🐠</option>
-              <option value="Reptil" style={{color: "black"}}>Reptil 🦎</option>
-              <option value="Roedor" style={{color: "black"}}>Roedor 🐭</option>
-              <option value="Conejo" style={{color: "black"}}>Conejo 🐰</option>
-              <option value="Otro" style={{color: "black"}}>Otro ❓</option>
-            </select>
+          <form onSubmit={e => e.preventDefault()}>
+            <div className="steps-wrapper">
+              <div
+                className="steps"
+                style={{ transform: `translateX(-${step * 100}%)` }}
+              >
+                {/* Slide 1 */}
+                <div className="step">
+                  <label className="Categoria">🏷️ Nombre *</label>
+                  <input
+                    className="Input"
+                    type="text"
+                    placeholder="ej: Firulais"
+                    value={nombre}
+                    onChange={e => setNombre(e.target.value)}
+                  />
+                  <label className="Categoria">🐾 Especie *</label>
+                  <select
+                    className="Select"
+                    value={especie}
+                    onChange={e => setEspecie(e.target.value)}
+                  >
+                    <option value="" disabled>
+                      Selecciona especie
+                    </option>
+                    <option value="Perro">Perro 🐶</option>
+                    <option value="Gato">Gato 🐱</option>
+                    <option value="Ave">Ave 🐦</option>
+                    <option value="Pez">Pez 🐠</option>
+                    <option value="Reptil">Reptil 🦎</option>
+                    <option value="Roedor">Roedor 🐭</option>
+                    <option value="Conejo">Conejo 🐰</option>
+                    <option value="Otro">Otro ❓</option>
+                  </select>
+                </div>
 
-            <div className="Categoria">🧬 Raza *</div>
-            <input
-              className="Input"
-              type="text"
-              placeholder="ej: Golden Retriever, Persa, Canario..."
-              value={raza}
-              onChange={(e) => setRaza(e.target.value)}
-            />
+                {/* Slide 2 */}
+                <div className="step">
+                  <label className="Categoria">🧬 Raza *</label>
+                  <input
+                    className="Input"
+                    type="text"
+                    placeholder="ej: Golden Retriever"
+                    value={raza}
+                    onChange={e => setRaza(e.target.value)}
+                  />
+                  <label className="Categoria">⚖️ Peso (kg) *</label>
+                  <input
+                    className="Input"
+                    type="number"
+                    placeholder="ej: 5.5"
+                    value={peso}
+                    onChange={e => setPeso(e.target.value)}
+                  />
+                </div>
 
-            <div className="Categoria">⚖️ Peso (kg) *</div>
-            <input
-              className="Input"
-              type="text"
-              placeholder="ej: 5.5"
-              value={peso}
-              onChange={(e) => setPeso(e.target.value)}
-            />
+                {/* Slide 3 */}
+                <div className="step">
+                  <label className="Categoria">📅 Fecha de Nac. *</label>
+                  <input
+                    className="Input"
+                    type="date"
+                    value={fechaNacimiento}
+                    onChange={e => setFechaNacimiento(e.target.value)}
+                    max={new Date().toISOString().split('T')[0]}
+                  />
+                  <label className="Categoria">👫 Sexo *</label>
+                  <select
+                    className="Select"
+                    value={sexo}
+                    onChange={e => setSexo(e.target.value)}
+                  >
+                    <option value="" disabled>
+                      Selecciona sexo
+                    </option>
+                    <option value="Macho">Macho ♂️</option>
+                    <option value="Hembra">Hembra ♀️</option>
+                  </select>
+                </div>
 
-            <div className="Categoria">📅 Fecha de Nacimiento *</div>
-            <input
-              className="Input"
-              type="date"
-              value={fechaNacimiento}
-              onChange={(e) => setFechaNacimiento(e.target.value)}
-              max={new Date().toISOString().split("T")[0]}
-            />
-
-            <div className="Categoria">👫 Sexo *</div>
-            <select
-              className="Select"
-              value={sexo}
-              onChange={(e) => setSexo(e.target.value)}
-              required
-            >
-              <option value="" disabled hidden>Selecciona sexo</option>
-              <option value="Macho" style={{color: "black"}}>Macho ♂️</option>
-              <option value="Hembra" style={{color: "black"}}>Hembra ♀️</option>
-            </select>
-
-            <div className="Categoria">📷 Foto</div>
-            <input
-              className="Input Foto"
-              type="text"
-              placeholder="https://ejemplo.com/foto-mascota.jpg"
-              value={foto}
-              onChange={(e) => setFoto(e.target.value)}
-            />
-
-            <div className="Aviso">
-              <p>Puedes agregar una foto más tarde si no tienes una ahora...</p>
+                {/* Slide 4 */}
+                <div className="step">
+                  <label className="Categoria">📷 Foto (URL)</label>
+                  <input
+                    className="Input Foto"
+                    type="text"
+                    placeholder="https://ejemplo.com/foto.jpg"
+                    value={foto}
+                    onChange={e => setFoto(e.target.value)}
+                  />
+                  <p className="Aviso">Puedes agregar la foto luego.</p>
+                </div>
+              </div>
             </div>
+
+            {mensaje && <p className="Mensaje">{mensaje}</p>}
+
+            <div className="BotonContainer">
+              {step < stepsCount - 1 ? (
+                <button
+                  type="button"
+                  className="Boton"
+                  onClick={handleNext}
+                >
+                  Siguiente
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="Boton"
+                  onClick={handleSubmit}
+                >
+                  Registrar Mascota
+                </button>
+              )}
+            </div>
+          </form>
+
+          <div className="progress-dots">
+            {Array.from({ length: stepsCount }).map((_, i) => (
+              <span
+                key={i}
+                className={`dot ${i === step ? 'active' : ''}`}
+              />
+            ))}
           </div>
 
-          {mensaje && <div className="Mensaje">{mensaje}</div>}
-
-          <div className="BotonContainer">
-            <button className="Boton" type="submit">Registrar Mascota</button>
-          </div>
-        </form>
-
-        <div className="Nota">
-          <p className="Texto">
-            <strong>Nota: </strong>Todos los campos marcados con <strong className='Apostrofe'>*</strong> son obligatorios. La foto es opcional y puedes agregarla más tarde.
+          <p className="Nota">
+            Nota: todos los campos con <strong className="Apostrofe">*</strong> son
+            obligatorios.
           </p>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

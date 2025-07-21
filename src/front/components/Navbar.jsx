@@ -33,7 +33,13 @@ const Navbar = () => {
   return (
     <header className="navbar navbar-expand-lg navbar-dark bg-purple-dark fixed-top">
       <div className="container">
-        <Link className="navbar-brand fw-bold" to="/">
+        <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
+          <img
+            src="/img/petlogo.png"  
+            alt="Logo Maskots"
+            style={{ height: "70px", marginRight: "10px" }}
+            className="logo-navbar"
+          />
         </Link>
         <button
           className="navbar-toggler"
