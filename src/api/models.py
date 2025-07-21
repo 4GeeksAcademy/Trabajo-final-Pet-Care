@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Integer, ForeignKey, Boolean, Date
+from sqlalchemy import String, Integer, ForeignKey, Boolean, Date, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import date, datetime
 
@@ -65,6 +65,7 @@ class Pet(db.Model):
         "Vacuna", back_populates="mascota")
     recomendaciones: Mapped[list["Recomendacion"]] = relationship(
         "Recomendacion", back_populates="mascota", cascade="all, delete-orphan")
+   
 
     # Relación ➜ cada mascota "apunta" a una raza
     razas: Mapped["Raza"] = relationship("Raza", back_populates="mascotas")
@@ -148,3 +149,36 @@ class Recomendacion(db.Model):
             "fecha": self.fecha.isoformat(),
             "mascota_id": self.mascota_id
         }
+    
+class MedicalProfile(db.Model):
+    __tablename__ = "medical_profiles"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    pet_id: Mapped[int] = mapped_column(db.ForeignKey("pets.id"), nullable=False, unique=True)
+
+    alergias: Mapped[str] = mapped_column(String(300), default="", nullable=True)
+    condiciones_previas: Mapped[str] = mapped_column(String(500), default="", nullable=True)
+    medicamentos_actuales: Mapped[str] = mapped_column(String(250), default="", nullable=True)
+    esterilizado: Mapped[bool] = mapped_column(Boolean, default=False)
+    fecha_ultima_revision: Mapped[date] = mapped_column(Date, nullable=True)
+    veterinario_habitual: Mapped[str] = mapped_column(String(100), default="", nullable=True)
+    observaciones: Mapped[str] = mapped_column(String(800), default="", nullable=True)
+    grupo_sanguineo: Mapped[str] = mapped_column(String(20), default="", nullable=True)
+    microchip: Mapped[str] = mapped_column(String(100), default="", nullable=True)
+
+    pet: Mapped["Pet"] = relationship("Pet", backref="perfil_medico", uselist=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "pet_id": self.pet_id,
+            "alergias": self.alergias,
+            "condiciones_previas": self.condiciones_previas,
+            "medicamentos_actuales": self.medicamentos_actuales,
+            "esterilizado": self.esterilizado,
+            "fecha_ultima_revision": self.fecha_ultima_revision.isoformat() if self.fecha_ultima_revision else None,
+            "veterinario_habitual": self.veterinario_habitual,
+            "observaciones": self.observaciones,
+            "grupo_sanguineo": self.grupo_sanguineo,
+            "microchip": self.microchip
+        }
+

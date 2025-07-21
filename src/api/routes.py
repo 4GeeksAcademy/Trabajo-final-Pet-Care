@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, Vacuna, Raza, Favorite, Recomendacion
+from api.models import db, User, Pet, Vacuna, Raza, Favorite, Recomendacion, MedicalProfile
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_swagger import swagger
@@ -254,41 +254,76 @@ def delete_pet(pet_id):
     current_user = get_jwt_identity()
     try:
         pet = Pet.query.get(pet_id)
+        print("pet_id:", pet_id)
         if not pet:
+            print("Mascota no encontrada")
             return jsonify({'msg': 'Mascota no encontrada'}), 404
-        if pet.user_id != current_user:
+
+        print("pet.user_id:", pet.user_id, type(pet.user_id))
+        print("current_user:", current_user, type(current_user))
+
+        if str(pet.user_id) != str(current_user):
+            print("No tienes permiso: pet.user_id =", pet.user_id, "current_user =", current_user)
             return jsonify({'msg': 'No tienes permiso para eliminar esta mascota'}), 403
+
         db.session.delete(pet)
         db.session.commit()
+        print("Mascota eliminada correctamente")
         return jsonify({'msg': 'Mascota eliminada correctamente'}), 200
     except Exception as e:
         db.session.rollback()
+        print("Error al eliminar mascota:", str(e))
         return jsonify({'msg': 'Error al eliminar la mascota', 'error': str(e)}), 500
+
 
     # ________VACUNAS______#
 
-# RUTA REGISTRO DE VACUNA
-
-
+# RUTA VACUNAS 
+#GET VACUNAS 
+@api.route('/mascotas/<int:mascota_id>/vacunas', methods=['GET'])
+@jwt_required()
+def get_vacunas(mascota_id):
+    vacunas = Vacuna.query.filter_by(mascota_id=mascota_id).all()
+    return jsonify([v.serialize() for v in vacunas]), 200
+#POST VACUNAS 
 @api.route('/mascotas/<int:mascota_id>/vacunas', methods=['POST'])
 def add_vacuna(mascota_id):
     """Registra una nueva vacuna para una mascota específica."""
     data = request.get_json()
     if not data.get('nombre') or not data.get('fecha_aplicacion'):
         return jsonify({"msg": "El nombre y la fecha de aplicación son obligatorios"}), 400
-    nueva_vacuna = Vacuna(
-        nombre=data.get('nombre'),
-        descripcion=data.get('descripcion'),
-        fecha_aplicacion=data.get('fecha_aplicacion'),
-        mascota_id=mascota_id
-    )
-    db.session.add(nueva_vacuna)
-    db.session.commit()
+
     try:
-        pets = Pet.query.filter_by(user_id=user_id).all()
-        return jsonify([pet.serialize() for pet in pets]), 200
+        mascota = Pet.query.get(mascota_id)
+        if not mascota:
+            return jsonify({'msg': 'Mascota no encontrada'}), 404
+
+        nueva_vacuna = Vacuna(
+            nombre=data.get('nombre'),
+            descripcion=data.get('descripcion'),
+            fecha_aplicacion=data.get('fecha_aplicacion'),
+            mascota_id=mascota_id
+        )
+        db.session.add(nueva_vacuna)
+        db.session.commit()
+        return jsonify(nueva_vacuna.serialize()), 201
     except Exception as e:
-        return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
+        db.session.rollback()
+        return jsonify({'msg': 'Error al registrar la vacuna', 'error': str(e)}), 500
+    
+#DELETE VACUNAS 
+@api.route('/vacunas/<int:vacuna_id>', methods=['DELETE'])
+@jwt_required()
+def delete_vacuna(vacuna_id):
+    vacuna = Vacuna.query.get(vacuna_id)
+    if not vacuna:
+        return jsonify({"msg": "Vacuna no encontrada"}), 404
+    db.session.delete(vacuna)
+    db.session.commit()
+    return jsonify({"msg": "Vacuna eliminada correctamente"}), 200
+
+        
+
 
 #RUTAS VETERINARIAS FAVORITAS 
 
@@ -403,3 +438,43 @@ def delete_recomendacion(id):
     db.session.delete(recomendacion)
     db.session.commit()
     return jsonify({"msg": "Recomendación eliminada"}), 200
+
+@api.route('/pets/<int:pet_id>/perfil_medico', methods=['GET'])
+@jwt_required()
+def get_perfil_medico(pet_id):
+    perfil = MedicalProfile.query.filter_by(pet_id=pet_id).first()
+    if not perfil:
+        return jsonify({"msg": "No hay perfil médico para esta mascota"}), 404
+    return jsonify(perfil.serialize()), 200
+
+# POST/PUT para crear o actualizar perfil médico
+@api.route('/pets/<int:pet_id>/perfil_medico', methods=['POST', 'PUT'])
+@jwt_required()
+def save_perfil_medico(pet_id):
+    data = request.get_json()
+    perfil = MedicalProfile.query.filter_by(pet_id=pet_id).first()
+    if not perfil:
+        perfil = MedicalProfile(pet_id=pet_id)
+        db.session.add(perfil)
+
+    perfil.alergias = data.get('alergias', perfil.alergias)
+    perfil.condiciones_previas = data.get('condiciones_previas', perfil.condiciones_previas)
+    perfil.medicamentos_actuales = data.get('medicamentos_actuales', perfil.medicamentos_actuales)
+    perfil.esterilizado = data.get('esterilizado', perfil.esterilizado)
+    perfil.fecha_ultima_revision = data.get('fecha_ultima_revision', perfil.fecha_ultima_revision)
+    perfil.veterinario_habitual = data.get('veterinario_habitual', perfil.veterinario_habitual)
+    perfil.observaciones = data.get('observaciones', perfil.observaciones)
+    perfil.grupo_sanguineo = data.get('grupo_sanguineo', perfil.grupo_sanguineo)
+    perfil.microchip = data.get('microchip', perfil.microchip)
+    db.session.commit()
+    return jsonify(perfil.serialize()), 200
+
+@api.route('/pets/<int:pet_id>/perfil_medico', methods=['DELETE'])
+@jwt_required()
+def delete_perfil_medico(pet_id):
+    perfil = MedicalProfile.query.filter_by(pet_id=pet_id).first()
+    if not perfil:
+        return jsonify({"msg": "No hay perfil médico para eliminar"}), 404
+    db.session.delete(perfil)
+    db.session.commit()
+    return jsonify({"msg": "Perfil médico eliminado"}), 200

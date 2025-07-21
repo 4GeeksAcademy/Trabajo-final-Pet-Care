@@ -12,7 +12,7 @@ const infoItems = [
 const Info = () => (
     <section className="info-section">
         <div className="container">
-            <h2 className="info-title">
+            <h2 className="info-title text-white">
                 Por qué elegir <span className="underline">PetCare</span> para tu mascota
             </h2>
             <div className="info-cards">

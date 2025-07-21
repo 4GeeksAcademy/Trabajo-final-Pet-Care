@@ -1,24 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/home.css";
 
 const PetCard = ({ pet, onDelete }) => {
+  const [loading, setLoading] = useState(false);
+
   const handleDelete = async () => {
     if (!window.confirm(`¿Seguro que quieres eliminar a ${pet.nombre}?`)) return;
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/pet/${petId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/pet/${pet.id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (!res.ok) throw new Error("Error al eliminar mascota");
-      onDelete(pet.id);
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.msg || "Error al eliminar mascota");
+      }
+      onDelete(pet.id); 
+      alert("Mascota eliminada correctamente");
     } catch (err) {
       console.error(err);
       alert(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
