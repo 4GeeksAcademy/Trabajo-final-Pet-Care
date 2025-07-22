@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [pets, setPets] = useState(null);
   const [loadingPets, setLoadingPets] = useState(true);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");

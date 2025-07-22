@@ -5,6 +5,7 @@ const plans = [
   {
     name: "Silver",
     price: "$9.99/mes",
+    key: "silver", // 👈 Necesario para saber qué plan enviar
     perks: [
       "Recordatorios de vacunación",
       "Acceso a historial nutricional básico",
@@ -16,6 +17,7 @@ const plans = [
   {
     name: "Gold",
     price: "$19.99/mes",
+    key: "gold", // 👈 Necesario para saber qué plan enviar
     perks: [
       "Todo de Silver, más:",
       "Recomendaciones IA personalizadas",
@@ -29,6 +31,36 @@ const plans = [
 ];
 
 export default function PremiumSection() {
+  const handleSubscribe = async (planKey) => {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/create-checkout-session`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ plan: planKey }),
+    });
+    // Revisa el status antes de parsear JSON
+    if (!res.ok) {
+      const errMsg = await res.text();
+      alert(`Error del backend: ${errMsg}`);
+      return;
+    }
+    const data = await res.json();
+    if (data.checkout_url) {
+      window.location.href = data.checkout_url;
+    } else {
+      alert(data.msg || "Error iniciando pago (sin checkout_url)");
+      console.log(data);
+    }
+  } catch (err) {
+    alert("Error en el pago (catch)");
+    console.error(err);
+  }
+};
+
   return (
     <section className="premium-section py-5">
       <div className="container">
@@ -64,7 +96,10 @@ export default function PremiumSection() {
                       </li>
                     ))}
                   </ul>
-                  <button className="btn btn-purple-mid mt-auto">
+                  <button
+                    className="btn btn-purple-mid mt-auto"
+                    onClick={() => handleSubscribe(plan.key)}
+                  >
                     {plan.buttonText}
                   </button>
                 </div>
