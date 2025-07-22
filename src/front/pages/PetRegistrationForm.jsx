@@ -20,7 +20,6 @@ const PetRegistrationForm = () => {
   const [sexo, setSexo] = useState('');
   const [foto, setFoto] = useState('');
   const [mensaje, setMensaje] = useState(null);
-
   const [step, setStep] = useState(0);
   const stepsCount = 4;
 
@@ -63,17 +62,14 @@ const PetRegistrationForm = () => {
       user_id: user.id
     };
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}api/pets`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(mascota)
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/pets`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(mascota)
+      });
       const data = await res.json();
       if (res.ok) {
         setMensaje(data.msg || '¡Mascota registrada!');
@@ -83,6 +79,31 @@ const PetRegistrationForm = () => {
       }
     } catch {
       setMensaje('Error de conexión.');
+    }
+  };
+
+  const handleImageUpload = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'mascotas_unsigned');
+
+    try {
+      const res = await fetch('https://api.cloudinary.com/v1_1/dvqbb7cjs/image/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setFoto(data.secure_url);
+        setMensaje(null);
+      } else {
+        setMensaje('Error al subir imagen.');
+      }
+    } catch {
+      setMensaje('Error de conexión al subir imagen.');
     }
   };
 
@@ -99,16 +120,11 @@ const PetRegistrationForm = () => {
 
         <div className="FormCard">
           <h2 className="Titulo">¡Registra tu Mascota!</h2>
-          <p className="Sub-titulo">
-            Añade a tu compañero/a a nuestra familia
-          </p>
+          <p className="Sub-titulo">Añade a tu compañero/a a nuestra familia</p>
 
           <form onSubmit={e => e.preventDefault()}>
             <div className="steps-wrapper">
-              <div
-                className="steps"
-                style={{ transform: `translateX(-${step * 100}%)` }}
-              >
+              <div className="steps" style={{ transform: `translateX(-${step * 100}%)` }}>
                 {/* Slide 1 */}
                 <div className="step">
                   <label className="Categoria">🏷️ Nombre *</label>
@@ -125,9 +141,7 @@ const PetRegistrationForm = () => {
                     value={especie}
                     onChange={e => setEspecie(e.target.value)}
                   >
-                    <option value="" disabled>
-                      Selecciona especie
-                    </option>
+                    <option value="" disabled>Selecciona especie</option>
                     <option value="Perro">Perro 🐶</option>
                     <option value="Gato">Gato 🐱</option>
                     <option value="Ave">Ave 🐦</option>
@@ -175,9 +189,7 @@ const PetRegistrationForm = () => {
                     value={sexo}
                     onChange={e => setSexo(e.target.value)}
                   >
-                    <option value="" disabled>
-                      Selecciona sexo
-                    </option>
+                    <option value="" disabled>Selecciona sexo</option>
                     <option value="Macho">Macho ♂️</option>
                     <option value="Hembra">Hembra ♀️</option>
                   </select>
@@ -185,14 +197,22 @@ const PetRegistrationForm = () => {
 
                 {/* Slide 4 */}
                 <div className="step">
-                  <label className="Categoria">📷 Foto (URL)</label>
+                  <label className="Categoria">📷 Foto (desde tu dispositivo)</label>
+                  <label htmlFor="file-upload" className="CustomFileButton">
+                    Elegir archivo
+                  </label>
                   <input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
                     className="Input Foto"
-                    type="text"
-                    placeholder="https://ejemplo.com/foto.jpg"
-                    value={foto}
-                    onChange={e => setFoto(e.target.value)}
                   />
+                  {foto && (
+                    <div className="VistaPreviaContainer">
+                      <img src={foto} alt="Vista previa" className="VistaPrevia" />
+                    </div>
+                  )}
                   <p className="Aviso">Puedes agregar la foto luego.</p>
                 </div>
               </div>
@@ -202,19 +222,11 @@ const PetRegistrationForm = () => {
 
             <div className="BotonContainer">
               {step < stepsCount - 1 ? (
-                <button
-                  type="button"
-                  className="Boton"
-                  onClick={handleNext}
-                >
+                <button type="button" className="Boton" onClick={handleNext}>
                   Siguiente
                 </button>
               ) : (
-                <button
-                  type="button"
-                  className="Boton"
-                  onClick={handleSubmit}
-                >
+                <button type="button" className="Boton" onClick={handleSubmit}>
                   Registrar Mascota
                 </button>
               )}
@@ -223,16 +235,12 @@ const PetRegistrationForm = () => {
 
           <div className="progress-dots">
             {Array.from({ length: stepsCount }).map((_, i) => (
-              <span
-                key={i}
-                className={`dot ${i === step ? 'active' : ''}`}
-              />
+              <span key={i} className={`dot ${i === step ? 'active' : ''}`} />
             ))}
           </div>
 
           <p className="Nota">
-            Nota: todos los campos con <strong className="Apostrofe">*</strong> son
-            obligatorios.
+            Nota: todos los campos con <strong className="Apostrofe">*</strong> son obligatorios.
           </p>
         </div>
       </div>

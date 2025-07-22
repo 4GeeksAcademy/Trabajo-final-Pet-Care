@@ -7,7 +7,6 @@ import PerfilMedicoPet from "../components/PerfilMedicoPet";
 import "../styles/petdetails.css";
 import { BsPersonCircle, BsCapsulePill, BsClipboard2Check, BsEggFried, BsRobot } from "react-icons/bs";
 
-
 const PetDetails = () => {
   const { petId } = useParams();
   const [pet, setPet] = useState(null);
@@ -17,6 +16,8 @@ const PetDetails = () => {
   const [success, setSuccess] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState({});
+
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   useEffect(() => {
     if (success) {
@@ -81,7 +82,32 @@ const PetDetails = () => {
       setLoading(false);
     }
   };
-  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "mascotas_unsigned");
+
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/dvqbb7cjs/image/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.secure_url) {
+        setEditData((prev) => ({ ...prev, foto: data.secure_url }));
+        setSuccess("Imagen actualizada exitosamente");
+      } else {
+        setError("Error al subir imagen.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Error al conectar con Cloudinary.");
+    }
+  };
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
@@ -96,6 +122,7 @@ const PetDetails = () => {
             className="row justify-content-center align-items-start gx-4"
             style={{ minHeight: "70vh", flexWrap: "nowrap" }}
           >
+            {/* Columna 1: Foto y nombre */}
             <div className="col-12 col-md-4 d-flex justify-content-center align-items-start mb-4 mb-md-0">
               <div
                 className="card shadow rounded-5 text-center position-relative"
@@ -140,6 +167,7 @@ const PetDetails = () => {
               </div>
             </div>
 
+            {/* Columna 2: Tabs */}
             <div className="col-12 col-md-2 d-flex flex-md-column flex-row align-items-center justify-content-center gap-3 my-4 my-md-0">
               {[
                 { tab: "perfil", icon: <BsPersonCircle />, text: "Perfil" },
@@ -189,14 +217,10 @@ const PetDetails = () => {
                   </div>
                 )}
                 {activeTab === "vacunas" && (
-                  <div>
-                    <VacunasView petId={petId} pet={pet} user={user} />
-                  </div>
+                  <VacunasView petId={petId} pet={pet} user={user} />
                 )}
                 {activeTab === "historial" && (
-                  <div>
-                    <PerfilMedicoPet petId={petId} />
-                  </div>
+                  <PerfilMedicoPet petId={petId} />
                 )}
                 {activeTab === "alimentacion" && (
                   <div>
@@ -290,12 +314,21 @@ const PetDetails = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">Foto (URL)</label>
+                      <label className="form-label">Actualizar foto (opcional)</label>
                       <input
                         className="form-control"
-                        value={editData.foto || ""}
-                        onChange={e => setEditData({ ...editData, foto: e.target.value })}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
                       />
+                      {editData.foto && (
+                        <img
+                          src={editData.foto}
+                          alt="Preview"
+                          className="img-thumbnail mt-2"
+                          style={{ maxWidth: "200px" }}
+                        />
+                      )}
                     </div>
                   </div>
                   {error && <p className="text-danger text-center">{error}</p>}
