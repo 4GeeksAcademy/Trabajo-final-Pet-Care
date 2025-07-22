@@ -1,4 +1,3 @@
-/*  NAVBAR: links en blanco */
 .navbar-dark .nav-link,
 .navbar-dark .navbar-brand {
   color: #fff !important;
@@ -11,7 +10,6 @@
 .bg-purple-dark {
   background-color: var(--purple-dark) !important;
 }
-
 .navbar-brand .navbar-logo {
   max-height: 50px;    
   width: auto;          
@@ -21,11 +19,9 @@
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
-
 .navbar-brand:hover {
   color: var(--link-hover) !important;
 }
-/* Links de navegación */
 .nav-link {
   color: var(--link-default) !important;
   transition: color 0.2s ease;
@@ -34,8 +30,23 @@
 .nav-link:focus {
   color: var(--link-hover) !important;
 }
-
 .navbar-dark .navbar-toggler {
   border-color: var(--link-default) !important;
 }
+.navbar .nav-item.d-flex .nav-link {
+  padding: 0 0.25rem;
+}
 
+.navbar-user-link {
+  border: 1px solid var(--link-default);
+  border-radius: 6px;
+  padding: 2px 6px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  display: inline-block;
+}
+.navbar-user-link:hover,
+.navbar-user-link:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--link-hover);
+  text-decoration: none;
+}
