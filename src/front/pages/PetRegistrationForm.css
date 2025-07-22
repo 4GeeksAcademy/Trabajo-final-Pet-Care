@@ -220,3 +220,38 @@ input[type="date"]::-webkit-datetime-edit {
     margin: 0 4px;
   }
 }
+
+.VistaPreviaContainer {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.VistaPrevia {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+}
+
+.CustomFileButton {
+  display: inline-block;
+  background: linear-gradient(45deg, #6fcf7f, #5D3A9B);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: opacity 0.3s, transform 0.2s;
+  margin-bottom: 20px;
+}
+
+.CustomFileButton:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+
+.Input[type="file"] {
+  display: none;
+}
