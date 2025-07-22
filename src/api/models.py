@@ -13,6 +13,7 @@ class User(db.Model):
     apellido: Mapped[str] = mapped_column(String(30), nullable=False)
     email: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(500), nullable=False)
+    foto: Mapped[str] = mapped_column(String(500), nullable=True)
 
     favorites: Mapped[list["Favorite"]] = relationship(
         "Favorite",
@@ -25,7 +26,8 @@ class User(db.Model):
             "id": self.id,
             "nombre": self.nombre,
             "apellido": self.apellido,
-            "email": self.email
+            "email": self.email,
+            "foto": self.foto
         }
 
 
