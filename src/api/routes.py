@@ -1,7 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
 from api.models import db, User, Pet, Vacuna, Raza, Favorite, Recomendacion, MedicalProfile
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -19,6 +19,7 @@ from .utils import APIException
 from .utils import admin_required 
 import os 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # import openai
@@ -624,64 +625,88 @@ def send_contact_message():
     db.session.commit()
     return jsonify({"msg": "Mensaje enviado correctamente"}), 20
 
-#PAGOS
-@api.route('/create-checkout-session', methods=['POST'])
+#STRIPE PARA DONACIONES 
+@api.route('/create-donation-session', methods=['POST'])
 @jwt_required()
-def create_checkout_session():
+def create_donation_session():  
     data = request.get_json()
-    plan = data.get("plan")  # "silver" o "gold"
-    if plan not in ["silver", "gold"]:
-        return jsonify({"msg": "Plan inválido"}), 400
+    amount = data.get("amount")
+    print("AMOUNT RECIBIDO:", amount)
 
-    # Define los precios según tu cuenta de Stripe (puedes crearlos en Products/Prices)
+    try:
+        amount = float(amount)
+    except Exception as e:
+        print("ERROR DE AMOUNT:", e)
+        return jsonify({"msg": "Monto inválido"}), 400
+
     PRICES = {
-        "silver": "price_1RnWBTBL5zffqAu9DWbugWRc",  
-        "gold":   "price_1RnWBvBL5zffqAu9ziPTe7I2"
+        2: "price_1RnniJBL5zffqAu9J25OgIsK",
+        5: "price_1RnnimBL5zffqAu9F3R13cPi",
+        10: "price_1Rnnj0BL5zffqAu98JUs0gwV"
     }
+    price_id = PRICES.get(amount)
+    if not price_id:
+        print("MONTO INVALIDO:", amount)
+        return jsonify({"msg": "Monto inválido"}), 400
+
+    try:
+
+        success_url = "https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/dashboard?donation=ok"
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price": price_id,
+                "quantity": 1,
+            }],
+            mode="payment",
+            success_url=success_url,
+            cancel_url="https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/dashboard",
+            metadata={"user_id": get_jwt_identity()},
+        )
+        print("STRIPE SESSION URL:", session.url)
+        return jsonify({"checkout_url": session.url})
+    except Exception as e:
+        print("STRIPE ERROR:", e)
+        return jsonify({"msg": f"Error de Stripe: {str(e)}"}), 500
+#STRIPE PARA CARNET DE VACUNACION 
+@api.route('/stripe/carnet-checkout', methods=['POST'])
+@jwt_required()
+def carnet_checkout():
+    user_id = get_jwt_identity()
+    pet_id = request.json.get("pet_id")
+    if not pet_id:
+        return jsonify({"msg": "Falta pet_id"}), 400
+
+    success_url = f"https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/pets/{pet_id}?carnet_paid=ok"
+    cancel_url  = f"https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/pets/{pet_id}?carnet_paid=cancel"
+
     try:
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{
-                "price": PRICES[plan],
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {
+                        "name": "Carnet digital de vacunas para tu mascota",
+                    },
+                    "unit_amount": 100,
+                },
                 "quantity": 1,
             }],
-            mode="subscription",
-            success_url="https://miniature-tribble-wr56vg579jgrfvj6q-3001.app.github.dev/success?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url="https://miniature-tribble-wr56vg579jgrfvj6q-3001.app.github.dev/dashboard?canceled=true",
+            mode="payment",
+            success_url=success_url,
+            cancel_url=cancel_url,
             metadata={
-                "user_id": get_jwt_identity(),
-                "plan": plan
+                "user_id": user_id,
+                "pet_id": pet_id
             }
         )
-        return jsonify({"checkout_url": session.url})
+        return jsonify({"url": session.url})
     except Exception as e:
-        return jsonify({"msg": str(e)}), 500
-#RUTA STRIPE 
-@api.route('/stripe/webhook', methods=['POST'])
-def stripe_webhook():
-    payload = request.data
-    sig_header = request.headers.get('stripe-signature')
-    endpoint_secret = "whsec_rwTIZ41io3QlFJzD6jCzoDsmKiyt3hdj"  
-    event = None
+        return jsonify({"error": str(e)}), 500
 
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
-        )
-    except Exception as e:
-        print("Webhook error:", e)
-        return '', 400
+@api.route('/pets/<int:pet_id>/carnet-pdf', methods=['GET'])
+def descargar_carnet_demo(pet_id):
+    return send_from_directory('static', 'bongo.pdf', as_attachment=True)
 
-    # Maneja el evento del pago exitoso
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        user_id = session['metadata']['user_id']
-        plan = session['metadata']['plan']
-        # Actualiza el usuario en la base de datos:
-        user = User.query.get(user_id)
-        if user:
-            user.subscription = plan
-            db.session.commit()
-            print(f"Usuario {user.email} actualizado a plan {plan}")
 
-    return '', 200

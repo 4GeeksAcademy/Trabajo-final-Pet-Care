@@ -76,3 +76,32 @@ background: #9b59b6 !important;
 .text-purple-mid {
   color: var(--bs-primary) !important;
 }
+.btn-main {
+  background: #9b59b6;
+  color: #fff;
+  border-radius: 24px;
+  border: none;
+  box-shadow: 0 2px 8px #9b59b650;
+  transition: 0.2s;
+  font-weight: bold;
+}
+.btn-main:hover, .btn-main:focus {
+  background: #8e44ad;
+  color: #fff;
+}
+.btn-outline-main {
+  background: #fff;
+  color: #9b59b6;
+  border: 2px solid #9b59b6;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px #9b59b620;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.btn-outline-main:hover, .btn-outline-main:active {
+  background: #9b59b6;
+  color: #fff;
+}
+.text-purple-mid {
+  color: #9b59b6 !important;
+}

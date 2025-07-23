@@ -1,24 +1,44 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const VacunasView = ({ petId, pet, user }) => {
     const [vacunas, setVacunas] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [showPagarModal, setShowPagarModal] = useState(false);
+    const [showExitoModal, setShowExitoModal] = useState(false);
     const [form, setForm] = useState({
         nombre: "",
         descripcion: "",
         fecha_aplicacion: ""
     });
+    const [carnetPagado, setCarnetPagado] = useState(false);
 
-    // Fetch vacunas
+    const carnetKey = user && petId ? `carnetPagado_${user.id}_${petId}` : null;
+
+    const location = useLocation();
+    useEffect(() => {
+        if (carnetKey) {
+            setCarnetPagado(localStorage.getItem(carnetKey) === "ok");
+        }
+        const query = new URLSearchParams(location.search);
+        if (query.get("carnet_paid") === "ok" && carnetKey && !localStorage.getItem(carnetKey)) {
+            setShowExitoModal(true);
+            localStorage.setItem(carnetKey, "ok");
+            setCarnetPagado(true);
+           
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, [location.search, carnetKey]);
+
     const fetchVacunas = async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/mascotas/${petId}/vacunas`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/mascotas/${petId}/vacunas`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             const data = await res.json();
             setVacunas(data);
         } catch (err) {
@@ -32,7 +52,6 @@ const VacunasView = ({ petId, pet, user }) => {
         fetchVacunas();
     }, [petId, showModal]);
 
-    // Guardar vacuna
     const handleSave = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
@@ -48,7 +67,6 @@ const VacunasView = ({ petId, pet, user }) => {
         setForm({ nombre: "", descripcion: "", fecha_aplicacion: "" });
     };
 
-    // Eliminar vacuna
     const handleDeleteVacuna = async (vacunaId) => {
         if (!window.confirm("¿Seguro que deseas eliminar esta vacuna?")) return;
         try {
@@ -57,9 +75,7 @@ const VacunasView = ({ petId, pet, user }) => {
                 `${import.meta.env.VITE_BACKEND_URL}/api/vacunas/${vacunaId}`,
                 {
                     method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                    headers: { Authorization: `Bearer ${token}` }
                 }
             );
             const data = await res.json();
@@ -72,11 +88,51 @@ const VacunasView = ({ petId, pet, user }) => {
     };
 
     const handleDescargarCarnet = () => {
-        if (user?.plan === "silver" || user?.plan === "gold") {
-            alert("¡Aquí se descargaría el carnet digital de vacunas! (Integrar jsPDF)");
-        } else {
-            setShowUpgradeModal(true);
+        setShowPagarModal(true);
+    };
+
+    const handleStripePagoCarnet = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/stripe/carnet-checkout`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ pet_id: petId })
+                }
+            );
+            const data = await res.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                alert(data.error || "Error al iniciar el pago");
+            }
+        } catch (err) {
+            alert("Error al conectar con Stripe");
         }
+    };
+
+    const descargarCarnetPDF = async () => {
+        const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/pets/${petId}/carnet-pdf`
+        );
+        if (!response.ok) {
+            alert("No se pudo descargar el carnet. Intenta de nuevo.");
+            return;
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "carnet_vacunacion.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
     };
 
     return (
@@ -122,22 +178,41 @@ const VacunasView = ({ petId, pet, user }) => {
 
             {/* Botón Carnet Digital */}
             <div className="carnet-digital-section mt-3">
-                <button
-                    className="btn btn-outline-main w-100"
-                    onClick={handleDescargarCarnet}
-                >
-                    <svg width="28" height="28" fill="none" viewBox="0 0 42 42">
-                        <rect width="42" height="42" rx="10" fill="#F2F2F7" />
-                        <path d="M21 11v14m0 0l-5-5m5 5l5-5" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        <rect x="14" y="31" width="14" height="2.5" rx="1.25" fill="#8B5CF6" />
-                    </svg>
-                    <span style={{ fontWeight: 600, color: "#6D28D9", fontSize: 18 }}> Descargar Carnet de Vacunación  </span>
-                </button>
-                {/* Si usuario no es silver/gold, muestra el modal aquí */}
-                {showUpgradeModal && (
-                    <UpgradeModal onClose={() => setShowUpgradeModal(false)} />
+                {carnetPagado ? (
+                    <button
+                        className="btn btn-success w-100"
+                        onClick={descargarCarnetPDF}
+                    >
+                        Descargar Carnet de Vacunación PDF
+                    </button>
+                ) : (
+                    <button
+                        className="btn btn-outline-main w-100"
+                        onClick={handleDescargarCarnet}
+                    >
+                        <svg width="28" height="28" fill="none" viewBox="0 0 42 42">
+                            <rect width="42" height="42" rx="10" fill="#F2F2F7" />
+                            <path d="M21 11v14m0 0l-5-5m5 5l5-5" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <rect x="14" y="31" width="14" height="2.5" rx="1.25" fill="#8B5CF6" />
+                        </svg>
+                        <span style={{ fontWeight: 600, color: "#6D28D9", fontSize: 18 }}> Descargar Carnet de Vacunación  </span>
+                    </button>
+                )}
+                {showPagarModal && (
+                    <ModalPagoCarnet
+                        onClose={() => setShowPagarModal(false)}
+                        onPagar={handleStripePagoCarnet}
+                    />
                 )}
             </div>
+
+            {/* Modal Éxito tras pagar */}
+            {showExitoModal && (
+                <ModalExitoCarnet
+                    onClose={() => setShowExitoModal(false)}
+                    onDescargar={descargarCarnetPDF}
+                />
+            )}
 
             {/* Modal Añadir Vacuna */}
             {showModal && (
@@ -199,8 +274,7 @@ const VacunasView = ({ petId, pet, user }) => {
     );
 };
 
-// Modal para sugerir upgrade de plan
-const UpgradeModal = ({ onClose }) => (
+const ModalPagoCarnet = ({ onClose, onPagar }) => (
     <div className="modal show d-block" tabIndex="-1" style={{ background: "#0008" }}>
         <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content rounded-4 p-4 text-center">
@@ -220,7 +294,7 @@ const UpgradeModal = ({ onClose }) => (
                         flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
-                        minHeight: "240px",
+                        minHeight: "220px",
                         width: "100%",
                         marginBottom: "18px"
                     }}
@@ -239,11 +313,39 @@ const UpgradeModal = ({ onClose }) => (
                     />
                 </div>
                 <p className="mt-3 mb-2">
-                    Exporta y descarga el carnet digital de vacunas de tu mascota.<br />
-                    Disponible solo para usuarios <b>Silver</b> y <b>Gold</b>.
+                    Para obtener el carnet digital de vacunación en PDF debes cancelar <b>1 USD</b> (pago único).<br />
+                    Al pagar, tendrás acceso al carnet para descargarlo e imprimirlo.
                 </p>
-                <button className="btn btn-main w-100" onClick={() => window.location.href = "/actualizar-plan"}>
-                    Actualizar plan
+                <button className="btn btn-main w-100" onClick={onPagar}>
+                    Sí, quiero mi carnet digital
+                </button>
+                <button className="btn btn-link text-purple-dark mt-2" onClick={onClose}>Cancelar</button>
+            </div>
+        </div>
+    </div>
+);
+
+const ModalExitoCarnet = ({ onClose, onDescargar }) => (
+    <div className="modal show d-block" tabIndex="-1" style={{ background: "#0008" }}>
+        <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content rounded-4 p-4 text-center">
+                <h4 className="mb-3" style={{ color: "#6D28D9" }}>¡Pago exitoso!</h4>
+                <img
+                    src="/img/bongo.png"
+                    alt="Carnet"
+                    style={{
+                        maxWidth: "140px",
+                        borderRadius: "14px",
+                        boxShadow: "0 2px 16px #c2c2ee77",
+                        margin: "0 auto 18px auto",
+                        display: "block"
+                    }}
+                />
+                <p className="mb-3">
+                    ¡Ahora puedes descargar el carnet digital de vacunación de tu mascota!
+                </p>
+                <button className="btn btn-success w-100" onClick={onDescargar}>
+                    Descargar Carnet en PDF
                 </button>
                 <button className="btn btn-link text-purple-dark mt-2" onClick={onClose}>Cerrar</button>
             </div>
@@ -252,4 +354,3 @@ const UpgradeModal = ({ onClose }) => (
 );
 
 export default VacunasView;
-

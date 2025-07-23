@@ -69,7 +69,6 @@ export default function PerfilMedicoPet({ petId }) {
     fetchPerfil();
   }, [petId]);
 
-  // 2. Traer historial de pesos
   useEffect(() => {
     const fetchPesos = async () => {
       setLoadingPesos(true);
@@ -89,7 +88,6 @@ export default function PerfilMedicoPet({ petId }) {
     fetchPesos();
   }, [petId, showPesoModal]);
 
-  // 3. Guardar nuevo peso
   const handleAddPeso = async (e) => {
     e.preventDefault();
     if (!nuevoPeso.peso || !nuevoPeso.fecha) return;
@@ -110,7 +108,6 @@ export default function PerfilMedicoPet({ petId }) {
     }
   };
 
-  // Guardar condiciones, alergias, esterilización
   const handleGuardarProblemas = async () => {
     await savePerfil({ condiciones_previas: problemasSeleccionados.join(";") });
     setShowProblemas(false);
@@ -132,7 +129,6 @@ export default function PerfilMedicoPet({ petId }) {
     setShowEsterilizacion(false);
   };
 
-  // Guardar perfil (PUT)
   const savePerfil = async (campos) => {
     setLoading(true);
     setError("");
@@ -159,7 +155,6 @@ export default function PerfilMedicoPet({ petId }) {
     }
   };
 
-  // ----------- 4. Si NO existe perfil, mostrar modal para crearlo ----------
   if (error)
     return (
       <div className="alert alert-warning text-center">
@@ -184,7 +179,6 @@ export default function PerfilMedicoPet({ petId }) {
               e.preventDefault();
               try {
                 const token = localStorage.getItem("token");
-                // Guarda condiciones como string separado por ";"
                 const payload = {
                   alergias: nuevoPerfil.alergias,
                   condiciones_previas: (nuevoPerfil.condicionesCheck || []).join(";") + (nuevoPerfil.condicionesExtra ? ";" + nuevoPerfil.condicionesExtra : ""),
@@ -267,7 +261,6 @@ export default function PerfilMedicoPet({ petId }) {
       </div>
     );
 
-  // ----------- 5. UI normal si SÍ existe perfil médico -----------
   if (loading)
     return <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "200px" }}>
       <Spinner animation="border" variant="primary" />
