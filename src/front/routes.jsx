@@ -17,6 +17,7 @@ import Dashboard from './pages/Dashboard';
 import UserProfile from "./pages/UserProfile";
 
 
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     // CreateRoutesFromElements function allows you to build route elements declaratively.

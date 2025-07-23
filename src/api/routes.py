@@ -1,7 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
 from api.models import db, User, Pet, Vacuna, Raza, Favorite, Recomendacion, MedicalProfile
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -16,12 +16,20 @@ from flask_jwt_extended import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
 from .utils import APIException
+from .utils import admin_required 
+import os 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # import openai
 # import os
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 
 from openai import OpenAI
+import stripe
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+print("STRIPE KEY:", os.getenv("STRIPE_SECRET_KEY"))
 
 client = OpenAI()
 
@@ -32,7 +40,126 @@ jwt_blacklist = set()
 # Allow CORS requests to this API
 CORS(api)
 
+#______RUTAS PANEL ADMINISTRADOR_____ 
+#GET USUARIOS 
+@api.route('/admin/users', methods=['GET'])
+@jwt_required()
+@admin_required
+def admin_list_users():
+    users = User.query.all()
+    return jsonify([u.serialize() for u in users]), 200
 
+#VER USUARIO INDIVIDUAL 
+@api.route('/admin/user/<int:user_id>', methods=['GET'])
+@jwt_required()
+@admin_required
+def admin_get_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+    return jsonify(user.serialize()), 200
+#EDITAR USUARIO 
+@api.route('/admin/user/<int:user_id>', methods=['PUT'])
+@jwt_required()
+@admin_required
+def admin_edit_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+    data = request.get_json()
+    user.nombre = data.get("nombre", user.nombre)
+    user.apellido = data.get("apellido", user.apellido)
+    user.email = data.get("email", user.email)
+    user.is_admin = data.get("is_admin", user.is_admin)
+    user.is_active = data.get("is_active", user.is_active)
+    db.session.commit()
+    return jsonify(user.serialize()), 200
+#ACTIVAR-DESACTIVAR USUARIO 
+@api.route('/admin/user/<int:user_id>/toggle_active', methods=['PATCH'])
+@jwt_required()
+@admin_required
+def admin_toggle_active_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+    user.is_active = not user.is_active
+    db.session.commit()
+    return jsonify({"id": user.id, "is_active": user.is_active}), 200
+
+#LISTAR MASCOTAS
+@api.route('/admin/pets', methods=['GET'])
+@jwt_required()
+@admin_required
+def admin_list_pets():
+    pets = Pet.query.all()
+    return jsonify([p.serialize() for p in pets]), 200
+#DETALLE DE MASCOTA
+@api.route('/admin/pet/<int:pet_id>', methods=['GET'])
+@jwt_required()
+@admin_required
+def admin_get_pet(pet_id):
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({"msg": "Mascota no encontrada"}), 404
+    return jsonify(pet.serialize()), 200
+#EDITAR MASCOTA
+@api.route('/admin/pet/<int:pet_id>', methods=['PUT'])
+@jwt_required()
+@admin_required
+def admin_edit_pet(pet_id):
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({"msg": "Mascota no encontrada"}), 404
+    data = request.get_json()
+    pet.nombre = data.get("nombre", pet.nombre)
+    pet.edad = data.get("edad", pet.edad)
+    pet.especie = data.get("especie", pet.especie)
+    pet.raza = data.get("raza", pet.raza)
+    pet.peso = data.get("peso", pet.peso)
+    pet.is_active = data.get("is_active", pet.is_active)
+    db.session.commit()
+    return jsonify(pet.serialize()), 200
+#DESACTIVAR-REACTIVAR MASCOTA
+@api.route('/admin/pet/<int:pet_id>/toggle_active', methods=['PATCH'])
+@jwt_required()
+@admin_required
+def admin_toggle_active_pet(pet_id):
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({"msg": "Mascota no encontrada"}), 404
+    pet.is_active = not pet.is_active
+    db.session.commit()
+    return jsonify({"id": pet.id, "is_active": pet.is_active}), 200
+#FILTRAR MASCOTA POR USUARIO, ESPECIE, ETC. 
+@api.route('/admin/pets/filter', methods=['GET'])
+@jwt_required()
+@admin_required
+def admin_filter_pets():
+    user_id = request.args.get("user_id")
+    especie = request.args.get("especie")
+    raza = request.args.get("raza")
+    is_active = request.args.get("is_active")
+    query = Pet.query
+    if user_id:
+        query = query.filter_by(user_id=user_id)
+    if especie:
+        query = query.filter_by(especie=especie)
+    if raza:
+        query = query.filter_by(raza=raza)
+    if is_active is not None:
+        query = query.filter_by(is_active=(is_active.lower() == "true"))
+    pets = query.all()
+    return jsonify([p.serialize() for p in pets]), 200
+
+#USUARIO VISUALIZA MENSAJES DE "CONTACTANOS"
+@api.route('/admin/contact_messages', methods=['GET'])
+@jwt_required()
+@admin_required
+def admin_list_contact_messages():
+    messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+    return jsonify([m.serialize() for m in messages]), 200
+
+    
 # _____USERS___#
 # RUTA GET ALL USERS
 @api.route('/users', methods=['GET'])
@@ -484,3 +611,108 @@ def delete_perfil_medico(pet_id):
     db.session.delete(perfil)
     db.session.commit()
     return jsonify({"msg": "Perfil médico eliminado"}), 200
+
+#USUARIO ENVIA FORMULARIO DE CONTACTO Y SE GUARDA EN LA DB 
+@api.route('/contact', methods=['POST'])
+def send_contact_message():
+    data = request.get_json()
+    nombre = data.get("nombre")
+    email = data.get("email")
+    mensaje = data.get("mensaje")
+    if not nombre or not email or not mensaje:
+        return jsonify({"msg": "Todos los campos son obligatorios"}), 400
+
+    new_msg = ContactMessage(
+        nombre=nombre,
+        email=email,
+        mensaje=mensaje
+    )
+    db.session.add(new_msg)
+    db.session.commit()
+    return jsonify({"msg": "Mensaje enviado correctamente"}), 20
+
+#STRIPE PARA DONACIONES 
+@api.route('/create-donation-session', methods=['POST'])
+@jwt_required()
+def create_donation_session():  
+    data = request.get_json()
+    amount = data.get("amount")
+    print("AMOUNT RECIBIDO:", amount)
+
+    try:
+        amount = float(amount)
+    except Exception as e:
+        print("ERROR DE AMOUNT:", e)
+        return jsonify({"msg": "Monto inválido"}), 400
+
+    PRICES = {
+        2: "price_1RnniJBL5zffqAu9J25OgIsK",
+        5: "price_1RnnimBL5zffqAu9F3R13cPi",
+        10: "price_1Rnnj0BL5zffqAu98JUs0gwV"
+    }
+    price_id = PRICES.get(amount)
+    if not price_id:
+        print("MONTO INVALIDO:", amount)
+        return jsonify({"msg": "Monto inválido"}), 400
+
+    try:
+
+        success_url = "https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/dashboard?donation=ok"
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price": price_id,
+                "quantity": 1,
+            }],
+            mode="payment",
+            success_url=success_url,
+            cancel_url="https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/dashboard",
+            metadata={"user_id": get_jwt_identity()},
+        )
+        print("STRIPE SESSION URL:", session.url)
+        return jsonify({"checkout_url": session.url})
+    except Exception as e:
+        print("STRIPE ERROR:", e)
+        return jsonify({"msg": f"Error de Stripe: {str(e)}"}), 500
+#STRIPE PARA CARNET DE VACUNACION 
+@api.route('/stripe/carnet-checkout', methods=['POST'])
+@jwt_required()
+def carnet_checkout():
+    user_id = get_jwt_identity()
+    pet_id = request.json.get("pet_id")
+    if not pet_id:
+        return jsonify({"msg": "Falta pet_id"}), 400
+
+    success_url = f"https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/pets/{pet_id}?carnet_paid=ok"
+    cancel_url  = f"https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/pets/{pet_id}?carnet_paid=cancel"
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "usd",
+                    "product_data": {
+                        "name": "Carnet digital de vacunas para tu mascota",
+                    },
+                    "unit_amount": 100,
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "user_id": user_id,
+                "pet_id": pet_id
+            }
+        )
+        return jsonify({"url": session.url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@api.route('/pets/<int:pet_id>/carnet-pdf', methods=['GET'])
+def descargar_carnet_demo(pet_id):
+    return send_from_directory('static', 'bongo.pdf', as_attachment=True)
+
+

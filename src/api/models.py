@@ -13,7 +13,11 @@ class User(db.Model):
     apellido: Mapped[str] = mapped_column(String(30), nullable=False)
     email: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(500), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+
     foto: Mapped[str] = mapped_column(String(500), nullable=True)
+
 
     favorites: Mapped[list["Favorite"]] = relationship(
         "Favorite",
@@ -27,6 +31,8 @@ class User(db.Model):
             "nombre": self.nombre,
             "apellido": self.apellido,
             "email": self.email,
+            "is_active": self.is_active,
+            "is_admin": self.is_admin, 
             "foto": self.foto
         }
 
@@ -58,6 +64,7 @@ class Pet(db.Model):
     raza: Mapped[str] = mapped_column(String(300))
     fecha_nacimiento: Mapped[date] = mapped_column(nullable=False)
     sexo: Mapped[str] = mapped_column(String(10), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     user_id: Mapped[int] = mapped_column(
         db.ForeignKey("users.id"), nullable=False)
@@ -184,3 +191,19 @@ class MedicalProfile(db.Model):
             "microchip": self.microchip
         }
 
+class ContactMessage(db.Model):
+    __tablename__ = "contact_messages"
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    mensaje = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "email": self.email,
+            "mensaje": self.mensaje,
+            "created_at": self.created_at.isoformat()
+        }
