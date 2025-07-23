@@ -222,24 +222,30 @@ def logout():
 @jwt_required()
 def update_user(user_id):
     data = request.get_json()
-    nombre = data.get('nombre')
-    apellido = data.get('apellido')
-    email = data.get('email')
-    password = data.get('password')
-    current_user = get_jwt_identity()
-    if current_user != user_id:
+    current_user_id = int(get_jwt_identity())
+
+    if current_user_id != user_id:
         return jsonify({'msg': 'No tienes permiso para actualizar este usuario'}), 403
+
     try:
         user = User.query.get(user_id)
         if not user:
             return jsonify({'msg': 'Usuario no encontrado'}), 404
-        user.nombre = nombre
-        user.apellido = apellido
-        user.email = email
-        if password:
-            user.password = generate_password_hash(password)
+
+        if 'nombre' in data:
+            user.nombre = data['nombre']
+        if 'apellido' in data:
+            user.apellido = data['apellido']
+        if 'email' in data:
+            user.email = data['email']
+        if 'password' in data and data['password']:
+            user.password = generate_password_hash(data['password'])
+        if 'foto' in data:
+            user.foto = data['foto']
+
         db.session.commit()
-        return jsonify({'msg': 'Usuario actualizado correctamente'}), 200
+        return jsonify({'msg': 'Usuario actualizado correctamente', 'user': user.serialize()}), 200
+
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Error al actualizar el usuario', 'error': str(e)}), 500

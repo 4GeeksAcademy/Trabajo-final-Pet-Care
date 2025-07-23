@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -12,36 +11,36 @@ export default function Login() {
   };
 
   const handleSubmit = async e => {
-  e.preventDefault();
-  setError("");
+    e.preventDefault();
+    setError("");
 
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const mensaje = data.msg || data.message || "Credenciales inválidas";
+        setError(mensaje);
+        return;
       }
-    );
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      const mensaje = data.msg || data.message || "Credenciales inválidas";
-      setError(mensaje);
-      return;
+      const { token, user } = data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      window.dispatchEvent(new Event("userUpdated"));
+      navigate("/dashboard");
+    } catch (err) {
+      setError("No se pudo conectar con el servidor");
     }
-    const { token, user } = data;
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    navigate("/dashboard");
-
-  } catch (err) {
-    setError("No se pudo conectar con el servidor");
-  }
-};
-
+  };
 
   return (
     <main className="d-flex justify-content-center align-items-center vh-100">

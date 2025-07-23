@@ -16,6 +16,9 @@ class User(db.Model):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    foto: Mapped[str] = mapped_column(String(500), nullable=True)
+
+
     favorites: Mapped[list["Favorite"]] = relationship(
         "Favorite",
         back_populates="user",
@@ -29,7 +32,8 @@ class User(db.Model):
             "apellido": self.apellido,
             "email": self.email,
             "is_active": self.is_active,
-            "is_admin": self.is_admin
+            "is_admin": self.is_admin, 
+            "foto": self.foto
         }
 
 
