@@ -36,7 +36,12 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       window.dispatchEvent(new Event("userUpdated"));
-      navigate("/dashboard");
+
+      if (user.is_admin) {
+        navigate("/admin-panel");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError("No se pudo conectar con el servidor");
     }

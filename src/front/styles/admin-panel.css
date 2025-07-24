@@ -1,0 +1,66 @@
+.admin-panel-wrapper {
+  background-color: var(--light-bg);
+  width: 100%;
+}
+
+.admin-panel {
+  background-color: var(--light-bg);
+  min-height: 100vh;
+}
+
+.admin-panel__title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.admin-panel__tabs .btn {
+  font-size: 0.95rem;
+  padding: 0.4rem 1.2rem;
+}
+
+.admin-panel__tabs .btn.active {
+  background: #9b59b6 !important;
+  color: #fff !important;
+}
+
+.admin-panel__section {
+  margin-top: 2rem;
+}
+
+.admin-table {
+  font-size: 0.95rem;
+}
+
+.admin-table thead th {
+  white-space: nowrap;
+  color: #9b59b6;
+  border-bottom: 2px solid #9b59b6;
+}
+
+.admin-table tbody td {
+  vertical-align: middle;
+}
+
+.admin-table input.form-control.form-control-sm {
+  min-width: 120px;
+}
+
+.bg-purple-admin {
+  background-color: #9b59b6 !important;
+  color: #fff !important;
+}
+
+@media (max-width: 576px) {
+  .admin-panel__tabs .btn {
+    flex: 1 1 auto;
+  }
+  .admin-table {
+    font-size: 0.85rem;
+  }
+  .admin-panel__title {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+}

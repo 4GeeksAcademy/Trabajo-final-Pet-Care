@@ -15,6 +15,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UserProfile from "./pages/UserProfile";
+import AdminPanel from "./pages/AdminPanel";
 
 
 
@@ -41,6 +42,7 @@ export const router = createBrowserRouter(
         <Route path="/pets" element={<PetList userId={1} />} />
         <Route path="/pets/:petId" element={<PetDetails />} />
         <Route path="/user/:userId" element={<UserProfile />} />
+        <Route path="/admin-panel" element={<AdminPanel />} />
       </Route>
     )
 

@@ -267,6 +267,15 @@ def delete_user(user_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Error al eliminar el usuario', 'error': str(e)}), 500
+    
+#DELETE RAPIDO DE USUARIO
+@api.route('/usuario/<int:user_id>', methods=['DELETE'])
+def eliminar_facil(user_id):
+    usuario = User.query.filter_by(id=user_id).first()
+    if usuario:
+        db.session.delete(usuario)
+        db.session.commit()
+        return jsonify({'msg': 'Usuario eliminado exitósamente'})
 
 # RUTA OBTENER USUARIO POR ID
 @api.route('/user/<int:user_id>', methods=['GET'])
