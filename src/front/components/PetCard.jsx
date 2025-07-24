@@ -18,10 +18,10 @@ const PetCard = ({ pet, onDelete }) => {
         }
       );
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.msg || "Error al eliminar mascota");
+        const errorText = await res.text();
+        throw new Error(errorText || "Error al eliminar mascota");
       }
-      onDelete(pet.id); 
+      onDelete(pet.id);
       alert("Mascota eliminada correctamente");
     } catch (err) {
       console.error(err);

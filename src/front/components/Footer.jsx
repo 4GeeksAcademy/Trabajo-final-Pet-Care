@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/footer.css"; 
-import logo from "../assets/img/logo-pet.png"; 
+import logo from "/img/petlogo.png"; 
 
 const Footer = () => (
   <footer className="site-footer">

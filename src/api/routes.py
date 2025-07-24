@@ -395,7 +395,7 @@ def delete_pet(pet_id):
         print("pet.user_id:", pet.user_id, type(pet.user_id))
         print("current_user:", current_user, type(current_user))
 
-        if str(pet.user_id) != str(current_user):
+        if int(pet.user_id) != int(current_user):
             print("No tienes permiso: pet.user_id =", pet.user_id, "current_user =", current_user)
             return jsonify({'msg': 'No tienes permiso para eliminar esta mascota'}), 403
 

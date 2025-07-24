@@ -25,7 +25,6 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
   font-family: 'Montserrat', sans-serif !important;
 }
 
-/* Fondos componentes  */
 .bg-light {
   background-color: var(--light-bg) !important;
 }
@@ -38,8 +37,10 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
 .text-purple-dark {
   color: var(--purple-dark) !important;
 }
+.text-purple-mid {
+  color: var(--purple-mid) !important;
+}
 
-/* Botones*/
 .btn-main {
   background-color: var(--purple-mid) !important;
   color: #fff !important;
@@ -80,7 +81,7 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
 .btn-add:hover {
   background: rgba(255,255,255,0.2);
 }
-/* Avatar de mascota */
+
 .pet-avatar {
   width: 80px;
   height: 80px;
@@ -93,13 +94,13 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
 .card {
   border-radius: 2rem !important;
 }
-/* Botón “+” fijo */
+
 .btn-add {
   width: 60px;
   height: 60px;
   border-width: 2px !important;
 }
-/* Enlaces */
+
 .link-primary {
   color: var(--purple-mid) !important;
   transition: color 0.2s ease;
@@ -108,7 +109,7 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
   color: var(--purple-dark) !important;
   text-decoration: underline !important;
 }
-/* Tarjetas Testimonios */
+
 .testimonial-card {
   flex: 0 0 auto;
   width: 300px;
@@ -139,7 +140,6 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
   font-size: 0.8rem;
   color: var(--text-muted);
 }
-/* Ocultar scrollbar*/
 .scroll-container {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -147,7 +147,6 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
 .scroll-container::-webkit-scrollbar {
   display: none;
 }
-/* Flechas manuales */
 .carousel-btn {
   position: absolute;
   top: 50%;
@@ -280,4 +279,100 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
   .info-card {
     flex: 0 0 80%;
   }
+}
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  min-height: 520px; 
+}
+
+.hero-video-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: brightness(0.5); 
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(50,0,80,0.2); 
+  z-index: 1;
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 992px) {
+  .hero-section {
+    min-height: 350px;
+  }
+  .hero-img {
+    margin-top: 2rem;
+  }
+}
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  min-height: 90vh;    
+  display: flex;
+  align-items: center; 
+}
+
+.display-4, .hero-title, 
+.about-hero h1,
+.display-1,
+.display-2,
+.display-3 {
+  font-family: 'Montserrat', 'Inter', 'Segoe UI', Arial, sans-serif; 
+  font-size: 4.5rem; 
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.12;
+  color: #ffffff;
+  text-shadow: 0 2px 16px rgba(80,30,120,0.22);  
+  margin-bottom: 1.2rem;
+}
+
+
+
+@media (max-width: 600px) {
+  .hero-section .hero-title,
+  .about-hero h1,
+  .display-1,
+  .display-2,
+  .display-3 {
+    font-size: 2.2rem;
+  }
+}
+.info-icon{
+  color: var(--purple-mid)
+}
+.donation-banner-inner {
+  background: linear-gradient(93deg, #f2e5f6 65%, #e7f7fd 100%);
+  border: 1.5px solid #e4c8fb;
+  min-height: 110px;
+}
+.donation-dog-img {
+  box-shadow: 0 4px 12px #9b59b614;
+  border: 3px solid #fff;
+  transition: transform .15s;
+}
+.donation-dog-img:hover {
+  transform: scale(1.07) rotate(-3deg);
+}
+.btn-main {
+  background: #9b59b6;
+  border: none;
+}
+.btn-main:hover {
+  background: #6c3483;
+}
+.text-purple-mid {
+  color: #9b59b6;
 }
