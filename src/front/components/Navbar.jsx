@@ -66,14 +66,23 @@ const Navbar = () => {
         </button>
         <div className={`collapse navbar-collapse ${open ? "show" : ""}`}>
           <ul className="navbar-nav ms-auto align-items-center">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Inicio
-              </Link>
-            </li>
-
             {!token ? (
               <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/">
+                    Inicio
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/about">
+                    Quiénes somos
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/contact">
+                    Contáctanos
+                  </Link>
+                </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/signup">
                     Registrarse
@@ -94,7 +103,7 @@ const Navbar = () => {
                 </li>
                 {userState && (
                   <li className="nav-item d-flex align-items-center">
-                    <span className="nav-link mb-0 me-1">¡ Hola</span>
+                    <span className="nav-link mb-0 me-1">¡Hola</span>
                     <Link
                       className="nav-link p-0 fw-bold navbar-user-link"
                       to={`/user/${userState.id}`}
@@ -122,3 +131,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+

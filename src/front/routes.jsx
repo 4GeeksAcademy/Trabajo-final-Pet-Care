@@ -15,6 +15,8 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import UserProfile from "./pages/UserProfile";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 
 
@@ -41,6 +43,8 @@ export const router = createBrowserRouter(
         <Route path="/pets" element={<PetList userId={1} />} />
         <Route path="/pets/:petId" element={<PetDetails />} />
         <Route path="/user/:userId" element={<UserProfile />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
       </Route>
     )
 

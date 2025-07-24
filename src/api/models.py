@@ -74,6 +74,15 @@ class Pet(db.Model):
         "Vacuna", back_populates="mascota")
     recomendaciones: Mapped[list["Recomendacion"]] = relationship(
         "Recomendacion", back_populates="mascota", cascade="all, delete-orphan")
+    medical_profile: Mapped["MedicalProfile"] = relationship(
+        "MedicalProfile",
+        back_populates="pet",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+    vacunas: Mapped[list["Vacuna"]] = relationship(
+        "Vacuna", back_populates="mascota", cascade="all, delete-orphan"
+    )
    
 
     # Relación ➜ cada mascota "apunta" a una raza
@@ -87,7 +96,6 @@ class Pet(db.Model):
             "foto": self.foto,
             "peso": self.peso,
             "user_id": self.user_id,
-            # "raza": self.raza.serialize() if self.raza else None
             "raza": self.raza,
             "fecha_nacimiento": self.fecha_nacimiento.isoformat(),
             "sexo": self.sexo
@@ -104,6 +112,9 @@ class Vacuna(db.Model):
     mascota_id: Mapped[int] = mapped_column(
         db.ForeignKey("pets.id"), nullable=False)
     mascota: Mapped["Pet"] = relationship("Pet", back_populates="vacunas")
+    mascota_id: Mapped[int] = mapped_column(
+        db.ForeignKey("pets.id", ondelete="CASCADE"), nullable=False
+    )
 
     def serialize(self):
         return {
@@ -162,7 +173,7 @@ class Recomendacion(db.Model):
 class MedicalProfile(db.Model):
     __tablename__ = "medical_profiles"
     id: Mapped[int] = mapped_column(primary_key=True)
-    pet_id: Mapped[int] = mapped_column(db.ForeignKey("pets.id"), nullable=False, unique=True)
+    pet_id: Mapped[int] = mapped_column(ForeignKey("pets.id", ondelete="CASCADE"), nullable=False, unique=True)
 
     alergias: Mapped[str] = mapped_column(String(300), default="", nullable=True)
     condiciones_previas: Mapped[str] = mapped_column(String(500), default="", nullable=True)
@@ -174,7 +185,8 @@ class MedicalProfile(db.Model):
     grupo_sanguineo: Mapped[str] = mapped_column(String(20), default="", nullable=True)
     microchip: Mapped[str] = mapped_column(String(100), default="", nullable=True)
 
-    pet: Mapped["Pet"] = relationship("Pet", backref="perfil_medico", uselist=False)
+    # Relación uno a uno: cada perfil médico tiene una mascota
+    pet: Mapped["Pet"] = relationship("Pet", back_populates="medical_profile")
 
     def serialize(self):
         return {
