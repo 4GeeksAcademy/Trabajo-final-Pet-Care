@@ -22,6 +22,10 @@ const UserProfile = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -114,34 +118,38 @@ const UserProfile = () => {
 
   return (
     <div className="userprofile-container">
-      <Link to="/dashboard" className="userprofile-backbtn">
-        ← Volver al dashboard
+      <Link
+        to={currentUser?.is_admin ? "/admin-panel" : "/dashboard"}
+        className="userprofile-backbtn"
+      >
+        ← {currentUser?.is_admin ? "Volver al panel de administrador" : "Volver al dashboard"}
       </Link>
       <div className="userprofile-card">
         <h2 className="userprofile-title">Perfil de usuario</h2>
 
         <div className="userprofile-img-container">
-  <img
-    className="userprofile-img"
-    src={form.foto || DEFAULT_IMAGE}
-    alt="Foto de perfil"
-  />
-</div>
-{editing && (
-  <>
-    <label htmlFor="file-upload" className="userprofile-file-upload-btn">
-      {uploading ? "Subiendo..." : "Cambiar foto de perfil"}
-    </label>
-    <input
-      id="file-upload"
-      type="file"
-      accept="image/*"
-      onChange={handleImageUpload}
-      className="userprofile-file-input"
-      disabled={uploading}
-    />
-  </>
-)}
+          <img
+            className="userprofile-img"
+            src={form.foto || DEFAULT_IMAGE}
+            alt="Foto de perfil"
+          />
+        </div>
+
+        {editing && (
+          <>
+            <label htmlFor="file-upload" className="userprofile-file-upload-btn">
+              {uploading ? "Subiendo..." : "Cambiar foto de perfil"}
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="userprofile-file-input"
+              disabled={uploading}
+            />
+          </>
+        )}
 
         {!editing ? (
           <>

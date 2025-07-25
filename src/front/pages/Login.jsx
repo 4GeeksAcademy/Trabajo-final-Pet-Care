@@ -26,6 +26,12 @@ export default function Login() {
 
       const data = await res.json();
 
+      if (res.status === 403) {
+        const mensaje = data.message || "Tu cuenta está desactivada";
+        setError(mensaje);
+        return;
+      }
+
       if (!res.ok) {
         const mensaje = data.msg || data.message || "Credenciales inválidas";
         setError(mensaje);
@@ -36,7 +42,12 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       window.dispatchEvent(new Event("userUpdated"));
-      navigate("/dashboard");
+
+      if (user.is_admin) {
+        navigate("/admin-panel");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError("No se pudo conectar con el servidor");
     }

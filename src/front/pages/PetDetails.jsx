@@ -112,8 +112,8 @@ const PetDetails = () => {
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
       <div className="container py-5 flex-grow-1">
-        <Link to="/dashboard" className="btn btn-link text-purple-dark mb-4">
-          ← Volver al dashboard
+        <Link to={user?.is_admin ? "/admin-panel" : "/dashboard"} className="btn btn-link text-purple-dark mb-4">
+          ← {user?.is_admin ? "Volver al panel" : "Volver al dashboard"}
         </Link>
         {loading && <p className="text-center">Cargando...</p>}
         {error && <p className="text-center text-danger">{error}</p>}

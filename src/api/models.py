@@ -98,7 +98,8 @@ class Pet(db.Model):
             "user_id": self.user_id,
             "raza": self.raza,
             "fecha_nacimiento": self.fecha_nacimiento.isoformat(),
-            "sexo": self.sexo
+            "sexo": self.sexo,
+            "is_active": self.is_active
         }
 
 

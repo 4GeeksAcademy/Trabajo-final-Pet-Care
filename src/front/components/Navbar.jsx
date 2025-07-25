@@ -96,11 +96,16 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard">
-                    Dashboard
-                  </Link>
-                </li>
+                {userState && (
+                  <li className="nav-item">
+                    <Link
+                      className="nav-link"
+                      to={userState.is_admin ? "/admin-panel" : "/dashboard"}
+                    >
+                      {userState.is_admin ? "Panel de administrador" : "Dashboard"}
+                    </Link>
+                  </li>
+                )}
                 {userState && (
                   <li className="nav-item d-flex align-items-center">
                     <span className="nav-link mb-0 me-1">¡Hola</span>

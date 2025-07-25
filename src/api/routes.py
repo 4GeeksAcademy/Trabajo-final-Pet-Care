@@ -152,12 +152,12 @@ def admin_filter_pets():
     return jsonify([p.serialize() for p in pets]), 200
 
 #USUARIO VISUALIZA MENSAJES DE "CONTACTANOS"
-@api.route('/admin/contact_messages', methods=['GET'])
-@jwt_required()
-@admin_required
-def admin_list_contact_messages():
-    messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
-    return jsonify([m.serialize() for m in messages]), 200
+# @api.route('/admin/contact_messages', methods=['GET'])
+# @jwt_required()
+# @admin_required
+# def admin_list_contact_messages():
+#     messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+#     return jsonify([m.serialize() for m in messages]), 200
 
     
 # _____USERS___#
@@ -198,13 +198,20 @@ def login():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
+
     user = User.query.filter_by(email=email).first()
+
     if not user or not check_password_hash(user.password, password):
         raise APIException("Credenciales inválidas", status_code=401)
+
+    if not user.is_active:
+        raise APIException("Tu cuenta está desactivada. Contacta al administrador.", status_code=403)
+
     access_token = create_access_token(
         identity=str(user.id),  
         expires_delta=timedelta(days=1)
     )
+
     return jsonify({"token": access_token, "user": user.serialize()}), 200
 
 # RUTA LOGOUT USER
@@ -267,6 +274,15 @@ def delete_user(user_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Error al eliminar el usuario', 'error': str(e)}), 500
+    
+#DELETE RAPIDO DE USUARIO
+@api.route('/usuario/<int:user_id>', methods=['DELETE'])
+def eliminar_facil(user_id):
+    usuario = User.query.filter_by(id=user_id).first()
+    if usuario:
+        db.session.delete(usuario)
+        db.session.commit()
+        return jsonify({'msg': 'Usuario eliminado exitósamente'})
 
 # RUTA OBTENER USUARIO POR ID
 @api.route('/user/<int:user_id>', methods=['GET'])
@@ -288,7 +304,7 @@ def get_pets_por_usuario():
     if not user_id:
         return jsonify({'msg': 'Debes proporcionar id de usuario en la url'}), 400
     try:
-        pets = Pet.query.filter_by(user_id=user_id).all()
+        pets = Pet.query.filter_by(user_id=user_id, is_active=True).all()
         return jsonify([pet.serialize() for pet in pets]), 200
     except Exception as e:
         return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
@@ -298,8 +314,8 @@ def get_pets_por_usuario():
 def get_pet_by_id(pet_id):
     try:
         pet = Pet.query.get(pet_id)
-        if not pet:
-            return jsonify({'msg': 'Mascota no encontrada'}), 404
+        if not pet or not pet.is_active:
+            return jsonify({'msg': 'Mascota no encontrada o desactivada'}), 404
         return jsonify(pet.serialize()), 200
     except Exception as e:
         return jsonify({'msg': 'Error al obtener la mascota', 'error': str(e)}), 500
@@ -356,7 +372,6 @@ def update_pet(pet_id):
     if not pet:
         return jsonify({'msg': 'Mascota no encontrada'}), 404
 
-    # Actualiza sólo si viene en el payload
     if 'nombre' in data:
         pet.nombre  = data['nombre']
     if 'peso' in data:
