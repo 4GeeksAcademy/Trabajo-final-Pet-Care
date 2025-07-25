@@ -9,7 +9,7 @@ const pets = [
 ];
 
 const Jumbotron = () => (
-  <section className="py-5 text-white bg-purple-light">
+  <section className="py-5 text-white bg-green-dark">
     <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
       <div className="text-center text-lg-start mb-4 mb-lg-0">
         <h2 className="fw-bold display-6 text-white">

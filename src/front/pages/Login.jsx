@@ -26,6 +26,12 @@ export default function Login() {
 
       const data = await res.json();
 
+      if (res.status === 403) {
+        const mensaje = data.message || "Tu cuenta está desactivada";
+        setError(mensaje);
+        return;
+      }
+
       if (!res.ok) {
         const mensaje = data.msg || data.message || "Credenciales inválidas";
         setError(mensaje);

@@ -1,66 +1,174 @@
-.admin-panel-wrapper {
-  background-color: var(--light-bg);
-  width: 100%;
+:root {
+  --admin-bg: #f9f8fc;
+  --admin-border: #ddd;
+  --admin-hover: #f3ecfa;
+  --admin-warning: #fff7e6;
 }
 
-.admin-panel {
-  background-color: var(--light-bg);
+/* General wrapper */
+.admin-panel-wrapper {
+  background-color: var(--admin-bg);
   min-height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Header */
+.admin-panel__header {
+  border-bottom: 2px solid var(--admin-border);
+  padding-bottom: 1rem;
 }
 
 .admin-panel__title {
-  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
   font-weight: 600;
-  color: #333;
-  margin: 0;
+  color: var(--purple-dark);
+  font-family: 'Bricolage Grotesque', sans-serif;
 }
 
+/* Tabs */
 .admin-panel__tabs .btn {
-  font-size: 0.95rem;
-  padding: 0.4rem 1.2rem;
+  border-radius: 24px;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .admin-panel__tabs .btn.active {
+  background-color: #9b59b6 !important;
+  color: #fff !important;
+  border-color: #9b59b6 !important;
+}
+
+/* Section styles */
+.admin-panel__section {
+  margin-top: 2rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Table styles */
+.admin-table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.admin-table th {
+  background-color: var(--purple-soft);
+  color: var(--purple-dark);
+  font-weight: 600;
+}
+
+.admin-table td {
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+.admin-table input.form-control-sm {
+  border-radius: 8px;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+}
+
+/* Row warning state */
+.admin-table .table-warning {
+  background-color: var(--admin-warning);
+}
+
+/* Badges */
+.badge.bg-success {
+  background-color: var(--green-dark) !important;
+}
+
+.badge.bg-secondary {
+  background-color: #ccc !important;
+}
+
+.badge.bg-purple-admin {
+  background-color: var(--purple-mid) !important;
+  color: #fff !important;
+}
+
+.badge.text-purple-mid {
+  border: 1px solid var(--purple-mid);
+  color: var(--purple-mid) !important;
+  background-color: var(--purple-soft);
+}
+
+/* Buttons */
+.btn-main {
+  background: #9b59b6 !important;
+  border: none !important;
+  border-radius: 24px !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1.2rem !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px #9b59b650;
+  transition: 0.2s ease-in-out;
+}
+
+.btn-main:hover {
+  background: #8e44ad !important;
+  color: #fff !important;
+}
+
+.btn-outline-main {
+  background: #fff !important;
+  color: #9b59b6 !important;
+  border: 2px solid #9b59b6 !important;
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px #9b59b620;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-main:hover {
   background: #9b59b6 !important;
   color: #fff !important;
 }
 
-.admin-panel__section {
-  margin-top: 2rem;
+.btn-outline-danger {
+  background: #fff !important;
+  color: #e74c3c !important;
+  border: 2px solid #e74c3c !important;
+  border-radius: 20px !important;
+  font-weight: 600 !important;
 }
 
-.admin-table {
-  font-size: 0.95rem;
-}
-
-.admin-table thead th {
-  white-space: nowrap;
-  color: #9b59b6;
-  border-bottom: 2px solid #9b59b6;
-}
-
-.admin-table tbody td {
-  vertical-align: middle;
-}
-
-.admin-table input.form-control.form-control-sm {
-  min-width: 120px;
-}
-
-.bg-purple-admin {
-  background-color: #9b59b6 !important;
+.btn-outline-danger:hover {
+  background: #e74c3c !important;
   color: #fff !important;
 }
 
-@media (max-width: 576px) {
-  .admin-panel__tabs .btn {
-    flex: 1 1 auto;
+.btn-outline-secondary {
+  background: #fff !important;
+  color: #555 !important;
+  border: 1px solid #bbb !important;
+  border-radius: 20px !important;
+  font-weight: 500 !important;
+}
+
+.btn-outline-secondary:hover {
+  background: #eee !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-panel__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
+
   .admin-table {
     font-size: 0.85rem;
   }
+
   .admin-panel__title {
-    font-size: 1.25rem;
-    text-align: center;
+    font-size: 1.6rem;
+  }
+
+  .admin-panel__tabs .btn {
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
   }
 }

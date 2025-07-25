@@ -88,7 +88,7 @@ export default function AdminPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setUsers((prev) => prev.map((x) => (x.id === u.id ? { ...x, is_active: data.is_active } : x)));
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const togglePetActive = async (p) => {
@@ -100,7 +100,7 @@ export default function AdminPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setPets((prev) => prev.map((x) => (x.id === p.id ? { ...x, is_active: data.is_active } : x)));
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const editUserField = async (id, field, value) => {
@@ -117,7 +117,7 @@ export default function AdminPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setUsers((prev) => prev.map((u) => (u.id === id ? data : u)));
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const editPetField = async (id, field, value) => {
@@ -134,7 +134,7 @@ export default function AdminPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setPets((prev) => prev.map((p) => (p.id === id ? data : p)));
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const handleInlineChange = (setter, current, id, field, value, saveFn) => {
@@ -163,25 +163,27 @@ export default function AdminPanel() {
           <h1 className="admin-panel__title">
             Panel de Administración – <span className="text-purple-mid">{user.nombre}</span>
           </h1>
-          <div className="admin-panel__tabs btn-group" role="group">
+          <div className="admin-panel__tabs d-flex gap-2" role="group">
             <button
               type="button"
               className={`btn btn-outline-main ${tab === "users" ? "active" : ""}`}
               onClick={() => setTab("users")}
-            >Usuarios</button>
+            >
+              Usuarios
+            </button>
             <button
               type="button"
               className={`btn btn-outline-main ${tab === "pets" ? "active" : ""}`}
               onClick={() => setTab("pets")}
-            >Mascotas</button>
+            >
+              Mascotas
+            </button>
           </div>
         </div>
 
         {tab === "users" && (
           <section className="admin-panel__section">
-            {userError && (
-              <div className="alert alert-danger py-2" role="alert">{userError}</div>
-            )}
+            {userError && <div className="alert alert-danger py-2">{userError}</div>}
             {loadingUsers ? (
               <div className="text-center my-5">
                 <img
@@ -214,7 +216,9 @@ export default function AdminPanel() {
                             type="text"
                             className="form-control form-control-sm"
                             value={u.nombre || ""}
-                            onChange={(e) => handleInlineChange(setUsers, users, u.id, "nombre", e.target.value, editUserField)}
+                            onChange={(e) =>
+                              handleInlineChange(setUsers, users, u.id, "nombre", e.target.value, editUserField)
+                            }
                           />
                         </td>
                         <td>
@@ -222,7 +226,9 @@ export default function AdminPanel() {
                             type="text"
                             className="form-control form-control-sm"
                             value={u.apellido || ""}
-                            onChange={(e) => handleInlineChange(setUsers, users, u.id, "apellido", e.target.value, editUserField)}
+                            onChange={(e) =>
+                              handleInlineChange(setUsers, users, u.id, "apellido", e.target.value, editUserField)
+                            }
                           />
                         </td>
                         <td>
@@ -230,7 +236,9 @@ export default function AdminPanel() {
                             type="email"
                             className="form-control form-control-sm"
                             value={u.email || ""}
-                            onChange={(e) => handleInlineChange(setUsers, users, u.id, "email", e.target.value, editUserField)}
+                            onChange={(e) =>
+                              handleInlineChange(setUsers, users, u.id, "email", e.target.value, editUserField)
+                            }
                           />
                         </td>
                         <td>
@@ -239,21 +247,41 @@ export default function AdminPanel() {
                           </span>
                         </td>
                         <td>
-                          <span className={`badge rounded-pill ${u.is_admin ? "bg-purple-admin" : "bg-light text-purple-mid"}`}>
+                          <span
+                            className={`badge rounded-pill ${u.is_admin ? "bg-purple-admin" : "bg-light text-purple-mid"
+                              }`}
+                          >
                             {u.is_admin ? "Sí" : "No"}
                           </span>
                         </td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-main me-2"
-                            onClick={() => toggleUserActive(u)}
-                          >{u.is_active ? "Desactivar" : "Activar"}</button>
+                        <td className="d-flex align-items-center gap-2">
                           {!u.is_admin && (
                             <button
                               className="btn btn-sm btn-outline-main"
                               onClick={() => editUserField(u.id, "is_admin", true)}
-                            >Hacer admin</button>
+                            >
+                              Hacer admin
+                            </button>
                           )}
+                          {u.is_admin && (
+                            <button
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => editUserField(u.id, "is_admin", false)}
+                            >
+                              Quitar admin
+                            </button>
+                          )}
+                          <button
+                            className="btn btn-sm btn-outline-main"
+                            onClick={() => navigate(`/admin/user/${u.id}`)}>
+                            Ver detalle
+                          </button>
+                          <button
+                            className="btn btn-sm btn-main"
+                            onClick={() => toggleUserActive(u)}
+                          >
+                            {u.is_active ? "Desactivar" : "Activar"}
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -266,9 +294,7 @@ export default function AdminPanel() {
 
         {tab === "pets" && (
           <section className="admin-panel__section">
-            {petError && (
-              <div className="alert alert-danger py-2" role="alert">{petError}</div>
-            )}
+            {petError && <div className="alert alert-danger py-2">{petError}</div>}
             {loadingPets ? (
               <div className="text-center my-5">
                 <img
@@ -303,7 +329,9 @@ export default function AdminPanel() {
                             type="text"
                             className="form-control form-control-sm"
                             value={p.nombre || ""}
-                            onChange={(e) => handleInlineChange(setPets, pets, p.id, "nombre", e.target.value, editPetField)}
+                            onChange={(e) =>
+                              handleInlineChange(setPets, pets, p.id, "nombre", e.target.value, editPetField)
+                            }
                           />
                         </td>
                         <td>
@@ -311,7 +339,9 @@ export default function AdminPanel() {
                             type="text"
                             className="form-control form-control-sm"
                             value={p.especie || ""}
-                            onChange={(e) => handleInlineChange(setPets, pets, p.id, "especie", e.target.value, editPetField)}
+                            onChange={(e) =>
+                              handleInlineChange(setPets, pets, p.id, "especie", e.target.value, editPetField)
+                            }
                           />
                         </td>
                         <td>
@@ -319,7 +349,9 @@ export default function AdminPanel() {
                             type="text"
                             className="form-control form-control-sm"
                             value={p.raza || ""}
-                            onChange={(e) => handleInlineChange(setPets, pets, p.id, "raza", e.target.value, editPetField)}
+                            onChange={(e) =>
+                              handleInlineChange(setPets, pets, p.id, "raza", e.target.value, editPetField)
+                            }
                           />
                         </td>
                         <td>
@@ -328,7 +360,9 @@ export default function AdminPanel() {
                             min="0"
                             className="form-control form-control-sm"
                             value={p.peso ?? ""}
-                            onChange={(e) => handleInlineChange(setPets, pets, p.id, "peso", e.target.value, editPetField)}
+                            onChange={(e) =>
+                              handleInlineChange(setPets, pets, p.id, "peso", e.target.value, editPetField)
+                            }
                           />
                         </td>
                         <td>
@@ -336,7 +370,9 @@ export default function AdminPanel() {
                             type="text"
                             className="form-control form-control-sm"
                             value={p.sexo || ""}
-                            onChange={(e) => handleInlineChange(setPets, pets, p.id, "sexo", e.target.value, editPetField)}
+                            onChange={(e) =>
+                              handleInlineChange(setPets, pets, p.id, "sexo", e.target.value, editPetField)
+                            }
                           />
                         </td>
                         <td>{p.user_id}</td>
@@ -345,15 +381,16 @@ export default function AdminPanel() {
                             {p.is_active ? "Sí" : "No"}
                           </span>
                         </td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-main me-2"
-                            onClick={() => togglePetActive(p)}
-                          >{p.is_active ? "Desactivar" : "Activar"}</button>
+                        <td className="d-flex align-items-center gap-2">
                           <button
                             className="btn btn-sm btn-outline-main"
                             onClick={() => navigate(`/pets/${p.id}`)}
-                          >Ver detalle</button>
+                          >
+                            Ver detalle
+                          </button>
+                          <button className="btn btn-sm btn-main" onClick={() => togglePetActive(p)}>
+                            {p.is_active ? "Desactivar" : "Activar"}
+                          </button>
                         </td>
                       </tr>
                     ))}

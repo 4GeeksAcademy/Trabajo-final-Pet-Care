@@ -152,12 +152,12 @@ def admin_filter_pets():
     return jsonify([p.serialize() for p in pets]), 200
 
 #USUARIO VISUALIZA MENSAJES DE "CONTACTANOS"
-@api.route('/admin/contact_messages', methods=['GET'])
-@jwt_required()
-@admin_required
-def admin_list_contact_messages():
-    messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
-    return jsonify([m.serialize() for m in messages]), 200
+# @api.route('/admin/contact_messages', methods=['GET'])
+# @jwt_required()
+# @admin_required
+# def admin_list_contact_messages():
+#     messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+#     return jsonify([m.serialize() for m in messages]), 200
 
     
 # _____USERS___#
@@ -198,13 +198,20 @@ def login():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
+
     user = User.query.filter_by(email=email).first()
+
     if not user or not check_password_hash(user.password, password):
         raise APIException("Credenciales inválidas", status_code=401)
+
+    if not user.is_active:
+        raise APIException("Tu cuenta está desactivada. Contacta al administrador.", status_code=403)
+
     access_token = create_access_token(
         identity=str(user.id),  
         expires_delta=timedelta(days=1)
     )
+
     return jsonify({"token": access_token, "user": user.serialize()}), 200
 
 # RUTA LOGOUT USER
@@ -297,7 +304,7 @@ def get_pets_por_usuario():
     if not user_id:
         return jsonify({'msg': 'Debes proporcionar id de usuario en la url'}), 400
     try:
-        pets = Pet.query.filter_by(user_id=user_id).all()
+        pets = Pet.query.filter_by(user_id=user_id, is_active=True).all()
         return jsonify([pet.serialize() for pet in pets]), 200
     except Exception as e:
         return jsonify({'msg': 'Error, no se pudo obtener mascotas', 'error': str(e)}), 400
@@ -307,8 +314,8 @@ def get_pets_por_usuario():
 def get_pet_by_id(pet_id):
     try:
         pet = Pet.query.get(pet_id)
-        if not pet:
-            return jsonify({'msg': 'Mascota no encontrada'}), 404
+        if not pet or not pet.is_active:
+            return jsonify({'msg': 'Mascota no encontrada o desactivada'}), 404
         return jsonify(pet.serialize()), 200
     except Exception as e:
         return jsonify({'msg': 'Error al obtener la mascota', 'error': str(e)}), 500
@@ -365,7 +372,6 @@ def update_pet(pet_id):
     if not pet:
         return jsonify({'msg': 'Mascota no encontrada'}), 404
 
-    # Actualiza sólo si viene en el payload
     if 'nombre' in data:
         pet.nombre  = data['nombre']
     if 'peso' in data:
@@ -404,7 +410,7 @@ def delete_pet(pet_id):
         print("pet.user_id:", pet.user_id, type(pet.user_id))
         print("current_user:", current_user, type(current_user))
 
-        if str(pet.user_id) != str(current_user):
+        if int(pet.user_id) != int(current_user):
             print("No tienes permiso: pet.user_id =", pet.user_id, "current_user =", current_user)
             return jsonify({'msg': 'No tienes permiso para eliminar esta mascota'}), 403
 
