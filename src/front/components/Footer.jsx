@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/footer.css"; 
 import logo from "/img/petlogo.png"; 
+import { Link } from "react-router-dom";
 
 const Footer = () => (
   <footer className="site-footer">
@@ -26,7 +27,7 @@ const Footer = () => (
         <div>
           <h4>La app</h4>
           <ul>
-            <li><a href="#how-it-works">¿Qué ofrecemos?</a></li>
+            <li><Link to="/about">¿Quienes somos?</Link></li>
             <li><a href="#why-us">Por qué PetCare</a></li>
           </ul>
         </div>
@@ -34,7 +35,7 @@ const Footer = () => (
           <h4>FAQs</h4>
           <ul>
             <li><a href="#faqs">Preguntas frecuentes</a></li>
-            <li><a href="#contact">Contacto</a></li>
+            <li><Link to="/contact">Contacto</Link></li>
           </ul>
         </div>
       </div>

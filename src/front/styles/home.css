@@ -376,3 +376,11 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
 .text-purple-mid {
   color: #9b59b6;
 }
+.contact-form-main {
+  min-height: calc(100vh - 160px); 
+  padding-top: 50px;
+  padding-bottom: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,43 +1,79 @@
-.about-hero {
-  min-height: 54vh;
-  position: relative;
-  overflow: hidden;
-  background: #8f77c8;
+.about-row-custom {
+  min-height: 100vh;
 }
 
-.about-video-bg {
-  position: absolute;
-  top: 0; left: 0; width: 100vw; height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  filter: brightness(0.35);
+.about-impact-split .col-md-4 {
+  min-height: 380px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
+
+.about-separator-right {
+  border-right: 1.2px solid #a474e7; 
+}
+
+
+@media (max-width: 991px) {
+  .about-separator-right {
+    border-right: none;
+  }
+}
+
+.about-left-hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.about-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.65) blur(0.5px);
+  z-index: 0;
+}
+
 .about-hero-overlay {
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(120deg, #8656e3ee 20%, #3e266eee 100%);
+  inset: 0;
+  background: rgba(81, 34, 129, 0.7); 
   z-index: 1;
 }
+
 .about-hero-content {
   position: relative;
   z-index: 2;
-}
-.text-shadow {
-  text-shadow: 0 4px 32px #23103a33, 0 1px 4px #00000044;
+  color: #fff;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.about-section {
-  background: #fff;
+.about-center-content, .about-right-content {
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
-.about-impact-section {
-  background: #f4eaff;
-}
-.text-purple-dark {
-  color: #50326c !important;
-}
-.bg-purple-light {
-  background: #f4eaff !important;
-}
-.bg-purple-soft {
-  background: #f4eaff !important;
+
+/* Responsive para mobile */
+@media (max-width: 991px) {
+  .about-impact-split .col-md-4 {
+    min-height: 280px;
+    height: auto;
+    padding: 1rem 0;
+  }
 }

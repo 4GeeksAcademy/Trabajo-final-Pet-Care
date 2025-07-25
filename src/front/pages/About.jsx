@@ -3,137 +3,80 @@ import Footer from "../components/Footer";
 import "../styles/about.css"; 
 
 const About = () => (
-  <>
-    {/* HERO CON VIDEO DE FONDO */}
-    <section className="about-hero position-relative text-white text-center d-flex align-items-center justify-content-center">
-      <video
-        className="about-video-bg"
-        src="https://videos.pexels.com/video-files/1883747/1883747-hd_1920_1080_25fps.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-      />
-      <div className="about-hero-overlay"></div>
-      <div className="about-hero-content container position-relative z-2 py-5">
-        <h1 className="display-3 fw-bold mb-3 text-shadow">
-          Mucho más que una app para mascotas
-        </h1>
-        <p className="lead mb-4 fs-4 text-shadow">
-          PetCare Tracker es una comunidad global de personas que creen que cada mascota merece una vida mejor.<br />
-          Tecnología + propósito = impacto real en el bienestar animal.
-        </p>
-      </div>
-    </section>
+  <div className="min-vh-100 d-flex flex-column">
+    <main className="about-impact-split flex-grow-1 d-flex flex-column">
+      <div className="container-fluid g-0">
+        <div className="row vh-100 gx-0 align-items-stretch about-row-custom">
 
-    {/* QUIÉNES SOMOS */}
-    <section className="about-section py-5 bg-white">
-      <div className="container">
-        <div className="row align-items-center flex-md-row flex-column-reverse">
-          <div className="col-md-6 text-md-start text-center">
-            <h2 className="fw-bold text-purple-dark mb-3">¿Quiénes somos?</h2>
-            <p className="fs-5 mb-3">
-              Somos un equipo de amantes de los animales, desarrolladores, veterinarios y voluntarios que soñamos con un mundo donde cada perro y gato tenga una vida digna y feliz. Usamos inteligencia artificial para facilitarte el cuidado, seguimiento y la felicidad de tus peludos.
-            </p>
-            <ul className="about-list fs-5">
-              <li>Organiza vacunas, visitas y recordatorios en segundos.</li>
-              <li>Recibe consejos personalizados de veterinarios y expertos.</li>
-              <li>Conecta con una red de ayuda y adopción responsable.</li>
-            </ul>
-          </div>
-          <div className="col-md-6 mb-4 mb-md-0 text-center">
-            <img
-              src="https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&w=600"
-              alt="Equipo PetCare"
-              className="img-fluid rounded-4 shadow about-img"
-              style={{ maxHeight: 300, objectFit: "cover" }}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {/* IMPACTO SOCIAL */}
-    <section className="about-impact-section py-5 bg-purple-soft">
-      <div className="container">
-        <div className="row align-items-center flex-md-row">
-          <div className="col-md-6 mb-4 mb-md-0 text-center">
-            <img
-              src="https://images.pexels.com/photos/4587996/pexels-photo-4587996.jpeg?auto=compress&w=600"
-              alt="Mascotas ayudadas"
-              className="img-fluid rounded-4 shadow about-img"
-              style={{ maxHeight: 240, objectFit: "cover" }}
-            />
-          </div>
-          <div className="col-md-6 text-md-start text-center">
-            <h2 className="fw-bold mb-3 text-purple-dark">
-              Tu apoyo es vida para otros peludos
-            </h2>
-            <p className="fs-5">
-              Por cada usuario y cada aporte, <b>donamos a refugios y fundaciones</b> dedicadas a rescatar y cuidar animales abandonados.
-            </p>
-            <div className="row">
-              <div className="col-4 text-center">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/616/616408.png"
-                  alt="Vacunas"
-                  style={{ width: 60, marginBottom: 10 }}
-                />
-                <p className="mb-0">Campañas de vacunas</p>
-              </div>
-              <div className="col-4 text-center">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/616/616408.png"
-                  alt="Esterilización"
-                  style={{ width: 60, marginBottom: 10 }}
-                />
-                <p className="mb-0">Esterilizaciones</p>
-              </div>
-              <div className="col-4 text-center">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/616/616408.png"
-                  alt="Adopciones"
-                  style={{ width: 60, marginBottom: 10 }}
-                />
-                <p className="mb-0">Fomento de adopciones</p>
+          {/* HERO: Columna 1 */}
+          <div className="col-md-4 d-flex align-items-center justify-content-center p-0 about-separator-right">
+            <div className="about-left-hero position-relative w-100 h-100">
+              <img
+                src="https://sdmntprukwest.oaiusercontent.com/files/00000000-e048-6243-bb83-00af387e9dac/raw?se=2025-07-25T04%3A27%3A23Z&sp=r&sv=2024-08-04&sr=b&scid=c21fdfe7-27c7-50f7-8ce5-4b8601d145b4&skoid=71e8fa5c-90a9-4c17-827b-14c3005164d6&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-07-24T22%3A16%3A54Z&ske=2025-07-25T22%3A16%3A54Z&sks=b&skv=2024-08-04&sig=PNtTulBJcZPvPIk7QrHa1ssPFD7r3Rju/MPU79mazE8%3D"
+                alt="Fondo solidario"
+                className="about-hero-bg"
+              />
+              <div className="about-hero-overlay"></div>
+              <div className="about-hero-content position-relative z-2 w-100 text-center">
+                <h2 className="mb-4 text-white">Tu apoyo salva vidas</h2>
+                <p className="mb-4">
+                  Por cada usuario, <b>donamos a refugios y fundaciones</b> reales de perros y gatos abandonados.<br />
+                  Usar Pet Tracker es transformar el mundo peludo.
+                </p>
+                <div className="mb-3 d-flex justify-content-center gap-2">
+                  <span className="badge rounded-pill bg-success">Vacunas</span>
+                  <span className="badge rounded-pill bg-warning text-dark">Esterilizaciones</span>
+                  <span className="badge rounded-pill bg-info text-dark">Adopciones</span>
+                </div>
+                <div className="alert alert-light p-2 small mt-2" style={{ opacity: 0.97 }}>
+                  <b>¡Gracias por ser parte!</b> Usando Pet Tracker ayudas a salvar vidas reales.
+                </div>
               </div>
             </div>
-            <div className="alert alert-success rounded-4 shadow-sm mt-4 text-center">
-              <b>¡Gracias por ser parte!</b> Usando PetCare Tracker ayudas a salvar vidas reales.
+          </div>
+
+          {/* MOTIVACIÓN: Columna 2 */}
+          <div className="col-md-4 d-flex align-items-center justify-content-center p-0 about-separator-right">
+            <div className="about-center-content w-100 text-center">
+              <h3 className="fw-bold mb-3" style={{ color: "#8c51c9" }}>¿Por qué hacemos esto?</h3>
+              <p>
+                <b>Amamos a los animales</b> y queremos un mundo donde cada mascota tenga acceso a salud y protección.<br />
+                Con Pet Tracker creas comunidad, recibes ayuda de expertos y haces el bien solo por usar la app.
+              </p>
+              <img
+                src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=cover&w=400&q=80"
+                alt="Perro feliz"
+                className="rounded shadow-lg my-3"
+                style={{ width: "210px", height: "160px", objectFit: "cover" }}
+              />
+              <div className="text-muted small fst-italic">
+                Tecnología + propósito = Bienestar animal real
+              </div>
+            </div>
+          </div>
+
+          {/* COMUNIDAD: Columna 3 */}
+          <div className="col-md-4 d-flex align-items-center justify-content-center p-0 bg-green-dark">
+            <div className="about-right-content w-100 text-center">
+              <h3 className="fw-bold mb-3 text-white">Somos comunidad</h3>
+              <p className="text-white">
+                Un equipo de desarrolladores, veterinarios y voluntarios guiados por el amor y la tecnología.<br />
+                <b>Tú eres parte de este cambio.</b>
+              </p>
+              <img
+                src="/img/equipo.png"
+                alt="Perro feliz"
+                className="rounded shadow-lg my-3"
+                style={{ width: "300px", height: "300px", objectFit: "cover" }}
+              />
+              <span className="badge rounded-pill bg-success mt-2">#JuntosPorLosPeludos</span>
             </div>
           </div>
         </div>
       </div>
-    </section>
-
-    {/* TESTIMONIO VISUAL */}
-    <section className="py-5 bg-white">
-      <div className="container">
-        <div className="row align-items-center flex-md-row">
-          <div className="col-md-6 mb-4 mb-md-0 text-center">
-            <img
-              src="https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&w=600"
-              alt="Dueño feliz"
-              className="img-fluid rounded-4 shadow"
-              style={{ maxHeight: 240, objectFit: "cover" }}
-            />
-          </div>
-          <div className="col-md-6 text-md-start text-center">
-            <h3 className="fw-bold mb-3 text-purple-dark">¿Sabías qué...?</h3>
-            <p className="fs-5">
-              <i>
-                “Gracias a PetCare Tracker, adopté a Luna y ahora está sana, feliz y siempre protegida. La app me recuerda todo y siento que pertenezco a una comunidad que realmente ayuda.”
-              </i>
-              <br />
-              <b>- Mariana, mamá de Luna</b>
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
+    </main>
     <Footer />
-  </>
+  </div>
 );
 
 export default About;
