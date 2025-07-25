@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import "../styles/navbar.css";
@@ -16,22 +16,34 @@ const Navbar = () => {
 
   const token = localStorage.getItem("token");
 
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef();
+
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
 
   useEffect(() => {
     setOpen(false);
+    setShowUserMenu(false);
   }, [location]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const onUserUpdated = () => {
       const updatedUser = localStorage.getItem("user");
       setUserState(updatedUser ? JSON.parse(updatedUser) : null);
     };
-
     window.addEventListener("userUpdated", onUserUpdated);
-
     return () => window.removeEventListener("userUpdated", onUserUpdated);
   }, []);
 
@@ -43,20 +55,33 @@ const Navbar = () => {
     localStorage.removeItem("user");
     setUserState(null);
     setOpen(false);
+    setShowUserMenu(false);
     navigate("/");
   };
 
   return (
     <header className="navbar navbar-expand-lg navbar-dark bg-purple-dark fixed-top">
       <div className="container">
-        <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
-          <img
-            src="/img/petlogo.png"
-            alt="Logo Maskots"
-            style={{ height: "70px", marginRight: "10px" }}
-            className="logo-navbar"
-          />
-        </Link>
+        {/* SOLO link si NO hay token */}
+        {!token ? (
+          <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
+            <img
+              src="/img/petlogo.png"
+              alt="Logo Pet Tracker"
+              style={{ height: "70px", marginRight: "10px" }}
+              className="logo-navbar"
+            />
+          </Link>
+        ) : (
+          <span className="navbar-brand fw-bold d-flex align-items-center">
+            <img
+              src="/img/petlogo.png"
+              alt="Logo Pet Tracker"
+              style={{ height: "70px", marginRight: "10px", cursor: "default" }}
+              className="logo-navbar"
+            />
+          </span>
+        )}
         <button
           className="navbar-toggler"
           onClick={() => setOpen((o) => !o)}
@@ -96,35 +121,67 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                {userState && (
-                  <li className="nav-item">
-                    <Link
-                      className="nav-link"
-                      to={userState.is_admin ? "/admin-panel" : "/dashboard"}
-                    >
-                      {userState.is_admin ? "Panel de administrador" : "Dashboard"}
-                    </Link>
-                  </li>
-                )}
-                {userState && (
-                  <li className="nav-item d-flex align-items-center">
-                    <span className="nav-link mb-0 me-1">¡Hola</span>
-                    <Link
-                      className="nav-link p-0 fw-bold navbar-user-link"
-                      to={`/user/${userState.id}`}
-                    >
-                      {userState.nombre}
-                    </Link>
-                    <span className="nav-link mb-0 ps-1">!</span>
-                  </li>
-                )}
-                <li className="nav-item">
+                <li className="nav-item position-relative" ref={userMenuRef}>
                   <button
-                    className="nav-link btn btn-logout"
-                    onClick={handleLogout}
+                    className="btn btn-user-avatar d-flex align-items-center justify-content-center"
+                    onClick={() => setShowUserMenu((show) => !show)}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      outline: "none",
+                      cursor: "pointer",
+                      padding: 0,
+                    }}
                   >
-                    Cerrar Sesión
+                    {userState?.foto ? (
+                      <img
+                        src={userState.foto}
+                        alt={userState.nombre}
+                        className="rounded-circle"
+                        style={{
+                          width: 60,
+                          height: 60,
+                          objectFit: "cover",
+                          border: "2px solid #fff",
+                          boxShadow: "0 2px 8px #6C40B5AA",
+                        }}
+                      />
+                    ) : (
+                      <i
+                        className="fas fa-user-circle"
+                        style={{ fontSize: 40, color: "#eee" }}
+                      />
+                    )}
                   </button>
+                  {/* Menú flotante */}
+                  {showUserMenu && (
+                    <div
+                      className="user-menu-dropdown shadow rounded-4 bg-white p-3 position-absolute end-0 mt-2"
+                      style={{ minWidth: 180, zIndex: 999 }}
+                    >
+                      <div
+                        className="text-muted mb-2"
+                        style={{ fontSize: 14 }}
+                      >
+                        ¡Hola, <b>{userState.nombre}</b>!
+                      </div>
+                      <Link
+                        to={`/user/${userState.id}`}
+                        className="dropdown-item fw-semibold mb-2"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <i className="fas fa-id-badge me-2 text-purple-mid"></i>
+                        Ver perfil
+                      </Link>
+                      <button
+                        className="dropdown-item text-danger"
+                        onClick={handleLogout}
+                      >
+                        <i className="fas fa-sign-out-alt me-2"></i>
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  )}
                 </li>
               </>
             )}
@@ -136,5 +193,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-

@@ -57,6 +57,24 @@
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
-  background: #38bd59;  /* Morado claro, cámbialo si tienes otro en tu paleta */
+  background: #38bd59;  
   color: #fff !important;
+}
+.user-menu-dropdown {
+  animation: dropdown-fade 0.23s ease;
+  right: 0;
+  top: 44px;
+  border: 1.5px solid #edeaff;
+  min-width: 180px;
+}
+@keyframes dropdown-fade {
+  from { opacity: 0; transform: translateY(-12px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.btn-user-avatar:focus { outline: none; }
+.btn-user-avatar img, .btn-user-avatar i {
+  transition: box-shadow 0.14s;
+}
+.btn-user-avatar:hover img, .btn-user-avatar:focus img {
+  box-shadow: 0 4px 16px #6C40B5aa;
 }

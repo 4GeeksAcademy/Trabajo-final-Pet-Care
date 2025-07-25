@@ -12,7 +12,7 @@ const About = () => (
           <div className="col-md-4 d-flex align-items-center justify-content-center p-0 about-separator-right">
             <div className="about-left-hero position-relative w-100 h-100">
               <img
-                src="https://sdmntprukwest.oaiusercontent.com/files/00000000-e048-6243-bb83-00af387e9dac/raw?se=2025-07-25T04%3A27%3A23Z&sp=r&sv=2024-08-04&sr=b&scid=c21fdfe7-27c7-50f7-8ce5-4b8601d145b4&skoid=71e8fa5c-90a9-4c17-827b-14c3005164d6&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-07-24T22%3A16%3A54Z&ske=2025-07-25T22%3A16%3A54Z&sks=b&skv=2024-08-04&sig=PNtTulBJcZPvPIk7QrHa1ssPFD7r3Rju/MPU79mazE8%3D"
+                src="/img/apoyar.png"
                 alt="Fondo solidario"
                 className="about-hero-bg"
               />
