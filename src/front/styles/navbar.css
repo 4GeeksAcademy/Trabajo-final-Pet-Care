@@ -18,6 +18,7 @@
 .navbar {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+  height: 98px;
 }
 .navbar-brand:hover {
   color: var(--link-hover) !important;

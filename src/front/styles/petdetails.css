@@ -77,3 +77,7 @@ img.rounded {
   animation: carnetFadeInUp 1s cubic-bezier(.22,1,.36,1) forwards;
   box-shadow: 0 8px 24px #bbaafd44;
 }
+
+.btn-link{
+  margin-top: 20px;
+}
