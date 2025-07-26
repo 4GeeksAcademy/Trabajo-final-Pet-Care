@@ -388,3 +388,57 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
 .supercontenedor{
   margin-top: 200px;
 }
+.carousel-marquee-outer {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 10px 0 20px 0;
+}
+
+.carousel-marquee-inner {
+  display: flex;
+  gap: 24px;
+  animation: scroll-marquee 48s linear infinite;
+  will-change: transform;
+}
+
+.carousel-marquee-inner:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.testimonial-card {
+  width: 330px;
+  min-width: 290px;
+  transition: transform 0.3s;
+  background: #fff7fd;
+  border-radius: 1.6rem;
+  background: #fff; 
+  color: #4B3C78; 
+  opacity: 1; 
+  box-shadow: 0 8px 36px 0 #8d3fbb18;
+}
+
+.testimonial-card.active {
+  transform: scale(1.04);
+  box-shadow: 0 8px 36px 0 #8d3fbb18;
+}
+
+@media (max-width: 600px) {
+  .testimonial-card {
+    width: 92vw;
+    min-width: 75vw;
+    font-size: 0.97rem;
+  }
+  .carousel-marquee-inner {
+    gap: 16px;
+  }
+}

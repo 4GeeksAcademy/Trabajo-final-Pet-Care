@@ -358,7 +358,7 @@ def register_pet():
         db.session.add(nueva_mascota)
         db.session.commit()
 
-        return jsonify({'msg': 'Mascota registrada con éxito :lentes_de_sol:'}), 201
+        return jsonify({'msg': 'Mascota registrada con éxito'}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Error al registrar la mascota', 'error': str(e)}), 500

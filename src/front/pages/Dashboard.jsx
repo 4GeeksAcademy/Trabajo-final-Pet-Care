@@ -12,16 +12,13 @@ export default function Dashboard() {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [pets, setPets] = useState([]);
-  const [loadingPets, setLoadingPets] = useState(true);
+  const [loading, setLoading] = useState(true); 
 
-  // Para el modal de donación
   const [showDonation, setShowDonation] = useState(false);
   const [loadingDonation, setLoadingDonation] = useState(false);
 
-  // Modal de "Gracias por donar"
   const [showThanks, setShowThanks] = useState(false);
 
-  // Mostrar modal de gracias si viene de Stripe
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("donation") === "ok") {
@@ -31,34 +28,36 @@ export default function Dashboard() {
   }, [location]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    if (!token || !storedUser) {
-      navigate("/login");
-      return;
-    }
+    async function loadData() {
+      const token = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+      if (!token || !storedUser) {
+        navigate("/login");
+        return;
+      }
 
-    const parsedUser = JSON.parse(storedUser);
-    setUser(parsedUser);
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
 
-    fetch(`${BACKEND}/api/pets?user_id=${parsedUser.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
+        const res = await fetch(`${BACKEND}/api/pets?user_id=${parsedUser.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) throw new Error("Error al cargar mascotas");
-        return res.json();
-      })
-      .then(setPets)
-      .catch(() => {
+        const petsData = await res.json();
+        setPets(petsData);
+
+      } catch (err) {
         localStorage.clear();
         navigate("/login");
-      })
-      .finally(() => {
-        setTimeout(() => setLoadingPets(false), 1200);
-      });
+      } finally {
+        setTimeout(() => setLoading(false), 1000); 
+      }
+    }
+    loadData();
+
   }, [navigate]);
 
-  // Modal donación
   const handleDonar = () => setShowDonation(true);
 
   const handleStripeDonation = async (amount) => {
@@ -94,14 +93,19 @@ export default function Dashboard() {
     }
   };
 
-  if (!user) {
+  useEffect(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }, []);
+
+  if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="d-flex flex-column justify-content-center align-items-center vh-100" style={{ background: "#f2e5f6" }}>
         <img
-          src="https://th.bing.com/th/id/R.1d07d3bf5c6e31cc81ea32d42e0ca896?rik=fyCMQz18dEzp%2bA&riu=http%3a%2f%2f2.bp.blogspot.com%2f-6l_paC5jSAA%2fUUXd-ZujCPI%2fAAAAAAAAC2I%2f74BZTvZkKds%2fs1600%2fperro.gif"
+          src="/img/cargandopet.gif"
           alt="Cargando…"
-          style={{ width: 200 }}
+          style={{ width: 400, marginBottom: 24 }}
         />
+        <p className="fs-4 text-purple-dark mb-0">Cargando a tus peludos....</p>
       </div>
     );
   }
@@ -144,7 +148,7 @@ export default function Dashboard() {
         <div className="dashboard__header mb-4 d-flex justify-content-between align-items-center">
           <h1 className="dashboard__title">
             ¡Bienvenido,{" "}
-            <span className="text-purple-mid">{user.nombre}</span>!
+            <span className="text-purple-mid">{user?.nombre}</span>!
           </h1>
           <button
             className="btn btn-main"
@@ -202,8 +206,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
-        {/* Animación wag */}
         <style>
           {`
           @keyframes wag {
@@ -269,26 +271,13 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
-        {loadingPets ? (
-          <div className="text-center my-5">
-            <img
-              src="https://i.pinimg.com/originals/1d/07/d3/1d07d3bf5c6e31cc81ea32d42e0ca896.gif"
-              alt="Cargando peluditos…"
-              style={{ width: 200 }}
-            />
-            <p>Cargando peluditos…</p>
-          </div>
-        ) : (
-          <PetList
-            pets={pets}
-            onDelete={(id) => setPets((prev) => prev.filter((p) => p.id !== id))}
-          />
-        )}
+        <PetList
+          pets={pets}
+          onDelete={(id) => setPets((prev) => prev.filter((p) => p.id !== id))}
+        />
 
         <VeterinarianSection />
       </div>
-      <Footer />
     </div>
   );
 }

@@ -401,7 +401,6 @@ export default function AdminPanel() {
           </section>
         )}
       </div>
-      <Footer />
     </div>
   );
 }

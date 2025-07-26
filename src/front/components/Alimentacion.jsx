@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../styles/alimentacion.css";
-
-const GIF_LOADING = "https://www.gifsanimados.org/data/media/1738/comida-para-perros-imagen-animada-0009.gif"; 
+import Spinner from "react-bootstrap/Spinner";
 
 const Alimentacion = ({ petId, pet, token }) => {
   const [recomendacion, setRecomendacion] = useState(null);
@@ -58,9 +57,11 @@ const Alimentacion = ({ petId, pet, token }) => {
 
   if (loading)
     return (
-      <div className="alimentacion-loading d-flex flex-column align-items-center justify-content-center p-5">
-        <img src={GIF_LOADING} alt="Cargando..." style={{ width: 80, height: 80, marginBottom: 8 }} />
-        <span className="mt-2">Cargando recomendación de alimentación...</span>
+      <div
+        className="alimentacion-card d-flex justify-content-center align-items-center"
+        style={{ minHeight: "220px" }}
+      >
+        <Spinner animation="border" variant="primary" />
       </div>
     );
 
