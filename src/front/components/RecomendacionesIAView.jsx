@@ -24,7 +24,6 @@ const RecomendacionesIAView = ({ petId, pet }) => {
 
   useEffect(() => {
     fetchRecomendaciones();
-    // eslint-disable-next-line
   }, [petId]);
 
   const handlePreguntarIA = async (e) => {
@@ -98,14 +97,16 @@ const RecomendacionesIAView = ({ petId, pet }) => {
       </form>
       {respuestaIA && (
         <div className="alert alert-info mt-2">
-          <strong>Respuesta IA:</strong><br />
-          {respuestaIA}
+          <strong>Respuesta IA:</strong>
+          {respuestaIA.split('\n\n').map((parrafo, idx) => (
+            <p key={idx} style={{ marginBottom: "0.8rem" }}>{parrafo}</p>
+          ))}
         </div>
       )}
       <hr />
       {recomendaciones.length > 0 ? (
         <ul className="list-group">
-          {recomendaciones.map((r) => {
+          {[...recomendaciones].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map((r) => {
             const isExpanded = expandedId === r.id;
             const preguntaCorta = r.pregunta.length > 60 ? r.pregunta.slice(0, 60) + "..." : r.pregunta;
             return (
@@ -133,7 +134,10 @@ const RecomendacionesIAView = ({ petId, pet }) => {
                 </div>
                 {isExpanded && (
                   <div className="mt-2">
-                    <strong>💡 Respuesta:</strong> {r.respuesta}
+                    <strong>💡 Respuesta:</strong>
+                    {r.respuesta.split('\n\n').map((parrafo, idx) => (
+                      <p key={idx} style={{ marginBottom: "0.8rem" }}>{parrafo}</p>
+                    ))}
                   </div>
                 )}
               </li>

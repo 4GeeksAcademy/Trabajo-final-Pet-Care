@@ -14,7 +14,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light">
+    <div className="d-flex flex-column min-vh-100 bg-light" style={{marginTop: "30px"}}>
       <main className="flex-grow-1 d-flex align-items-center justify-content-center">
         <section
           className="w-100 d-flex align-items-center justify-content-center"

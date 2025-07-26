@@ -78,6 +78,11 @@ img.rounded {
   box-shadow: 0 8px 24px #bbaafd44;
 }
 
+
+.btn-link{
+  margin-top: 20px;
+}
+
 /* CSS ALIMENTACION IA 
 
 /* Caja brillante con animación shimmer y sombra neón */

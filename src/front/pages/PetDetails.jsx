@@ -109,6 +109,10 @@ const PetDetails = () => {
     }
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
+
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
       <div className="container py-5 flex-grow-1">

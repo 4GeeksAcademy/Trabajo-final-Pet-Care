@@ -384,3 +384,7 @@ body, .alert, .btn, .badge, .form-control, .form-label, .btn-main {
   align-items: center;
   justify-content: center;
 }
+
+.supercontenedor{
+  margin-top: 200px;
+}

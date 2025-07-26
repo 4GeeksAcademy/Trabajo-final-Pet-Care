@@ -536,7 +536,9 @@ def generar_recomendacion_ia(pet_id):
         f"Sexo: {pet.sexo}\n"
         f"Fecha de nacimiento: {pet.fecha_nacimiento}\n\n"
         f"Pregunta del usuario: {pregunta}\n\n"
-        "Responde de forma útil y concisa en no más de 3 frases. Sé claro, directo y breve, como un experto en bienestar animal que da consejos rápidos:"
+        "Responde como un experto en bienestar animal. Tu respuesta debe estar dividida en exactamente tres párrafos.\n"
+        "Cada párrafo debe estar claramente separado por una línea en blanco (usa dos saltos de línea `\\n\\n`).\n"
+        "Sé claro, profesional y directo. No combines todo en un solo párrafo."
     )
 
     try:

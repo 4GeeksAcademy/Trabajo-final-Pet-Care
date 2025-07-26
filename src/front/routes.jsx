@@ -22,6 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
+    
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>}>
 
       {/* RUTAS PUBLICAS */}
@@ -120,3 +121,4 @@ export const router = createBrowserRouter(
     </Route>
   )
 );
+
