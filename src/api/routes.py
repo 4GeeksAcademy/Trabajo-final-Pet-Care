@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
-from api.models import db, User, Pet, Vacuna, Raza, Favorite, Recomendacion, MedicalProfile
+from api.models import db, User, Pet, Vacuna, Raza, Favorite, Recomendacion, MedicalProfile, AlimentacionRecomendacion
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_swagger import swagger
@@ -330,7 +330,6 @@ def get_all_pets():
         return jsonify({'msg': 'Error al obtener las mascotas', 'error': str(e)}), 500
 
 # RUTA REGISTRO DE MASCOTA
-
 @api.route('/pets', methods=['POST'])
 def register_pet():
     data = request.get_json()
@@ -358,6 +357,7 @@ def register_pet():
         )
         db.session.add(nueva_mascota)
         db.session.commit()
+
         return jsonify({'msg': 'Mascota registrada con éxito :lentes_de_sol:'}), 201
     except Exception as e:
         db.session.rollback()
@@ -725,6 +725,71 @@ def carnet_checkout():
         return jsonify({"url": session.url})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+#GENERA RECOMENDACION DE ALIMENTACION CON IA 
+@api.route('/pet/<int:pet_id>/alimentacion', methods=['POST'])
+@jwt_required()
+def generar_alimentacion_ia(pet_id):
+    user_id = int(get_jwt_identity())
+    pet = Pet.query.get(pet_id)
+    if not pet or pet.user_id != user_id:
+        return jsonify({"msg": "Mascota no encontrada o acceso denegado"}), 403
+
+    alimentacion_existente = AlimentacionRecomendacion.query.filter_by(pet_id=pet_id).first()
+    if alimentacion_existente:
+        return jsonify(alimentacion_existente.serialize()), 200
+
+    # PROMPT IA
+    prompt = (
+        f"Nombre: {pet.nombre}\n"
+        f"Especie: {pet.especie}\n"
+        f"Raza: {pet.raza or 'Desconocida'}\n"
+        f"Peso: {pet.peso} kg\n"
+        f"Sexo: {pet.sexo}\n"
+        f"Fecha de nacimiento: {pet.fecha_nacimiento}\n\n"
+        "El usuario acaba de registrar esta mascota en una app de salud animal y quiere saber cómo debería alimentarla correctamente según su especie y raza. "
+        "Responde con una recomendación breve de minimo 3 parrafos, clara y directa de alimentación, incluyendo tipo de comida, frecuencia y cantidad aproximada diaria. No introduzcas ni expliques, solo da la recomendación. Evita tecnicismos."
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Eres un experto en bienestar animal y nutrición veterinaria."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7
+        )
+        texto = response.choices[0].message.content.strip()
+
+        recomendacion = AlimentacionRecomendacion(
+            pet_id=pet_id,
+            texto=texto
+        )
+        db.session.add(recomendacion)
+        db.session.commit()
+
+        return jsonify(recomendacion.serialize()), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "Error al generar recomendación de alimentación", "error": str(e)}), 500
+
+#GET RECOMENDACION 
+@api.route('/pet/<int:pet_id>/alimentacion', methods=['GET'])
+@jwt_required()
+def get_alimentacion_ia(pet_id):
+    user_id = int(get_jwt_identity())
+    pet = Pet.query.get(pet_id)
+    if not pet or pet.user_id != user_id:
+        return jsonify({"msg": "Mascota no encontrada o acceso denegado"}), 403
+
+    alimentacion = AlimentacionRecomendacion.query.filter_by(pet_id=pet_id).first()
+    if not alimentacion:
+        return jsonify({"msg": "No hay recomendación registrada"}), 404
+    return jsonify(alimentacion.serialize()), 200
+
+
 
 @api.route('/pets/<int:pet_id>/carnet-pdf', methods=['GET'])
 def descargar_carnet_demo(pet_id):

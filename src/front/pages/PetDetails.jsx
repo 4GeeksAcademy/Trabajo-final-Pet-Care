@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import Footer from "../components/Footer";
 import RecomendacionesIAView from "../components/RecomendacionesIAView";
 import VacunasView from "../components/VacunasView";
 import PerfilMedicoPet from "../components/PerfilMedicoPet";
+import Alimentacion from "../components/Alimentacion.jsx"; 
 import "../styles/petdetails.css";
 import { BsPersonCircle, BsCapsulePill, BsClipboard2Check, BsEggFried, BsRobot } from "react-icons/bs";
 
@@ -223,10 +223,7 @@ const PetDetails = () => {
                   <PerfilMedicoPet petId={petId} />
                 )}
                 {activeTab === "alimentacion" && (
-                  <div>
-                    <h4>🍽 Alimentación</h4>
-                    <p>Aquí puedes ver y editar los hábitos alimenticios de {pet.nombre}.</p>
-                  </div>
+                    <Alimentacion petId={petId} pet={pet} token={localStorage.getItem("token")} />
                 )}
                 {activeTab === "ia" && (
                   <RecomendacionesIAView petId={petId} pet={pet} />
@@ -346,7 +343,6 @@ const PetDetails = () => {
           </div>
         )}
       </div>
-      <Footer />
     </div>
   );
 };
