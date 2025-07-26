@@ -31,42 +31,44 @@ export default function PerfilMedicoPet({ petId }) {
   const [showPesoModal, setShowPesoModal] = useState(false);
   const [nuevoPeso, setNuevoPeso] = useState({ peso: "", fecha: "" });
 
-  // Nuevo flujo: crear perfil médico
+  // Crear perfil médico
   const [showCrearPerfil, setShowCrearPerfil] = useState(false);
   const [nuevoPerfil, setNuevoPerfil] = useState({
     alergias: "",
-    condiciones_previas: "",
+    condicionesCheck: [],
+    condicionesExtra: "",
     esterilizado: false
   });
 
-  // 1. Traer perfil médico
-  useEffect(() => {
-    async function fetchPerfil() {
-      setLoading(true);
-      setError("");
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pets/${petId}/perfil_medico`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!res.ok) {
-          setPerfil(null);
-          setError("No hay perfil médico para esta mascota.");
-        } else {
-          const data = await res.json();
-          setPerfil(data);
-          setProblemasSeleccionados(data.condiciones_previas ? data.condiciones_previas.split(";") : []);
-          setAlergias(data.alergias ? data.alergias.split(";") : []);
-          setEsterilizado(data.esterilizado);
-        }
-      } catch (err) {
+  const fetchPerfil = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pets/${petId}/perfil_medico`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) {
         setPerfil(null);
-        setError("Error de conexión o formato de datos.");
-      } finally {
-        setLoading(false);
+        setError("No hay perfil médico para esta mascota.");
+      } else {
+        const data = await res.json();
+        setPerfil(data);
+        setProblemasSeleccionados(data.condiciones_previas ? data.condiciones_previas.split(";") : []);
+        setAlergias(data.alergias ? data.alergias.split(";") : []);
+        setEsterilizado(data.esterilizado);
       }
+    } catch (err) {
+      setPerfil(null);
+      setError("Error de conexión o formato de datos.");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchPerfil();
+
   }, [petId]);
 
   useEffect(() => {
@@ -103,6 +105,7 @@ export default function PerfilMedicoPet({ petId }) {
       });
       setShowPesoModal(false);
       setNuevoPeso({ peso: "", fecha: "" });
+
     } catch (err) {
       alert("No se pudo guardar el peso");
     }
@@ -111,22 +114,29 @@ export default function PerfilMedicoPet({ petId }) {
   const handleGuardarProblemas = async () => {
     await savePerfil({ condiciones_previas: problemasSeleccionados.join(";") });
     setShowProblemas(false);
+    fetchPerfil(); 
   };
   const handleGuardarAlergias = async () => {
     await savePerfil({ alergias: alergias.join(";") });
     setShowAlergias(false);
+    fetchPerfil();
   };
   const handleRemoveProblema = async (problema) => {
-    const nuevos = problemasSeleccionados.filter(p => p !== problema);
-    await savePerfil({ condiciones_previas: nuevos.join(";") });
-  };
-  const handleRemoveAlergia = async (alergia) => {
-    const nuevas = alergias.filter(a => a !== alergia);
-    await savePerfil({ alergias: nuevas.join(";") });
-  };
+  const nuevos = problemasSeleccionados.filter(p => p !== problema);
+  setProblemasSeleccionados(nuevos); 
+  await savePerfil({ condiciones_previas: nuevos.join(";") });
+
+};
+const handleRemoveAlergia = async (alergia) => {
+  const nuevas = alergias.filter(a => a !== alergia);
+  setAlergias(nuevas); 
+  await savePerfil({ alergias: nuevas.join(";") });
+
+};
   const handleGuardarEsterilizacion = async () => {
     await savePerfil({ esterilizado });
     setShowEsterilizacion(false);
+    fetchPerfil();
   };
 
   const savePerfil = async (campos) => {
@@ -155,6 +165,32 @@ export default function PerfilMedicoPet({ petId }) {
     }
   };
 
+  const handleCrearPerfil = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const payload = {
+        alergias: nuevoPerfil.alergias,
+        condiciones_previas: (nuevoPerfil.condicionesCheck || []).join(";") + (nuevoPerfil.condicionesExtra ? ";" + nuevoPerfil.condicionesExtra : ""),
+        esterilizado: nuevoPerfil.esterilizado,
+      };
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pets/${petId}/perfil_medico`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("No se pudo crear el perfil médico");
+      setShowCrearPerfil(false);
+      setError("");
+      fetchPerfil(); 
+    } catch {
+      alert("Error creando el perfil médico");
+    }
+  };
+
   if (error)
     return (
       <div className="alert alert-warning text-center">
@@ -174,33 +210,7 @@ export default function PerfilMedicoPet({ petId }) {
           <Modal.Header closeButton>
             <Modal.Title>Crear perfil médico</Modal.Title>
           </Modal.Header>
-          <Form
-            onSubmit={async e => {
-              e.preventDefault();
-              try {
-                const token = localStorage.getItem("token");
-                const payload = {
-                  alergias: nuevoPerfil.alergias,
-                  condiciones_previas: (nuevoPerfil.condicionesCheck || []).join(";") + (nuevoPerfil.condicionesExtra ? ";" + nuevoPerfil.condicionesExtra : ""),
-                  esterilizado: nuevoPerfil.esterilizado,
-                };
-                const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/pets/${petId}/perfil_medico`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                  },
-                  body: JSON.stringify(payload)
-                });
-                if (!res.ok) throw new Error("No se pudo crear el perfil médico");
-                setShowCrearPerfil(false);
-                setError("");
-                setTimeout(() => window.location.reload(), 800);
-              } catch {
-                alert("Error creando el perfil médico");
-              }
-            }}
-          >
+          <Form onSubmit={handleCrearPerfil}>
             <Modal.Body>
               <Form.Group>
                 <Form.Label>Alergias</Form.Label>

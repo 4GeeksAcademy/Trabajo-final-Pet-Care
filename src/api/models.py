@@ -83,6 +83,12 @@ class Pet(db.Model):
     vacunas: Mapped[list["Vacuna"]] = relationship(
         "Vacuna", back_populates="mascota", cascade="all, delete-orphan"
     )
+    alimentacion_recomendacion: Mapped["AlimentacionRecomendacion"] = relationship(
+    "AlimentacionRecomendacion",
+    back_populates="pet",
+    uselist=False,
+    cascade="all, delete-orphan"
+)
    
 
     # Relación ➜ cada mascota "apunta" a una raza
@@ -99,7 +105,8 @@ class Pet(db.Model):
             "raza": self.raza,
             "fecha_nacimiento": self.fecha_nacimiento.isoformat(),
             "sexo": self.sexo,
-            "is_active": self.is_active
+            "is_active": self.is_active, 
+            "alimentacion_recomendacion": self.alimentacion_recomendacion.serialize() if self.alimentacion_recomendacion else None
         }
 
 
@@ -220,3 +227,21 @@ class ContactMessage(db.Model):
             "mensaje": self.mensaje,
             "created_at": self.created_at.isoformat()
         }
+    
+class AlimentacionRecomendacion(db.Model):
+    __tablename__ = "alimentacion_recomendaciones"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    pet_id: Mapped[int] = mapped_column(ForeignKey("pets.id", ondelete="CASCADE"), nullable=False, unique=True)
+    texto: Mapped[str] = mapped_column(String(2000), nullable=False)
+    fecha: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+
+    pet: Mapped["Pet"] = relationship("Pet", back_populates="alimentacion_recomendacion")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "pet_id": self.pet_id,
+            "texto": self.texto,
+            "fecha": self.fecha.isoformat()
+        }
+
