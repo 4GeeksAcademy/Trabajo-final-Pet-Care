@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import "../styles/alimentacion.css";
+import Spinner from "react-bootstrap/Spinner";
 
 const VacunasView = ({ petId, pet, user }) => {
     const [vacunas, setVacunas] = useState([]);
@@ -26,7 +28,7 @@ const VacunasView = ({ petId, pet, user }) => {
             setShowExitoModal(true);
             localStorage.setItem(carnetKey, "ok");
             setCarnetPagado(true);
-           
+
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     }, [location.search, carnetKey]);
@@ -135,23 +137,29 @@ const VacunasView = ({ petId, pet, user }) => {
         window.URL.revokeObjectURL(url);
     };
 
-    return (
-        <div>
-            <div className="d-flex align-items-center justify-content-between mb-3">
-                <h4>💉 Vacunas registradas</h4>
-                <button
-                    className="btn btn-main"
-                    onClick={() => setShowModal(true)}
-                >
-                    + Añadir vacuna
-                </button>
+    if (loading)
+        return (
+            <div
+                className="alimentacion-card d-flex justify-content-center align-items-center"
+                style={{ minHeight: "220px" }}
+            >
+                <Spinner animation="border" variant="primary" />
             </div>
+        );
 
-            {/* Listado de vacunas */}
-            <div>
-                {loading ? (
-                    <p>Cargando...</p>
-                ) : vacunas.length === 0 ? (
+    return (
+        <div className="alimentacion-card">
+            <div className="alimentacion-emoji">💉</div>
+            <div className="alimentacion-title">Vacunas</div>
+            <div className="alimentacion-contenido">
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                    <strong>Vacunas registradas</strong>
+                    <button className="btn btn-main" onClick={() => setShowModal(true)}>
+                        + Añadir vacuna
+                    </button>
+                </div>
+                {/* Listado de vacunas */}
+                {vacunas.length === 0 ? (
                     <div className="alert alert-secondary">No hay vacunas registradas.</div>
                 ) : (
                     <ul className="list-group mb-4">
@@ -174,45 +182,47 @@ const VacunasView = ({ petId, pet, user }) => {
                         ))}
                     </ul>
                 )}
-            </div>
+                {/* Botón Carnet Digital */}
+                <div className="carnet-digital-section mt-3">
+                    {carnetPagado ? (
+                        <button
+                            className="btn btn-success w-100"
+                            onClick={descargarCarnetPDF}
+                        >
+                            Descargar Carnet
+                        </button>
+                    ) : (
+                        <button
+                            className="btn btn-descargar w-100"
+                            onClick={handleDescargarCarnet}
+                        >
+                            <svg width="28" height="28" fill="none" viewBox="0 0 42 42">
+                                <rect width="42" height="42" rx="10" fill="#F2F2F7" />
+                                <path d="M21 11v14m0 0l-5-5m5 5l5-5" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                <rect x="14" y="31" width="14" height="2.5" rx="1.25" fill="#8B5CF6" />
+                            </svg>
+                            <span style={{ fontWeight: 600, color: "#6D28D9", fontSize: 18 }}> Descargar Carnet de vacunación PDF </span>
+                        </button>
+                    )}
+                    {showPagarModal && (
+                        <ModalPagoCarnet
+                            onClose={() => setShowPagarModal(false)}
+                            onPagar={handleStripePagoCarnet}
+                        />
+                    )}
+                </div>
 
-            {/* Botón Carnet Digital */}
-            <div className="carnet-digital-section mt-3">
-                {carnetPagado ? (
-                    <button
-                        className="btn btn-success w-100"
-                        onClick={descargarCarnetPDF}
-                    >
-                        Descargar Carnet de Vacunación PDF
-                    </button>
-                ) : (
-                    <button
-                        className="btn btn-outline-main w-100"
-                        onClick={handleDescargarCarnet}
-                    >
-                        <svg width="28" height="28" fill="none" viewBox="0 0 42 42">
-                            <rect width="42" height="42" rx="10" fill="#F2F2F7" />
-                            <path d="M21 11v14m0 0l-5-5m5 5l5-5" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <rect x="14" y="31" width="14" height="2.5" rx="1.25" fill="#8B5CF6" />
-                        </svg>
-                        <span style={{ fontWeight: 600, color: "#6D28D9", fontSize: 18 }}> Descargar Carnet de Vacunación  </span>
-                    </button>
-                )}
-                {showPagarModal && (
-                    <ModalPagoCarnet
-                        onClose={() => setShowPagarModal(false)}
-                        onPagar={handleStripePagoCarnet}
+                {/* Modal Éxito tras pagar */}
+                {showExitoModal && (
+                    <ModalExitoCarnet
+                        onClose={() => setShowExitoModal(false)}
+                        onDescargar={descargarCarnetPDF}
                     />
                 )}
             </div>
-
-            {/* Modal Éxito tras pagar */}
-            {showExitoModal && (
-                <ModalExitoCarnet
-                    onClose={() => setShowExitoModal(false)}
-                    onDescargar={descargarCarnetPDF}
-                />
-            )}
+            <div className="alimentacion-footer">
+                Puedes añadir o eliminar vacunas y descargar el carnet digital.
+            </div>
 
             {/* Modal Añadir Vacuna */}
             {showModal && (
@@ -274,6 +284,7 @@ const VacunasView = ({ petId, pet, user }) => {
     );
 };
 
+// Modales igual, sin tocar nada
 const ModalPagoCarnet = ({ onClose, onPagar }) => (
     <div className="modal show d-block" tabIndex="-1" style={{ background: "#0008" }}>
         <div className="modal-dialog modal-dialog-centered">
@@ -316,8 +327,8 @@ const ModalPagoCarnet = ({ onClose, onPagar }) => (
                     Para obtener el carnet digital de vacunación en PDF debes cancelar <b>1 USD</b> (pago único).<br />
                     Al pagar, tendrás acceso al carnet para descargarlo e imprimirlo.
                 </p>
-                <button className="btn btn-main w-100" onClick={onPagar}>
-                    Sí, quiero mi carnet digital
+                <button className="btn btn-pagar w-100" onClick={onPagar}>
+                    Obtener carnet digital
                 </button>
                 <button className="btn btn-link text-purple-dark mt-2" onClick={onClose}>Cancelar</button>
             </div>

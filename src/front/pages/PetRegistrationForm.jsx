@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from "../components/Footer";
 import './PetRegistrationForm.css';
 
-const PetRegistrationForm = () => {
+const pasos = [
+  { label: "Datos básicos" },
+  { label: "Características" },
+  { label: "Sexo y nacimiento" },
+  { label: "Subir foto" },
+  { label: "Confirmar y registrar" }
+];
+
+export default function PetRegistrationForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,9 +28,11 @@ const PetRegistrationForm = () => {
   const [foto, setFoto] = useState('');
   const [mensaje, setMensaje] = useState(null);
   const [step, setStep] = useState(0);
-  const stepsCount = 4;
+  const stepsCount = 5;
 
   const handleNext = () => {
+    setMensaje(null);
+    // Validaciones según paso
     if (step === 0 && (!nombre.trim() || !especie)) {
       setMensaje('Completa nombre y especie.');
       return;
@@ -36,8 +45,16 @@ const PetRegistrationForm = () => {
       setMensaje('Completa fecha de nacimiento y sexo.');
       return;
     }
+    setStep((s) => Math.min(s + 1, stepsCount - 1));
+  };
+
+  const handlePrev = () => {
     setMensaje(null);
-    setStep(s => Math.min(s + 1, stepsCount - 1));
+    setStep((s) => Math.max(s - 1, 0));
+  };
+
+  const handleGoDashboard = () => {
+    navigate('/dashboard');
   };
 
   const handleSubmit = async () => {
@@ -85,11 +102,9 @@ const PetRegistrationForm = () => {
   const handleImageUpload = async e => {
     const file = e.target.files[0];
     if (!file) return;
-
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', 'mascotas_unsigned');
-
     try {
       const res = await fetch('https://api.cloudinary.com/v1_1/dvqbb7cjs/image/upload', {
         method: 'POST',
@@ -107,26 +122,53 @@ const PetRegistrationForm = () => {
     }
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
+
   return (
     <div className="AppLayout">
       <div className="fondo-pet">
-        <div className="DogImageContainerOutside">
-          <img
-            className="DogImageOutside"
-            src="https://static.vecteezy.com/system/resources/thumbnails/022/983/455/small_2x/dog-and-cat-free-illustration-icons-free-png.png"
-            alt="Perrito especial"
-          />
-        </div>
-
-        <div className="FormCard">
+        <div className="FormCard-expanded">
+          <button
+            className="BotonBackDashboard"
+            onClick={handleGoDashboard}
+            type="button"
+            title="Volver al Dashboard"
+          >
+            ← Dashboard
+          </button>
+          {/* Barra de pasos tipo wizard */}
+          <div className="StepperContainer mt-3">
+            {pasos.map((paso, idx) => (
+              <div
+                key={idx}
+                className={
+                  'StepCircleContainer' +
+                  (step === idx ? ' active' : '') +
+                  (step > idx ? ' completed' : '')
+                }
+              >
+                <div className="StepCircle">
+                  {step > idx ? (
+                    <span className="CheckIcon">✔</span>
+                  ) : (
+                    idx + 1
+                  )}
+                </div>
+                <div className="StepLabel">{paso.label}</div>
+                {idx < pasos.length - 1 && <div className="StepLine" />}
+              </div>
+            ))}
+          </div>
           <h2 className="Titulo">¡Registra tu Mascota!</h2>
           <p className="Sub-titulo">Añade a tu compañero/a a nuestra familia</p>
-
-          <form onSubmit={e => e.preventDefault()}>
+          <form onSubmit={e => e.preventDefault()} className="FormSlideContainer">
+            {/* Slides */}
             <div className="steps-wrapper">
-              <div className="steps" style={{ transform: `translateX(-${step * 100}%)` }}>
-                {/* Slide 1 */}
-                <div className="step">
+              {/* Slide 1 */}
+              {step === 0 && (
+                <div className="step active">
                   <label className="Categoria">🏷️ Nombre *</label>
                   <input
                     className="Input"
@@ -144,17 +186,12 @@ const PetRegistrationForm = () => {
                     <option value="" disabled>Selecciona especie</option>
                     <option value="Perro">Perro 🐶</option>
                     <option value="Gato">Gato 🐱</option>
-                    <option value="Ave">Ave 🐦</option>
-                    <option value="Pez">Pez 🐠</option>
-                    <option value="Reptil">Reptil 🦎</option>
-                    <option value="Roedor">Roedor 🐭</option>
-                    <option value="Conejo">Conejo 🐰</option>
-                    <option value="Otro">Otro ❓</option>
                   </select>
                 </div>
-
-                {/* Slide 2 */}
-                <div className="step">
+              )}
+              {/* Slide 2 */}
+              {step === 1 && (
+                <div className="step active">
                   <label className="Categoria">🧬 Raza *</label>
                   <input
                     className="Input"
@@ -172,9 +209,10 @@ const PetRegistrationForm = () => {
                     onChange={e => setPeso(e.target.value)}
                   />
                 </div>
-
-                {/* Slide 3 */}
-                <div className="step">
+              )}
+              {/* Slide 3 */}
+              {step === 2 && (
+                <div className="step active">
                   <label className="Categoria">📅 Fecha de Nac. *</label>
                   <input
                     className="Input"
@@ -194,10 +232,11 @@ const PetRegistrationForm = () => {
                     <option value="Hembra">Hembra ♀️</option>
                   </select>
                 </div>
-
-                {/* Slide 4 */}
-                <div className="step">
-                  <label className="Categoria">📷 Foto (desde tu dispositivo)</label>
+              )}
+              {/* Slide 4 */}
+              {step === 3 && (
+                <div className="step active">
+                  <label className="Categoria">📷 Foto (opcional)</label>
                   <label htmlFor="file-upload" className="CustomFileButton">
                     Elegir archivo
                   </label>
@@ -215,38 +254,97 @@ const PetRegistrationForm = () => {
                   )}
                   <p className="Aviso">Puedes agregar la foto luego.</p>
                 </div>
-              </div>
+              )}
+              {/* Slide 5: Confirmación */}
+              {step === 4 && (
+                <div className="step active confirm-slide">
+                  <div className="ConfirmCard">
+                    <div className="ConfirmCardHeader">
+                      🐾 Revisa los datos de <strong>{nombre}</strong> antes de registrar
+                    </div>
+                    <div className="ConfirmRow">
+                      <span className="ConfirmLabel">🐶 Nombre:</span>
+                      <span className="ConfirmValue">{nombre}</span>
+                    </div>
+                    <div className="ConfirmRow">
+                      <span className="ConfirmLabel">🦴 Especie:</span>
+                      <span className="ConfirmValue">{especie}</span>
+                    </div>
+                    <div className="ConfirmRow">
+                      <span className="ConfirmLabel">🧬 Raza:</span>
+                      <span className="ConfirmValue">{raza}</span>
+                    </div>
+                    <div className="ConfirmRow">
+                      <span className="ConfirmLabel">⚖️ Peso:</span>
+                      <span className="ConfirmValue">{peso} kg</span>
+                    </div>
+                    <div className="ConfirmRow">
+                      <span className="ConfirmLabel">📅 Nacimiento:</span>
+                      <span className="ConfirmValue">{fechaNacimiento}</span>
+                    </div>
+                    <div className="ConfirmRow">
+                      <span className="ConfirmLabel">👫 Sexo:</span>
+                      <span className="ConfirmValue">{sexo}</span>
+                    </div>
+                    <div className="ConfirmRow">
+                      <span className="ConfirmLabel">📷 Foto:</span>
+                      {foto ? (
+                        <img src={foto} alt="Foto mascota" className="ConfirmPetPhoto" />
+                      ) : (
+                        <span className="ConfirmNoPhoto">No agregada</span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="AvisoConfirm">Revisa los datos antes de registrar.</p>
+                </div>
+              )}
             </div>
-
             {mensaje && <p className="Mensaje">{mensaje}</p>}
-
             <div className="BotonContainer">
-              {step < stepsCount - 1 ? (
-                <button type="button" className="Boton" onClick={handleNext}>
-                  Siguiente
+              {step > 0 && (
+                <button
+                  type="button"
+                  className="Boton BotonAtras"
+                  onClick={handlePrev}
+                >
+                  ← Atrás
                 </button>
-              ) : (
-                <button type="button" className="Boton" onClick={handleSubmit}>
+              )}
+              {step < stepsCount - 1 && (
+                <button
+                  type="button"
+                  className="Boton BotonSiguiente"
+                  onClick={handleNext}
+                >
+                  Siguiente →
+                </button>
+              )}
+              {step === stepsCount - 1 && (
+                <button
+                  type="button"
+                  className="Boton BotonRegistrar"
+                  onClick={handleSubmit}
+                >
                   Registrar Mascota
                 </button>
               )}
             </div>
           </form>
-
           <div className="progress-dots">
-            {Array.from({ length: stepsCount }).map((_, i) => (
-              <span key={i} className={`dot ${i === step ? 'active' : ''}`} />
+            {pasos.map((p, i) => (
+              <span
+                key={i}
+                className={`dot ${i === step ? 'active' : ''}`}
+                title={p.label}
+              />
             ))}
           </div>
-
           <p className="Nota">
             Nota: todos los campos con <strong className="Apostrofe">*</strong> son obligatorios.
           </p>
         </div>
       </div>
-      <Footer />
     </div>
   );
-};
+}
 
-export default PetRegistrationForm;

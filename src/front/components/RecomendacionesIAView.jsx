@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Spinner from "react-bootstrap/Spinner";
+import "../styles/alimentacion.css"; 
 
 const RecomendacionesIAView = ({ petId, pet }) => {
   const [recomendaciones, setRecomendaciones] = useState([]);
@@ -6,24 +8,27 @@ const RecomendacionesIAView = ({ petId, pet }) => {
   const [respuestaIA, setRespuestaIA] = useState("");
   const [loadingIA, setLoadingIA] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchRecomendaciones = async () => {
     const token = localStorage.getItem("token");
     try {
+      setLoading(true);
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/pet/${petId}/recomendaciones`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       if (res.ok) setRecomendaciones(data);
     } catch (e) {
-      console.error("Error al obtener recomendaciones IA", e);
+      setRecomendaciones([]);
+    } finally {
+      setLoading(false);
     }
   };
-
   useEffect(() => {
+
     fetchRecomendaciones();
+    // eslint-disable-next-line
   }, [petId]);
 
   const handlePreguntarIA = async (e) => {
@@ -62,9 +67,7 @@ const RecomendacionesIAView = ({ petId, pet }) => {
     try {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/recomendacion/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (res.ok) {
@@ -72,81 +75,94 @@ const RecomendacionesIAView = ({ petId, pet }) => {
         if (expandedId === id) setExpandedId(null);
       }
     } catch (e) {
-      console.error("Error al eliminar recomendación:", e);
     }
   };
 
+  if (loading)
+    return (
+      <div
+        className="alimentacion-card d-flex justify-content-center align-items-center"
+        style={{ minHeight: "220px" }}
+      >
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
+
   return (
-    <div>
-      <h5 className="mb-3">🤖 Recomendaciones IA</h5>
-      <p>Estas son sugerencias personalizadas para {pet.nombre} generadas con IA.</p>
-      <form onSubmit={handlePreguntarIA} className="mb-3">
-        <div className="mb-2">
-          <label className="form-label">¿Qué deseas saber sobre el cuidado de {pet.nombre}?</label>
-          <textarea
-            className="form-control"
-            rows="2"
-            value={preguntaIA}
-            onChange={(e) => setPreguntaIA(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-main" disabled={loadingIA}>
-          {loadingIA ? "Consultando IA..." : "Enviar pregunta"}
-        </button>
-      </form>
-      {respuestaIA && (
-        <div className="alert alert-info mt-2">
-          <strong>Respuesta IA:</strong>
-          {respuestaIA.split('\n\n').map((parrafo, idx) => (
-            <p key={idx} style={{ marginBottom: "0.8rem" }}>{parrafo}</p>
-          ))}
-        </div>
-      )}
-      <hr />
-      {recomendaciones.length > 0 ? (
-        <ul className="list-group">
-          {[...recomendaciones].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map((r) => {
-            const isExpanded = expandedId === r.id;
-            const preguntaCorta = r.pregunta.length > 60 ? r.pregunta.slice(0, 60) + "..." : r.pregunta;
-            return (
-              <li
-                key={r.id}
-                className="list-group-item d-flex flex-column"
-                style={{ cursor: "pointer" }}
-                onClick={() => setExpandedId(isExpanded ? null : r.id)}
-              >
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>🗨️ Pregunta:</strong> {!isExpanded ? preguntaCorta : r.pregunta}
-                    <br />
-                    <small className="text-muted">📅 {new Date(r.fecha).toLocaleDateString()}</small>
+    <div className="alimentacion-card">
+      <div className="alimentacion-emoji">🤖</div>
+      <div className="alimentacion-title">Recomendaciones IA</div>
+      <div className="alimentacion-contenido">
+        <p>Estas son sugerencias personalizadas para <b>{pet?.nombre}</b> generadas con IA.</p>
+        <form onSubmit={handlePreguntarIA} className="mb-3">
+          <div className="mb-2">
+            <label className="form-label">¿Qué deseas saber sobre el cuidado de {pet?.nombre}?</label>
+            <textarea
+              className="form-control"
+              rows="2"
+              value={preguntaIA}
+              onChange={(e) => setPreguntaIA(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-main" disabled={loadingIA}>
+            {loadingIA ? "Consultando IA..." : "Enviar pregunta"}
+          </button>
+        </form>
+        {respuestaIA && (
+          <div className="alert alert-info mt-2">
+            <strong>Respuesta IA:</strong>
+            {respuestaIA.split('\n\n').map((parrafo, idx) => (
+              <p key={idx} style={{ marginBottom: "0.8rem" }}>{parrafo}</p>
+            ))}
+          </div>
+        )}
+        <hr />
+        {recomendaciones.length > 0 ? (
+          <ul className="list-group">
+            {[...recomendaciones].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).map((r) => {
+              const isExpanded = expandedId === r.id;
+              const preguntaCorta = r.pregunta.length > 60 ? r.pregunta.slice(0, 60) + "..." : r.pregunta;
+              return (
+                <li
+                  key={r.id}
+                  className="list-group-item d-flex flex-column"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setExpandedId(isExpanded ? null : r.id)}
+                >
+                  <div className="d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>🗨️ Pregunta:</strong> {!isExpanded ? preguntaCorta : r.pregunta}
+                      <br />
+                      <small className="text-muted">📅 {new Date(r.fecha).toLocaleDateString()}</small>
+                    </div>
+                    <button
+                      className="btn btn-sm btn-outline-danger ms-3"
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleDeleteRecomendacion(r.id);
+                      }}
+                    >
+                      🗑
+                    </button>
                   </div>
-                  <button
-                    className="btn btn-sm btn-outline-danger ms-3"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteRecomendacion(r.id);
-                    }}
-                  >
-                    🗑
-                  </button>
-                </div>
-                {isExpanded && (
-                  <div className="mt-2">
-                    <strong>💡 Respuesta:</strong>
-                    {r.respuesta.split('\n\n').map((parrafo, idx) => (
-                      <p key={idx} style={{ marginBottom: "0.8rem" }}>{parrafo}</p>
-                    ))}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p className="text-muted">No hay recomendaciones aún.</p>
-      )}
+                  {isExpanded && (
+                    <div className="mt-2">
+                      <strong>💡 Respuesta:</strong>
+                      {r.respuesta.split('\n\n').map((parrafo, idx) => (
+                        <p key={idx} style={{ marginBottom: "0.8rem" }}>{parrafo}</p>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="text-muted">No hay recomendaciones aún.</p>
+        )}
+      </div>
+      
     </div>
   );
 };

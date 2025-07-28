@@ -3,9 +3,29 @@ import { useParams, Link } from "react-router-dom";
 import RecomendacionesIAView from "../components/RecomendacionesIAView";
 import VacunasView from "../components/VacunasView";
 import PerfilMedicoPet from "../components/PerfilMedicoPet";
-import Alimentacion from "../components/Alimentacion.jsx"; 
+import Alimentacion from "../components/Alimentacion.jsx";
 import "../styles/petdetails.css";
 import { BsPersonCircle, BsCapsulePill, BsClipboard2Check, BsEggFried, BsRobot } from "react-icons/bs";
+
+const TAB_ICONS = {
+  perfil: <BsPersonCircle />,
+  vacunas: <BsCapsulePill />,
+  historial: <BsClipboard2Check />,
+  alimentacion: <BsEggFried />,
+  ia: <BsRobot />
+};
+
+const TAB_EMOJIS = {
+  perfil: "📝",
+};
+
+const TAB_TITLES = {
+  perfil: "Perfil",
+  vacunas: "Vacunas",
+  historial: "Historial Médico",
+  alimentacion: "Alimentación",
+  ia: "Recomendaciones IA"
+};
 
 const PetDetails = () => {
   const { petId } = useParams();
@@ -16,7 +36,6 @@ const PetDetails = () => {
   const [success, setSuccess] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState({});
-
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   useEffect(() => {
@@ -86,11 +105,9 @@ const PetDetails = () => {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "mascotas_unsigned");
-
     try {
       const res = await fetch("https://api.cloudinary.com/v1_1/dvqbb7cjs/image/upload", {
         method: "POST",
@@ -104,7 +121,6 @@ const PetDetails = () => {
         setError("Error al subir imagen.");
       }
     } catch (err) {
-      console.error(err);
       setError("Error al conectar con Cloudinary.");
     }
   };
@@ -113,14 +129,79 @@ const PetDetails = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, []);
 
+  // Render content by tab
+  const renderTabContent = () => {
+    if (activeTab === "perfil") {
+      return (
+        <div className="alimentacion-card" style={{ position: "relative", minHeight: 370 }}>
+          <div className="alimentacion-emoji">{TAB_EMOJIS.perfil}</div>
+          <div className="alimentacion-title">{TAB_TITLES.perfil}</div>
+          <div className="alimentacion-contenido" style={{ padding: 0 }}>
+            <ul className="list-group list-group-flush">
+              <li className="list-group-item"><b>Nombre:</b> {pet.nombre}</li>
+              <li className="list-group-item"><b>Especie:</b> {pet.especie}</li>
+              <li className="list-group-item"><b>Raza:</b> {pet.raza || "Sin raza"}</li>
+              <li className="list-group-item"><b>Peso:</b> {pet.peso} kg</li>
+              <li className="list-group-item"><b>Sexo:</b> {pet.sexo || "No disponible"}</li>
+              <li className="list-group-item"><b>Fecha de nacimiento:</b> {pet.fecha_nacimiento || "No disponible"}</li>
+            </ul>
+          </div>
+          <div className="alimentacion-footer text-end">
+            Perfil general de la mascota
+          </div>
+
+          {success && (
+            <div
+              className="alert alert-success text-center"
+              style={{
+                position: "absolute",
+                top: "-46px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 10,
+                minWidth: "260px",
+                boxShadow: "0 6px 16px #b7f3c599"
+              }}
+            >
+              {success}
+            </div>
+          )}
+        </div>
+      );
+    }
+    if (activeTab === "vacunas") {
+      return <VacunasView petId={petId} pet={pet} user={user} />;
+    }
+    if (activeTab === "historial") {
+      return <PerfilMedicoPet petId={petId} />;
+    }
+    if (activeTab === "alimentacion") {
+      return <Alimentacion petId={petId} pet={pet} token={localStorage.getItem("token")} />;
+    }
+    if (activeTab === "ia") {
+      return <RecomendacionesIAView petId={petId} pet={pet} />;
+    }
+    return null;
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
       <div className="container py-5 flex-grow-1">
         <Link to={user?.is_admin ? "/admin-panel" : "/dashboard"} className="btn btn-link text-purple-dark mb-4">
           ← {user?.is_admin ? "Volver al panel" : "Volver al dashboard"}
         </Link>
-        {loading && <p className="text-center">Cargando...</p>}
-        {error && <p className="text-center text-danger">{error}</p>}
+        {loading && (
+          <div className="d-flex flex-column align-items-center justify-content-center py-5">
+            <img
+              src="/img/cargandopet.gif"
+              alt="Cargando…"
+              style={{ width: 130, marginBottom: 12 }}
+            />
+          </div>
+        )}
+        {error && (
+          <p className="text-center text-danger">{error}</p>
+        )}
         {pet && (
           <div
             className="row justify-content-center align-items-start gx-4"
@@ -173,13 +254,7 @@ const PetDetails = () => {
 
             {/* Columna 2: Tabs */}
             <div className="col-12 col-md-2 d-flex flex-md-column flex-row align-items-center justify-content-center gap-3 my-4 my-md-0">
-              {[
-                { tab: "perfil", icon: <BsPersonCircle />, text: "Perfil" },
-                { tab: "vacunas", icon: <BsCapsulePill />, text: "Vacunas" },
-                { tab: "historial", icon: <BsClipboard2Check />, text: "Historial" },
-                { tab: "alimentacion", icon: <BsEggFried />, text: "Alimentación" },
-                { tab: "ia", icon: <BsRobot />, text: "IA" },
-              ].map(({ tab, icon, text }) => (
+              {Object.entries(TAB_TITLES).map(([tab, text]) => (
                 <button
                   key={tab}
                   className={`btn d-flex align-items-center w-100 mb-md-2 rounded-pill justify-content-center justify-content-md-start px-3 ${activeTab === tab
@@ -197,7 +272,7 @@ const PetDetails = () => {
                     marginRight: 12,
                     minWidth: 22
                   }}>
-                    {icon}
+                    {TAB_ICONS[tab]}
                   </span>
                   <span>{text}</span>
                 </button>
@@ -206,33 +281,25 @@ const PetDetails = () => {
 
             {/* Columna 3: Info dinámica */}
             <div className="col-12 col-md-6 d-flex align-items-start">
-              <div className="bg-white rounded-4 shadow-sm p-4 min-vh-50 w-100">
-                {activeTab === "perfil" && (
-                  <div>
-                    <h4>📝 Perfil</h4>
-                    <ul className="list-group list-group-flush">
-                      <li className="list-group-item"><b>Nombre:</b> {pet.nombre}</li>
-                      <li className="list-group-item"><b>Especie:</b> {pet.especie}</li>
-                      <li className="list-group-item"><b>Raza:</b> {pet.raza || "Sin raza"}</li>
-                      <li className="list-group-item"><b>Peso:</b> {pet.peso} kg</li>
-                      <li className="list-group-item"><b>Sexo:</b> {pet.sexo || "No disponible"}</li>
-                      <li className="list-group-item"><b>Fecha de nacimiento:</b> {pet.fecha_nacimiento || "No disponible"}</li>
-                    </ul>
+              <div className="w-100" style={{ position: "relative" }}>
+                {/* ALERT para el resto de tabs */}
+                {activeTab !== "perfil" && success && (
+                  <div
+                    className="alert alert-success text-center"
+                    style={{
+                      position: "absolute",
+                      top: "-46px",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      zIndex: 10,
+                      minWidth: "260px",
+                      boxShadow: "0 6px 16px #b7f3c599"
+                    }}
+                  >
+                    {success}
                   </div>
                 )}
-                {activeTab === "vacunas" && (
-                  <VacunasView petId={petId} pet={pet} user={user} />
-                )}
-                {activeTab === "historial" && (
-                  <PerfilMedicoPet petId={petId} />
-                )}
-                {activeTab === "alimentacion" && (
-                    <Alimentacion petId={petId} pet={pet} token={localStorage.getItem("token")} />
-                )}
-                {activeTab === "ia" && (
-                  <RecomendacionesIAView petId={petId} pet={pet} />
-                )}
-                {success && <div className="alert alert-success mt-4">{success}</div>}
+                {renderTabContent()}
               </div>
             </div>
           </div>

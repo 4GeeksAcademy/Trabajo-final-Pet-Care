@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
+import "../styles/perfilmedico.css"; // Asegúrate de tener este archivo CSS
 
 const PROBLEMAS_SALUD = [
-  "Agresividad",
-  "Ansiedad",
-  "Marcaje con orina",
-  "Enfermedad dental",
-  "Alergias cutáneas - dermatitis",
-  "Insuficiencia pancreática exocrina",
-  "Alergias alimentarias",
-  "Enfermedad inflamatoria crónica intestinal",
-  "Shunt hepático",
+  "Agresividad", "Ansiedad", "Marcaje con orina", "Enfermedad dental",
+  "Alergias cutáneas - dermatitis", "Insuficiencia pancreática exocrina",
+  "Alergias alimentarias", "Enfermedad inflamatoria crónica intestinal", "Shunt hepático"
 ];
 
 export default function PerfilMedicoPet({ petId }) {
@@ -25,13 +20,11 @@ export default function PerfilMedicoPet({ petId }) {
   const [esterilizado, setEsterilizado] = useState(false);
   const [showEsterilizacion, setShowEsterilizacion] = useState(false);
 
-  // Peso e historial
   const [pesos, setPesos] = useState([]);
   const [loadingPesos, setLoadingPesos] = useState(false);
   const [showPesoModal, setShowPesoModal] = useState(false);
   const [nuevoPeso, setNuevoPeso] = useState({ peso: "", fecha: "" });
 
-  // Crear perfil médico
   const [showCrearPerfil, setShowCrearPerfil] = useState(false);
   const [nuevoPerfil, setNuevoPerfil] = useState({
     alergias: "",
@@ -68,7 +61,6 @@ export default function PerfilMedicoPet({ petId }) {
 
   useEffect(() => {
     fetchPerfil();
-
   }, [petId]);
 
   useEffect(() => {
@@ -105,7 +97,6 @@ export default function PerfilMedicoPet({ petId }) {
       });
       setShowPesoModal(false);
       setNuevoPeso({ peso: "", fecha: "" });
-
     } catch (err) {
       alert("No se pudo guardar el peso");
     }
@@ -114,25 +105,27 @@ export default function PerfilMedicoPet({ petId }) {
   const handleGuardarProblemas = async () => {
     await savePerfil({ condiciones_previas: problemasSeleccionados.join(";") });
     setShowProblemas(false);
-    fetchPerfil(); 
+    fetchPerfil();
   };
+
   const handleGuardarAlergias = async () => {
     await savePerfil({ alergias: alergias.join(";") });
     setShowAlergias(false);
     fetchPerfil();
   };
+
   const handleRemoveProblema = async (problema) => {
-  const nuevos = problemasSeleccionados.filter(p => p !== problema);
-  setProblemasSeleccionados(nuevos); 
-  await savePerfil({ condiciones_previas: nuevos.join(";") });
+    const nuevos = problemasSeleccionados.filter(p => p !== problema);
+    setProblemasSeleccionados(nuevos);
+    await savePerfil({ condiciones_previas: nuevos.join(";") });
+  };
 
-};
-const handleRemoveAlergia = async (alergia) => {
-  const nuevas = alergias.filter(a => a !== alergia);
-  setAlergias(nuevas); 
-  await savePerfil({ alergias: nuevas.join(";") });
+  const handleRemoveAlergia = async (alergia) => {
+    const nuevas = alergias.filter(a => a !== alergia);
+    setAlergias(nuevas);
+    await savePerfil({ alergias: nuevas.join(";") });
+  };
 
-};
   const handleGuardarEsterilizacion = async () => {
     await savePerfil({ esterilizado });
     setShowEsterilizacion(false);
@@ -185,26 +178,30 @@ const handleRemoveAlergia = async (alergia) => {
       if (!res.ok) throw new Error("No se pudo crear el perfil médico");
       setShowCrearPerfil(false);
       setError("");
-      fetchPerfil(); 
+      fetchPerfil();
     } catch {
       alert("Error creando el perfil médico");
     }
   };
 
+  // --- RETURN ---
   if (error)
     return (
-      <div className="alert alert-warning text-center">
-        {error}
-        <br />
-        <Button
-          variant="success"
-          size="sm"
-          className="mt-3"
-          onClick={() => setShowCrearPerfil(true)}
-        >
-          Crear perfil médico
-        </Button>
-
+      <div className="historial-medico-card">
+        <div className="historial-medico-icono">📋</div>
+        <div className="historial-medico-titulo">Historial Médico</div>
+        <div className="alert alert-warning text-center">
+          {error}
+          <br />
+          <Button
+            variant="success"
+            size="sm"
+            className="mt-3"
+            onClick={() => setShowCrearPerfil(true)}
+          >
+            Crear perfil médico
+          </Button>
+        </div>
         {/* Modal para crear perfil médico */}
         <Modal show={showCrearPerfil} onHide={() => setShowCrearPerfil(false)}>
           <Modal.Header closeButton>
@@ -272,24 +269,27 @@ const handleRemoveAlergia = async (alergia) => {
     );
 
   if (loading)
-    return <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "200px" }}>
-      <Spinner animation="border" variant="primary" />
-    </div>;
+    return (
+      <div className="historial-medico-card d-flex justify-content-center align-items-center" style={{ minHeight: "220px" }}>
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
 
   return (
-    <div className="container py-4">
-      <h3>Datos de salud de tu mascota</h3>
+    <div className="historial-medico-card">
+      <div className="historial-medico-icono">📋</div>
+      <div className="historial-medico-titulo">Historial Médico</div>
       {/* Peso */}
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center">
           <strong>Peso</strong>
           <Button variant="link" size="sm" onClick={() => setShowPesoModal(true)}>Agregar</Button>
         </div>
-        <div style={{ background: "#f6f6fa", minHeight: 120, borderRadius: 8, marginBottom: 8, padding: 16 }}>
+        <div style={{ background: "#f6f6fa", minHeight: 80, borderRadius: 8, marginBottom: 8, padding: 14 }}>
           {loadingPesos ? (
             <Spinner />
           ) : pesos.length > 0 ? (
-            <ResponsiveContainer width="100%" height={90}>
+            <ResponsiveContainer width="100%" height={70}>
               <LineChart data={pesos}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="fecha" tick={{ fontSize: 12 }} />
@@ -396,49 +396,6 @@ const handleRemoveAlergia = async (alergia) => {
         <Button variant="link" size="sm" onClick={() => setShowEsterilizacion(true)}>
           Editar
         </Button>
-      </div>
-
-      {/* PRO Banner */}
-      <div className="alert alert-info d-flex align-items-center mt-4"
-        style={{
-          background: "#f7f6fc",
-          border: "1px solid #e4e0f6",
-          borderRadius: "1.2rem",
-          boxShadow: "0 2px 14px 0 rgba(230,210,90,0.06)"
-        }}
-      >
-        <span className="me-3" style={{ fontSize: "2.2rem", display: "flex", alignItems: "center" }}>
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="#FFD600" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" />
-          </svg>
-        </span>
-        <div style={{ flex: 1 }}>
-          <strong style={{ fontWeight: 600, color: "#1d1940" }}>
-            ¿Quieres recomendaciones personalizadas y el historial en PDF?
-          </strong>
-          <div className="text-muted" style={{ fontSize: "1em" }}>
-            Haz upgrade a <b>GOLD</b> y recibe un informe profesional para tu mascota, listo para imprimir o compartir.
-          </div>
-        </div>
-        <button
-          className="btn btn-sm btn-main ms-3 d-flex align-items-center"
-          onClick={() => window.location.href = "/upgrade"}
-          style={{
-            whiteSpace: "nowrap",
-            background: "linear-gradient(90deg, #FFD600 60%, #FFCA28 100%)",
-            color: "#222",
-            fontWeight: 700,
-            border: "none",
-            boxShadow: "0 2px 8px 0 rgba(240,180,0,0.08)"
-          }}
-        >
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="#FFD600" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: 5 }}>
-            <rect x="5" y="10" width="14" height="9" rx="2" fill="#FFD600" />
-            <rect x="9" y="7" width="6" height="4" rx="3" fill="#FFD600" opacity="0.8" />
-            <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="#888" strokeWidth="1.2" fill="none" />
-          </svg>
-          Hazte PRO
-        </button>
       </div>
 
       {/* --------- MODALS --------- */}
@@ -585,3 +542,4 @@ const handleRemoveAlergia = async (alergia) => {
     </div>
   );
 }
+

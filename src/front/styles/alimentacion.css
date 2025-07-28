@@ -78,3 +78,33 @@
     margin-left: 54px;
   }
 }
+.btn-center-modal {
+  display: block;
+  margin: 22px auto 0 auto !important;
+  min-width: 220px;
+}
+.btn-pagar{
+  background: #994cd8;
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+  border-radius: 1.5rem;
+  padding: 0.8rem 1.2rem;
+  transition: background-color 0.3s, transform 0.2s;
+}
+.btn-pagar:hover {
+  background: #7e57c2;
+  transform: translateY(-2px);
+}
+.btn-descargar{
+  background: transparent;
+  color: #994cd8;
+  border: 2px solid #994cd8;
+  font-weight: bold;
+  border-radius: 1.5rem;
+  padding: 0.8rem 1.2rem;
+  transition: background-color 0.3s, transform 0.2s;
+}
+.btn-descargar:hover {
+  background: #f3e8ff;
+  transform: translateY(-2px);
+}

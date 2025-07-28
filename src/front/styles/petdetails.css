@@ -87,11 +87,9 @@ img.rounded {
 
 /* Caja brillante con animación shimmer y sombra neón */
 .alimentacion-box {
-  background: #e8f8ff;
-  border: 2.5px solid #89f7fe;
-  box-shadow: 0 0 15px 3px #89f7fe99, 0 0 40px 8px #c3f3ff33;
+  background: #ffffff;
+  border: 2.5px solid #c8a3e6;
   border-radius: 22px;
-  transition: box-shadow 0.5s, border-color 0.5s;
   position: relative;
   overflow: hidden;
   padding: 1.5rem 1.2rem;
@@ -99,8 +97,6 @@ img.rounded {
   font-size: 1.08rem;
   color: #36456a;
   min-height: 170px;
-  /* Glow anim */
-  animation: glow-anim 2.8s ease-in-out infinite alternate;
 }
 
 @keyframes glow-anim {
@@ -114,19 +110,7 @@ img.rounded {
   }
 }
 
-/* Efecto shimmer - luz que pasa por la caja */
-.alimentacion-box::after {
-  content: "";
-  position: absolute;
-  top: -40%;
-  left: -60%;
-  width: 120%;
-  height: 180%;
-  background: linear-gradient(120deg, transparent, #e2f9ffaa 65%, transparent 100%);
-  opacity: 0.7;
-  pointer-events: none;
-  animation: shimmerAnim 2.8s infinite;
-}
+
 @keyframes shimmerAnim {
   0% { left: -60%; }
   100% { left: 100%; }
@@ -137,8 +121,7 @@ img.rounded {
   font-size: 2.6rem;
   display: inline-block;
   margin-bottom: 0.3rem;
-  filter: drop-shadow(0 0 10px #8ff5ffbb);
-  animation: bounceIcon 1.2s infinite alternate;
+  filter: drop-shadow(0 0 10px #a036d1bb);
 }
 @keyframes bounceIcon {
   0% { transform: translateY(0);}
@@ -152,4 +135,14 @@ img.rounded {
   margin-bottom: 1rem;
   letter-spacing: 0.01em;
   text-shadow: 0 2px 12px #6cc3e650;
+}
+.btn-main, .btn-outline-main {
+  margin-top: 0.2rem;
+  min-width: 250px;  /* ¡Ajusta el ancho! */
+  max-width: 210px;
+  /* Puedes ajustar esto según tu preferencia visual */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.6rem 1.2rem 0.6rem 1.2rem;
 }
