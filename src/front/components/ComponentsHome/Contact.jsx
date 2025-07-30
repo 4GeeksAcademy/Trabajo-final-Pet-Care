@@ -15,7 +15,7 @@ const Contact = () => (
       <p className="mb-0">
         ¿Tienes dudas? Escríbenos a{" "}
         <a href="mailto:soporte@petcare.com" className="link-primary">
-          soporte@petcare.com
+          soporte@pettracker.com
         </a>
       </p>
     </div>

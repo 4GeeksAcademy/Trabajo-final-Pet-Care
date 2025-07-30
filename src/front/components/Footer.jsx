@@ -28,7 +28,7 @@ const Footer = () => (
           <h4>La app</h4>
           <ul>
             <li><Link to="/about">¿Quienes somos?</Link></li>
-            <li><a href="#why-us">Por qué PetCare</a></li>
+            <li><a href="#why-us">Por qué Pet Tracker</a></li>
           </ul>
         </div>
         <div>
@@ -43,7 +43,7 @@ const Footer = () => (
 
     <div className="footer-bottom">
       <small>
-        © {new Date().getFullYear()} PetCare. Todos los derechos reservados.{" "}
+        © {new Date().getFullYear()} Pet Tracker. Todos los derechos reservados.{" "}
         <a href="/privacidad">Privacidad</a> |{" "}
         <a href="/terminos">Términos</a> |{" "}
         <a href="/cookies">Cookies</a>

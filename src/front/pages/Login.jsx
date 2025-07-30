@@ -104,7 +104,7 @@ export default function Login() {
             />
           </div>
 
-          <button type="submit" className="btn btn-main w-100">
+          <button type="submit" className="btn btn-main w-100" style={{marginLeft: "50px"}}>
             Entrar
           </button>
         </form>
