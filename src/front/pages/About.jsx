@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "../components/Footer";
 import "../styles/about.css";
 
@@ -18,6 +18,10 @@ const About = () => {
 
 
   const handleImgLoad = () => setLoadedImgs(l => l + 1);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <div className="min-vh-100 d-flex flex-column">

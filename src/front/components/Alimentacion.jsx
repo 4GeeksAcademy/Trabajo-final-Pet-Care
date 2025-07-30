@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../styles/alimentacion.css";
 import Spinner from "react-bootstrap/Spinner";
-
 const Alimentacion = ({ petId, pet, token }) => {
   const [recomendacion, setRecomendacion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState("");
-
+  const yaLlamado = useRef(false);
   const fetchWithAuth = (url, options = {}) =>
     fetch(url, {
       ...options,
@@ -16,28 +15,28 @@ const Alimentacion = ({ petId, pet, token }) => {
         ...(options.headers || {}),
       },
     });
-
   useEffect(() => {
-    if (!petId || !token) return;
+    if (!petId || !token || yaLlamado.current) return;
+    yaLlamado.current = true;
     setLoading(true);
     setErrMsg("");
     fetchWithAuth(`${import.meta.env.VITE_BACKEND_URL}api/pet/${petId}/alimentacion`)
       .then(res => {
         if (res.ok) return res.json();
-        if (res.status === 404) throw new Error("No hay recomendación registrada");
-        throw new Error("Error al consultar alimentación");
+        if (res.status === 404) throw new Error("NO_EXISTE");
+        throw new Error("GENERIC_ERROR");
       })
       .then(data => {
         setRecomendacion(data.texto);
         setLoading(false);
       })
       .catch(err => {
-        if (err.message === "No hay recomendación registrada") {
+        if (err.message === "NO_EXISTE") {
           fetchWithAuth(`${import.meta.env.VITE_BACKEND_URL}api/pet/${petId}/alimentacion`, {
             method: "POST",
           })
             .then(res => {
-              if (!res.ok) throw new Error("Error generando recomendación");
+              if (!res.ok) throw new Error("FALLO_GENERANDO");
               return res.json();
             })
             .then(data => {
@@ -53,8 +52,10 @@ const Alimentacion = ({ petId, pet, token }) => {
           setLoading(false);
         }
       });
+    return () => {
+      yaLlamado.current = false;
+    };
   }, [petId, token]);
-
   if (loading)
     return (
       <div
@@ -64,12 +65,8 @@ const Alimentacion = ({ petId, pet, token }) => {
         <Spinner animation="border" variant="primary" />
       </div>
     );
-
   if (errMsg)
-    return (
-      <div className="alert alert-warning rounded-4">{errMsg}</div>
-    );
-
+    return <div className="alert alert-warning rounded-4">{errMsg}</div>;
   return (
     <div className="alimentacion-card">
       <div className="alimentacion-emoji">🍽️</div>
@@ -83,5 +80,4 @@ const Alimentacion = ({ petId, pet, token }) => {
     </div>
   );
 };
-
 export default Alimentacion;

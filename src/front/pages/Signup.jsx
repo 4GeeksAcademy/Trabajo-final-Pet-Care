@@ -74,7 +74,7 @@ export default function Signup() {
 
   return (
     <main className="d-flex justify-content-center align-items-center vh-100">
-      <div className="card p-4 shadow-sm" style={{ maxWidth: 400, width: "100%" }}>
+      <div className="card p-4 shadow-sm" style={{ maxWidth: 400, width: "100%", marginTop: "70px" }}>
         <h2 className="card-title text-center mb-4">Crea tu cuenta</h2>
         { serverError && (
           <div className="alert alert-danger">{serverError}</div>
@@ -136,7 +136,8 @@ export default function Signup() {
             />
             {errors.confirm && <div className="invalid-feedback">{errors.confirm}</div>}
           </div>
-          <button type="submit" className="btn btn-main w-100">Registrarse</button>
+          <div style={{marginLeft: "50px"}}>
+          <button type="submit" className="btn btn-main w-100">Registrarse</button></div>
         </form>
         <p className="text-center mt-3">
           ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>

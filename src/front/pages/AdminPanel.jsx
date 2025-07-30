@@ -11,17 +11,13 @@ export default function AdminPanel() {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [loadingInit, setLoadingInit] = useState(true);
-
   const [tab, setTab] = useState("users");
-
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [userError, setUserError] = useState("");
-
   const [pets, setPets] = useState([]);
   const [loadingPets, setLoadingPets] = useState(false);
   const [petError, setPetError] = useState("");
-
   const token = useMemo(() => localStorage.getItem("token"), []);
 
   useEffect(() => {
@@ -88,7 +84,7 @@ export default function AdminPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setUsers((prev) => prev.map((x) => (x.id === u.id ? { ...x, is_active: data.is_active } : x)));
-    } catch (_) { }
+    } catch (_) {}
   };
 
   const togglePetActive = async (p) => {
@@ -100,7 +96,7 @@ export default function AdminPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setPets((prev) => prev.map((x) => (x.id === p.id ? { ...x, is_active: data.is_active } : x)));
-    } catch (_) { }
+    } catch (_) {}
   };
 
   const editUserField = async (id, field, value) => {
@@ -117,7 +113,7 @@ export default function AdminPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setUsers((prev) => prev.map((u) => (u.id === id ? data : u)));
-    } catch (_) { }
+    } catch (_) {}
   };
 
   const editPetField = async (id, field, value) => {
@@ -134,13 +130,17 @@ export default function AdminPanel() {
       if (!res.ok) return;
       const data = await res.json();
       setPets((prev) => prev.map((p) => (p.id === id ? data : p)));
-    } catch (_) { }
+    } catch (_) {}
   };
 
   const handleInlineChange = (setter, current, id, field, value, saveFn) => {
     setter((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
     saveFn(id, field, value);
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
 
   if (loadingInit) {
     return (
@@ -248,8 +248,7 @@ export default function AdminPanel() {
                         </td>
                         <td>
                           <span
-                            className={`badge rounded-pill ${u.is_admin ? "bg-purple-admin" : "bg-light text-purple-mid"
-                              }`}
+                            className={`badge rounded-pill ${u.is_admin ? "bg-purple-admin" : "bg-light text-purple-mid"}`}
                           >
                             {u.is_admin ? "Sí" : "No"}
                           </span>
@@ -266,6 +265,7 @@ export default function AdminPanel() {
                           {u.is_admin && (
                             <button
                               className="btn btn-sm btn-outline-danger"
+                              style={{ padding: "0.5rem 1.2rem", borderRadius: "24px", width: "250px" }}
                               onClick={() => editUserField(u.id, "is_admin", false)}
                             >
                               Quitar admin
@@ -273,7 +273,8 @@ export default function AdminPanel() {
                           )}
                           <button
                             className="btn btn-sm btn-outline-main"
-                            onClick={() => navigate(`/admin/user/${u.id}`)}>
+                            onClick={() => navigate(`/admin/user/${u.id}`)}
+                          >
                             Ver detalle
                           </button>
                           <button

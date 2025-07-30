@@ -19,6 +19,7 @@ from .utils import APIException
 from .utils import admin_required 
 import os 
 from dotenv import load_dotenv
+from sqlalchemy.exc import IntegrityError
 
 load_dotenv()
 
@@ -674,7 +675,7 @@ def create_donation_session():
 
     try:
 
-        success_url = "https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/dashboard?donation=ok"
+        success_url = "https://glorious-eureka-5gr7wg947r5wh7wxg-3000.app.github.dev/dashboard?donation=ok"
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{
@@ -683,7 +684,7 @@ def create_donation_session():
             }],
             mode="payment",
             success_url=success_url,
-            cancel_url="https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/dashboard",
+            cancel_url="https://glorious-eureka-5gr7wg947r5wh7wxg-3000.app.github.dev/dashboard",
             metadata={"user_id": get_jwt_identity()},
         )
         print("STRIPE SESSION URL:", session.url)
@@ -700,8 +701,8 @@ def carnet_checkout():
     if not pet_id:
         return jsonify({"msg": "Falta pet_id"}), 400
 
-    success_url = f"https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/pets/{pet_id}?carnet_paid=ok"
-    cancel_url  = f"https://miniature-tribble-wr56vg579jgrfvj6q-3000.app.github.dev/pets/{pet_id}?carnet_paid=cancel"
+    success_url = f"https://glorious-eureka-5gr7wg947r5wh7wxg-3000.app.github.dev/pets/{pet_id}?carnet_paid=ok"
+    cancel_url  = f"https://glorious-eureka-5gr7wg947r5wh7wxg-3000.app.github.dev/pets/{pet_id}?carnet_paid=cancel"
 
     try:
         session = stripe.checkout.Session.create(
@@ -736,12 +737,9 @@ def generar_alimentacion_ia(pet_id):
     pet = Pet.query.get(pet_id)
     if not pet or pet.user_id != user_id:
         return jsonify({"msg": "Mascota no encontrada o acceso denegado"}), 403
-
     alimentacion_existente = AlimentacionRecomendacion.query.filter_by(pet_id=pet_id).first()
     if alimentacion_existente:
         return jsonify(alimentacion_existente.serialize()), 200
-
-    # PROMPT IA
     prompt = (
         f"Nombre: {pet.nombre}\n"
         f"Especie: {pet.especie}\n"
@@ -752,7 +750,6 @@ def generar_alimentacion_ia(pet_id):
         "El usuario acaba de registrar esta mascota en una app de salud animal y quiere saber cómo debería alimentarla correctamente según su especie y raza. "
         "Responde con una recomendación breve de minimo 3 parrafos, clara y directa de alimentación, incluyendo tipo de comida, frecuencia y cantidad aproximada diaria. No introduzcas ni expliques, solo da la recomendación. Evita tecnicismos."
     )
-
     try:
         response = client.chat.completions.create(
             model="gpt-4",
@@ -763,18 +760,18 @@ def generar_alimentacion_ia(pet_id):
             temperature=0.7
         )
         texto = response.choices[0].message.content.strip()
-
-        recomendacion = AlimentacionRecomendacion(
-            pet_id=pet_id,
-            texto=texto
-        )
+        recomendacion = AlimentacionRecomendacion(pet_id=pet_id, texto=texto)
         db.session.add(recomendacion)
         db.session.commit()
-
         return jsonify(recomendacion.serialize()), 201
-
+    except IntegrityError:
+        db.session.rollback()
+        recomendacion = AlimentacionRecomendacion.query.filter_by(pet_id=pet_id).first()
+        return jsonify(recomendacion.serialize()), 200
     except Exception as e:
         db.session.rollback()
+        import traceback
+        traceback.print_exc()
         return jsonify({"msg": "Error al generar recomendación de alimentación", "error": str(e)}), 500
 
 #GET RECOMENDACION 

@@ -14,7 +14,7 @@ const Info = () => (
     <section className="info-section bg-purple-dark">
         <div className="container">
             <h2 className="info-title text-white">
-                Por qué elegir <span className="underline">PetCare</span> para tu mascota
+                Por qué elegir <span className="underline">Pet Tracker</span> para tu mascota
             </h2>
             <div className="info-cards">
                 {infoItems.map((item, i) => (

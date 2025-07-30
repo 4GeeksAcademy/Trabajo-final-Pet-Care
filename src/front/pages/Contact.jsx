@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import Footer from "../components/Footer"; 
+import React, { useState, useEffect } from "react";
+import Footer from "../components/Footer";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -13,13 +13,17 @@ const Contact = () => {
     setSubmitted(true);
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
+
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light" style={{marginTop: "30px"}}>
+    <div className="d-flex flex-column min-vh-100 bg-light" style={{ marginTop: "30px" }}>
       <main className="flex-grow-1 d-flex align-items-center justify-content-center">
         <section
           className="w-100 d-flex align-items-center justify-content-center"
           style={{
-            minHeight: "calc(120vh - 160px)", 
+            minHeight: "calc(120vh - 160px)",
             paddingTop: 48,
             paddingBottom: 48,
           }}

@@ -12,7 +12,7 @@ export default function Dashboard() {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [pets, setPets] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   const [showDonation, setShowDonation] = useState(false);
   const [loadingDonation, setLoadingDonation] = useState(false);
@@ -51,7 +51,7 @@ export default function Dashboard() {
         localStorage.clear();
         navigate("/login");
       } finally {
-        setTimeout(() => setLoading(false), 1000); 
+        setTimeout(() => setLoading(false), 1000);
       }
     }
     loadData();
@@ -94,8 +94,8 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-    }, []);
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
 
   if (loading) {
     return (
